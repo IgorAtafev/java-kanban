@@ -1,23 +1,26 @@
 package ru.yandex.practicum.tasks;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Epic extends Task {
-    private List<SubTask> subTasks = new ArrayList<>();
+    private final Map<Integer, SubTask> subTasks = new HashMap<>();
 
     public Epic(String name, String description, int id) {
         super(name, description, id);
     }
 
-    public List<SubTask> getSubTasks() {
+    public Map<Integer, SubTask> getSubTasks() {
         return subTasks;
     }
 
-    public void setSubTasks(List<SubTask> subTasks) {
-        this.subTasks = subTasks;
-    }
-
+    /**
+     * Gets epic status
+     * If the epic has no subtasks or all of them have the NEW status, then the status should be NEW.
+     * If all subtasks have the DONE status, then the epic is considered completed - with the DONE status.
+     * In all other cases the status should be IN_PROGRESS.
+     * @return
+     */
     @Override
     public Status getStatus() {
         if (subTasks.isEmpty()) {
@@ -26,7 +29,7 @@ public class Epic extends Task {
 
         boolean isStatusNew = true;
         boolean isStatusDone = true;
-        for (SubTask subTask : subTasks) {
+        for (SubTask subTask : subTasks.values()) {
             if (subTask.getStatus() != Status.NEW) {
                 isStatusNew = false;
             }
@@ -44,12 +47,27 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
+        String result = "Epic{" +
                 "name='" + getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", id=" + getId() +
-                ", status=" + getStatus() +
-                ", subTasks.size=" + subTasks.size() +
-                '}';
+                ", status=" + getStatus().getName() +
+                ", subTasks=";
+
+        if (!subTasks.isEmpty()) {
+            int counter = 0;
+            for (SubTask subTask : subTasks.values()) {
+                if (counter++ > 0) {
+                    result += ", ";
+                }
+                result += subTask.toString();
+            }
+        } else {
+            result += "null";
+        }
+
+        result += '}';
+
+        return result;
     }
 }

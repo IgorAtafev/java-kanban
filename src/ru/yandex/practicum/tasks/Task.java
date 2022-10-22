@@ -6,7 +6,7 @@ public class Task {
     private String name;
     private String description;
     private final int id;
-    private final Status status;
+    private Status status;
 
     public Task(String name, String description, int id) {
         this.name = name;
@@ -46,6 +46,10 @@ public class Task {
         return status;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -73,7 +77,7 @@ public class Task {
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
-                ", status=" + status +
+                ", status=" + status.getName() +
                 '}';
     }
 }
