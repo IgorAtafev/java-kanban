@@ -1,6 +1,4 @@
-package ru.yandex.practicum.tasks;
-
-import java.util.Objects;
+package ru.yandex.practicum.taskTracker;
 
 public class Task {
     private String name;
@@ -56,6 +54,7 @@ public class Task {
     public void setStatus(Status status) {
         this.status = status;
     }
+/*
 
     @Override
     public boolean equals(Object object) {
@@ -77,6 +76,7 @@ public class Task {
     public int hashCode() {
         return Objects.hash(name, description, id, status);
     }
+*/
 
     @Override
     public String toString() {

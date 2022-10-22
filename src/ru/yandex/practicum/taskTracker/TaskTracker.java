@@ -1,4 +1,4 @@
-package ru.yandex.practicum.tasks;
+package ru.yandex.practicum.taskTracker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,9 @@ public class TaskTracker {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
 
-    private int nextId = 0;
+    private int nextTaskId = 0;
+    private int nextEpicId = 0;
+    private int nextSubTaskId = 0;
 
     /**
      * Gets a list of all tasks
@@ -46,6 +48,22 @@ public class TaskTracker {
     }
 
     /**
+     * Gets a subtask by id
+     * @param id
+     * @return subtask or null if there was no mapping for id
+     */
+    public SubTask getSubTaskById(int id) {
+        for (Epic epic : epics.values()) {
+            SubTask subTask = epic.getSubTasks().get(id);
+            if (subTask != null) {
+                return subTask;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Deletes all tasks
      */
     public void deleteTasks() {
@@ -78,6 +96,22 @@ public class TaskTracker {
     }
 
     /**
+     * Deletes a subtask by id
+     * @param id
+     * @return subtask or null if there was no mapping for id
+     */
+    public SubTask deleteSubTaskById(int id) {
+        for (Epic epic : epics.values()) {
+            SubTask subTask = epic.getSubTasks().get(id);
+            if (subTask != null) {
+                return epic.getSubTasks().remove(id);
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Creates a new task
      * @param task
      * @return task or null if there was mapping for id
@@ -87,7 +121,7 @@ public class TaskTracker {
             return null;
         }
 
-        Task newTask = new Task(task.getName(), task.getDescription(), ++nextId);
+        Task newTask = new Task(task.getName(), task.getDescription(), ++nextTaskId);
         if (tasks.containsKey(newTask.getId())) {
             return null;
         }
@@ -106,13 +140,37 @@ public class TaskTracker {
             return null;
         }
 
-        Epic newEpic = new Epic(epic.getName(), epic.getDescription(), ++nextId);
+        Epic newEpic = new Epic(epic.getName(), epic.getDescription(), ++nextEpicId);
         if (epics.containsKey(newEpic.getId())) {
             return null;
         }
         epics.put(newEpic.getId(), newEpic);
 
         return newEpic;
+    }
+
+    /**
+     * Creates a new subtask
+     * @param subTask
+     * @return subtask or null if there was mapping for id
+     */
+    public SubTask createSubTask(SubTask subTask) {
+        if (subTask == null) {
+            return null;
+        }
+
+        Epic epic = epics.get(subTask.getEpicId());
+        if (epic == null) {
+            return null;
+        }
+
+        SubTask newSubTask = new SubTask(subTask.getName(), subTask.getDescription(), ++nextSubTaskId, epic.getId());
+        if (epic.getSubTasks().containsKey(newSubTask.getId())) {
+            return null;
+        }
+        epic.getSubTasks().put(newSubTask.getId(), newSubTask);
+
+        return newSubTask;
     }
 
     /**
@@ -154,8 +212,32 @@ public class TaskTracker {
 
         originalEpic.setName(epic.getName());
         originalEpic.setDescription(epic.getDescription());
-        originalEpic.setStatus(epic.getStatus());
 
         return originalEpic;
     }
+
+    /**
+     * Updates the subtask
+     * @param subTask
+     * @return subtask or null if there was no mapping for id
+     */
+    /*public SubTask updateSubTask(SubTask subTask) {
+        if (subTask == null) {
+            return null;
+        }
+
+        for (Epic epic : epics.values()) {
+            if (epic.getSubTasks().containsKey())
+        }
+        Task originalTask = tasks.get(task.getId());
+        if (tasks.get(task.getId()) == null) {
+            return null;
+        }
+
+        originalTask.setName(task.getName());
+        originalTask.setDescription(task.getDescription());
+        originalTask.setStatus(task.getStatus());
+
+        return originalTask;
+    }*/
 }

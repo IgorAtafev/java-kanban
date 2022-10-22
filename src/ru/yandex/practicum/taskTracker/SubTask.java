@@ -1,9 +1,12 @@
-package ru.yandex.practicum.tasks;
-
-import java.util.Objects;
+package ru.yandex.practicum.taskTracker;
 
 public class SubTask extends Task {
-    private int epicId;
+    private final int epicId;
+
+    public SubTask(String name, String description, int epicId) {
+        super(name, description);
+        this.epicId = epicId;
+    }
 
     public SubTask(String name, String description, int id, int epicId) {
         super(name, description, id);
@@ -19,11 +22,7 @@ public class SubTask extends Task {
         return epicId;
     }
 
-    public void setEpicId(int epicId) {
-        this.epicId = epicId;
-    }
-
-    @Override
+/*    @Override
     public boolean equals(Object object) {
         if (!super.equals(object)) {
             return false;
@@ -36,7 +35,7 @@ public class SubTask extends Task {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), epicId);
-    }
+    }*/
 
     @Override
     public String toString() {
