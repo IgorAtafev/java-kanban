@@ -6,6 +6,10 @@ import java.util.Map;
 public class Epic extends Task {
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
 
+    public Epic(String name, String description) {
+        super(name, description);
+    }
+
     public Epic(String name, String description, int id) {
         super(name, description, id);
     }
@@ -43,6 +47,11 @@ public class Epic extends Task {
         }
 
         return isStatusNew ? Status.NEW : isStatusDone ? Status.DONE : Status.IN_PROGRESS;
+    }
+
+    @Override
+    public void setStatus(Status status) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
