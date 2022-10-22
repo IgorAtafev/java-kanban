@@ -30,6 +30,38 @@ public class TaskTracker {
     }
 
     /**
+     * Gets a list of all subtasks
+     * @return list of subtasks or null
+     */
+    public List<SubTask> getSubTasks() {
+        if (epics.isEmpty()) {
+            return null;
+        }
+
+        List<SubTask> subTasks = new ArrayList<>();
+        for (Epic epic : epics.values()) {
+            for (SubTask subTask : epic.getSubTasks().values()) {
+                subTasks.add(subTask);
+            }
+        }
+
+        return subTasks;
+    }
+
+    /**
+     * Gets a list of all subtasks by epic
+     * @param epic
+     * @return list of subtasks or null
+     */
+    public List<SubTask> getSubTasksByEpic(Epic epic) {
+        if (epic == null || !epics.containsKey(epic.getId())) {
+           return null;
+        }
+
+        return new ArrayList<>(epic.getSubTasks().values());
+    }
+
+    /**
      * Gets a task by id
      * @param id
      * @return task or null if there was no mapping for id
@@ -50,7 +82,7 @@ public class TaskTracker {
     /**
      * Gets a subtask by id
      * @param id
-     * @return subtask or null if there was no mapping for id
+     * @return subtask or null
      */
     public SubTask getSubTaskById(int id) {
         for (Epic epic : epics.values()) {
@@ -78,6 +110,25 @@ public class TaskTracker {
     }
 
     /**
+     * Deletes all subtasks
+     */
+    public void deleteSubTasks() {
+        for (Epic epic : epics.values()) {
+            epic.getSubTasks().clear();
+        }
+    }
+
+    /**
+     * Deletes all subtasks by epic
+     * @param epic
+     */
+    public void deleteSubTasksByEpic(Epic epic) {
+        if (epic != null && epics.containsKey(epic.getId())) {
+            epic.getSubTasks().clear();
+        }
+    }
+
+    /**
      * Deletes a task by id
      * @param id
      * @return task or null if there was no mapping for id
@@ -98,7 +149,7 @@ public class TaskTracker {
     /**
      * Deletes a subtask by id
      * @param id
-     * @return subtask or null if there was no mapping for id
+     * @return subtask or null
      */
     public SubTask deleteSubTaskById(int id) {
         for (Epic epic : epics.values()) {
@@ -114,7 +165,7 @@ public class TaskTracker {
     /**
      * Creates a new task
      * @param task
-     * @return task or null if there was mapping for id
+     * @return task or null
      */
     public Task createTask(Task task) {
         if (task == null) {
@@ -133,26 +184,26 @@ public class TaskTracker {
     /**
      * Creates a new epic
      * @param epic
-     * @return epic or null if there was mapping for id
+     * @return epic or null
      */
     public Epic createEpic(Epic epic) {
         if (epic == null) {
             return null;
         }
 
-        Epic newEpic = new Epic(epic.getName(), epic.getDescription(), ++nextEpicId);
-        if (epics.containsKey(newEpic.getId())) {
+        Epic newTask = new Epic(epic.getName(), epic.getDescription(), ++nextEpicId);
+        if (epics.containsKey(newTask.getId())) {
             return null;
         }
-        epics.put(newEpic.getId(), newEpic);
+        epics.put(newTask.getId(), newTask);
 
-        return newEpic;
+        return newTask;
     }
 
     /**
      * Creates a new subtask
      * @param subTask
-     * @return subtask or null if there was mapping for id
+     * @return subtask or null
      */
     public SubTask createSubTask(SubTask subTask) {
         if (subTask == null) {
@@ -164,19 +215,19 @@ public class TaskTracker {
             return null;
         }
 
-        SubTask newSubTask = new SubTask(subTask.getName(), subTask.getDescription(), ++nextSubTaskId, epic.getId());
-        if (epic.getSubTasks().containsKey(newSubTask.getId())) {
+        SubTask newTask = new SubTask(epic.getId(), subTask.getName(), subTask.getDescription(), ++nextSubTaskId);
+        if (epic.getSubTasks().containsKey(newTask.getId())) {
             return null;
         }
-        epic.getSubTasks().put(newSubTask.getId(), newSubTask);
+        epic.getSubTasks().put(newTask.getId(), newTask);
 
-        return newSubTask;
+        return newTask;
     }
 
     /**
      * Updates the task
      * @param task
-     * @return task or null if there was no mapping for id
+     * @return task or null
      */
     public Task updateTask(Task task) {
         if (task == null) {
@@ -198,46 +249,48 @@ public class TaskTracker {
     /**
      * Updates the epic
      * @param epic
-     * @return epic or null if there was no mapping for id
+     * @return epic or null
      */
     public Epic updateEpic(Epic epic) {
         if (epic == null) {
             return null;
         }
 
-        Epic originalEpic = epics.get(epic.getId());
-        if (originalEpic == null) {
+        Epic originalTask = epics.get(epic.getId());
+        if (originalTask == null) {
             return null;
         }
 
-        originalEpic.setName(epic.getName());
-        originalEpic.setDescription(epic.getDescription());
+        originalTask.setName(epic.getName());
+        originalTask.setDescription(epic.getDescription());
 
-        return originalEpic;
+        return originalTask;
     }
 
     /**
      * Updates the subtask
      * @param subTask
-     * @return subtask or null if there was no mapping for id
+     * @return subtask or null
      */
-    /*public SubTask updateSubTask(SubTask subTask) {
+    public SubTask updateSubTask(SubTask subTask) {
         if (subTask == null) {
             return null;
         }
 
-        for (Epic epic : epics.values()) {
-            if (epic.getSubTasks().containsKey())
-        }
-        Task originalTask = tasks.get(task.getId());
-        if (tasks.get(task.getId()) == null) {
+        Epic epic = epics.get(subTask.getEpicId());
+        if (epic == null) {
             return null;
         }
 
-        originalTask.setName(task.getName());
-        originalTask.setDescription(task.getDescription());
-        originalTask.setStatus(task.getStatus());
+        SubTask originalTask = epic.getSubTasks().get(subTask.getId());
+        if (originalTask == null) {
+            return null;
+        }
+
+        originalTask.setName(subTask.getName());
+        originalTask.setDescription(subTask.getDescription());
+        originalTask.setStatus(subTask.getStatus());
 
         return originalTask;
-    }*/
+    }
 }

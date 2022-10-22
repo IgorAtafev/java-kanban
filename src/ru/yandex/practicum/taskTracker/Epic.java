@@ -57,10 +57,10 @@ public class Epic extends Task {
     @Override
     public String toString() {
         String result = "Epic{" +
-                "name='" + getName() + '\'' +
+                "id=" + getId() +
+                ", name='" + getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
-                ", id=" + getId() +
-                ", status=" + getStatus().getName() +
+                ", status='" + getStatus().getName() + '\'' +
                 ", subTasks=";
 
         if (!subTasks.isEmpty()) {

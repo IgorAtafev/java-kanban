@@ -3,17 +3,17 @@ package ru.yandex.practicum.taskTracker;
 public class SubTask extends Task {
     private final int epicId;
 
-    public SubTask(String name, String description, int epicId) {
+    public SubTask(int epicId, String name, String description) {
         super(name, description);
         this.epicId = epicId;
     }
 
-    public SubTask(String name, String description, int id, int epicId) {
+    public SubTask(int epicId, String name, String description, int id) {
         super(name, description, id);
         this.epicId = epicId;
     }
 
-    public SubTask(String name, String description, int id, Status status, int epicId) {
+    public SubTask(int epicId, String name, String description, int id, Status status) {
         super(name, description, id, status);
         this.epicId = epicId;
     }
@@ -22,29 +22,14 @@ public class SubTask extends Task {
         return epicId;
     }
 
-/*    @Override
-    public boolean equals(Object object) {
-        if (!super.equals(object)) {
-            return false;
-        }
-
-        SubTask subTask = (SubTask) object;
-        return epicId == subTask.epicId;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), epicId);
-    }*/
-
     @Override
     public String toString() {
         return "SubTask{" +
-                "name='" + getName() + '\'' +
-                ", description='" + getDescription() + '\'' +
+                "epicId=" + epicId +
                 ", id=" + getId() +
-                ", status=" + getStatus().getName() +
-                ", epicId=" + epicId +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", status='" + getStatus().getName() + '\'' +
                 '}';
     }
 }
