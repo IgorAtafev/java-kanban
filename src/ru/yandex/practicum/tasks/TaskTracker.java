@@ -101,7 +101,7 @@ public class TaskTracker {
      * @param epic
      * @return epic or null if there was mapping for id
      */
-    public Task createEpic(Epic epic) {
+    public Epic createEpic(Epic epic) {
         if (epic == null) {
             return null;
         }
@@ -142,7 +142,7 @@ public class TaskTracker {
      * @param epic
      * @return epic or null if there was no mapping for id
      */
-    public Task updateEpic(Epic epic) {
+    public Epic updateEpic(Epic epic) {
         if (epic == null) {
             return null;
         }
