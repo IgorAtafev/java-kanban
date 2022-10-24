@@ -19,13 +19,17 @@ public class SubTask extends Task {
             return false;
         }
 
+        if (!(object instanceof SubTask)) {
+            return false;
+        }
+
         SubTask subTask = (SubTask) object;
-        return epic.equals(subTask.epic);
+        return Objects.equals(epic, subTask.epic);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), epic.hashCode());
+        return Objects.hash(super.hashCode(), epic);
     }
 
     @Override

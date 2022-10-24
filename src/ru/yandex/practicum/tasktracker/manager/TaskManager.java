@@ -1,6 +1,5 @@
 package ru.yandex.practicum.tasktracker.manager;
 
-import ru.yandex.practicum.tasktracker.Status;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
@@ -10,17 +9,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TaskTracker {
+public class TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
 
     private int nextTaskId = 0;
-    private int nextEpicId = 0;
-    private int nextSubTaskId = 0;
 
     /**
      * Gets a list of all tasks
+     * @return list of all tasks
      */
     public List<Task> getTasks() {
         return new ArrayList<>(tasks.values());
@@ -28,6 +26,7 @@ public class TaskTracker {
 
     /**
      * Gets a list of all epics
+     * @return list of all epics
      */
     public List<Epic> getEpics() {
         return new ArrayList<>(epics.values());
@@ -35,23 +34,25 @@ public class TaskTracker {
 
     /**
      * Gets a list of all subtasks
+     * @return list of all subtasks
      */
     public List<SubTask> getSubTasks() {
         return new ArrayList<>(subTasks.values());
     }
 
     /**
-     * Gets a list of all subtasks by epic
-     * @param epic
+     * Gets a list of all subtasks by id epic
+     * @param id
+     * @return list of all subtasks by id epic
      */
-    public List<SubTask> getSubTasksByEpic(Epic epic) {
-        return new ArrayList<>(epic.getSubTasks());
+    public List<SubTask> getSubTasksByEpic(int id) {
+        return epics.get(id).getSubTasks();
     }
 
     /**
      * Gets a task by id
      * @param id
-     * @return task or null if there was no mapping for id
+     * @return task or null if there was no one
      */
     public Task getTaskById(int id) {
         return tasks.get(id);
@@ -60,7 +61,7 @@ public class TaskTracker {
     /**
      * Gets an epic by id
      * @param id
-     * @return epic or null if there was no mapping for id
+     * @return epic or null if there was no one
      */
     public Epic getEpicById(int id) {
         return epics.get(id);
@@ -69,7 +70,7 @@ public class TaskTracker {
     /**
      * Gets a subtask by id
      * @param id
-     * @return subtask or null if there was no mapping for id
+     * @return subtask or null if there was no one
      */
     public SubTask getSubTaskById(int id) {
         return subTasks.get(id);
@@ -95,18 +96,9 @@ public class TaskTracker {
      */
     public void deleteSubTasks() {
         for (Epic epic : epics.values()) {
-            epic.getSubTasks().clear();
+            epic.clearSubTasks();
         }
         subTasks.clear();
-    }
-
-    /**
-     * Deletes all subtasks by epic
-     * @param epic
-     */
-    public void deleteSubTasksByEpic(Epic epic) {
-        subTasks.values().removeAll(epic.getSubTasks());
-        epic.getSubTasks().clear();
     }
 
     /**
@@ -122,7 +114,9 @@ public class TaskTracker {
      * @param id
      */
     public void deleteEpicById(int id) {
-        subTasks.values().removeAll(getEpicById(id).getSubTasks());
+        for (SubTask subTask : getEpicById(id).getSubTasks()) {
+            subTasks.remove(subTask.getId());
+        }
         epics.remove(id);
     }
 
@@ -132,7 +126,7 @@ public class TaskTracker {
      */
     public void deleteSubTaskById(int id) {
         SubTask task = getSubTaskById(id);
-        task.getEpic().getSubTasks().remove(task);
+        task.getEpic().removeSubTask(task);
         subTasks.remove(id);
     }
 
@@ -142,7 +136,6 @@ public class TaskTracker {
      */
     public void createTask(Task task) {
         task.setId(++nextTaskId);
-        task.setStatus(Status.NEW);
         tasks.put(task.getId(), task);
     }
 
@@ -151,7 +144,7 @@ public class TaskTracker {
      * @param epic
      */
     public void createEpic(Epic epic) {
-        epic.setId(++nextEpicId);
+        epic.setId(++nextTaskId);
         epics.put(epic.getId(), epic);
     }
 
@@ -160,9 +153,8 @@ public class TaskTracker {
      * @param subTask
      */
     public void createSubTask(SubTask subTask) {
-        subTask.setId(++nextSubTaskId);
-        subTask.setStatus(Status.NEW);
-        subTask.getEpic().getSubTasks().add(subTask);
+        subTask.setId(++nextTaskId);
+        subTask.getEpic().addSubTask(subTask);
         subTasks.put(subTask.getId(), subTask);
     }
 
@@ -188,8 +180,8 @@ public class TaskTracker {
      */
     public void updateSubTask(SubTask subTask) {
         SubTask originalTask = getSubTaskById(subTask.getId());
-        originalTask.getEpic().getSubTasks().remove(originalTask);
-        subTask.getEpic().getSubTasks().add(subTask);
+        originalTask.getEpic().removeSubTask(originalTask);
+        subTask.getEpic().addSubTask(subTask);
         subTasks.put(subTask.getId(), subTask);
     }
 }

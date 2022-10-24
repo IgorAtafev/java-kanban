@@ -1,7 +1,5 @@
 package ru.yandex.practicum.tasktracker.model;
 
-import ru.yandex.practicum.tasktracker.Status;
-
 import java.util.Objects;
 
 public class Task {
@@ -48,7 +46,7 @@ public class Task {
             return true;
         }
 
-        if (object == null || !(object instanceof Task)) {
+        if (!(object instanceof Task)) {
             return false;
         }
 
