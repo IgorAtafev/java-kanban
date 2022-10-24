@@ -86,7 +86,7 @@ public class TaskTracker {
      * Deletes all epics
      */
     public void deleteEpics() {
-        deleteSubTasks();
+        subTasks.clear();
         epics.clear();
     }
 
@@ -94,7 +94,9 @@ public class TaskTracker {
      * Deletes all subtasks
      */
     public void deleteSubTasks() {
-        deleteSubTasksOfEpics();
+        for (Epic epic : epics.values()) {
+            epic.getSubTasks().clear();
+        }
         subTasks.clear();
     }
 
@@ -120,7 +122,7 @@ public class TaskTracker {
      * @param id
      */
     public void deleteEpicById(int id) {
-        deleteSubTasksByEpic(getEpicById(id));
+        subTasks.values().removeAll(getEpicById(id).getSubTasks());
         epics.remove(id);
     }
 
@@ -189,14 +191,5 @@ public class TaskTracker {
         originalTask.getEpic().getSubTasks().remove(originalTask);
         subTask.getEpic().getSubTasks().add(subTask);
         subTasks.put(subTask.getId(), subTask);
-    }
-
-    /**
-     * Deletes subtasks of all epics
-     */
-    private void deleteSubTasksOfEpics() {
-        for (Epic epic : epics.values()) {
-            epic.getSubTasks().clear();
-        }
     }
 }

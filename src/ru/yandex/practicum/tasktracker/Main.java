@@ -102,6 +102,8 @@ public class Main {
         System.out.println();
         System.out.printf("Список всех эпиков: %s", taskTracker.getEpics());
         System.out.println();
+        System.out.printf("Список всех подзадач: %s", taskTracker.getSubTasks());
+        System.out.println();
 
         System.out.println(System.lineSeparator());
         System.out.println("5. Удаление всех задач:");
