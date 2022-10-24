@@ -1,20 +1,14 @@
-package ru.yandex.practicum.taskTracker;
+package ru.yandex.practicum.tasktracker.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import ru.yandex.practicum.tasktracker.Status;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
-    private final Map<Integer, SubTask> subTasks = new HashMap<>();
+    private final List<SubTask> subTasks = new ArrayList<>();
 
-    public Epic(String name, String description) {
-        super(name, description);
-    }
-
-    public Epic(String name, String description, int id) {
-        super(name, description, id);
-    }
-
-    public Map<Integer, SubTask> getSubTasks() {
+    public List<SubTask> getSubTasks() {
         return subTasks;
     }
 
@@ -23,7 +17,6 @@ public class Epic extends Task {
      * If the epic has no subtasks or all of them have the NEW status, then the status should be NEW.
      * If all subtasks have the DONE status, then the epic is considered completed - with the DONE status.
      * In all other cases the status should be IN_PROGRESS.
-     * @return
      */
     @Override
     public Status getStatus() {
@@ -33,7 +26,7 @@ public class Epic extends Task {
 
         boolean isStatusNew = true;
         boolean isStatusDone = true;
-        for (SubTask subTask : subTasks.values()) {
+        for (SubTask subTask : subTasks) {
             if (subTask.getStatus() != Status.NEW) {
                 isStatusNew = false;
             }
@@ -56,27 +49,12 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        String result = "Epic{" +
+        return "Epic{" +
                 "id=" + getId() +
                 ", name='" + getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
-                ", status='" + getStatus().getName() + '\'' +
-                ", subTasks=";
-
-        if (!subTasks.isEmpty()) {
-            int counter = 0;
-            for (SubTask subTask : subTasks.values()) {
-                if (counter++ > 0) {
-                    result += ", ";
-                }
-                result += subTask.toString();
-            }
-        } else {
-            result += "null";
-        }
-
-        result += '}';
-
-        return result;
+                ", status='" + getStatus() + '\'' +
+                ", subTasks=" + subTasks +
+                '}';
     }
 }
