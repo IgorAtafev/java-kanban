@@ -17,7 +17,7 @@ public class TaskManager {
     private int nextTaskId = 0;
 
     /**
-     * Gets a list of all tasks
+     * Returns a list of all tasks
      * @return list of all tasks
      */
     public List<Task> getTasks() {
@@ -25,7 +25,7 @@ public class TaskManager {
     }
 
     /**
-     * Gets a list of all epics
+     * Returns a list of all epics
      * @return list of all epics
      */
     public List<Epic> getEpics() {
@@ -33,7 +33,7 @@ public class TaskManager {
     }
 
     /**
-     * Gets a list of all subtasks
+     * Returns a list of all subtasks
      * @return list of all subtasks
      */
     public List<SubTask> getSubTasks() {
@@ -41,7 +41,7 @@ public class TaskManager {
     }
 
     /**
-     * Gets a list of all subtasks by id epic
+     * Returns a list of all subtasks by id epic
      * @param id
      * @return list of all subtasks by id epic
      */
@@ -50,7 +50,7 @@ public class TaskManager {
     }
 
     /**
-     * Gets a task by id
+     * Returns a task by id
      * @param id
      * @return task or null if there was no one
      */
@@ -59,7 +59,7 @@ public class TaskManager {
     }
 
     /**
-     * Gets an epic by id
+     * Returns an epic by id
      * @param id
      * @return epic or null if there was no one
      */
@@ -68,7 +68,7 @@ public class TaskManager {
     }
 
     /**
-     * Gets a subtask by id
+     * Returns a subtask by id
      * @param id
      * @return subtask or null if there was no one
      */
@@ -126,7 +126,7 @@ public class TaskManager {
      */
     public void deleteSubTaskById(int id) {
         SubTask task = getSubTaskById(id);
-        task.getEpic().removeSubTask(task);
+        epics.get(task.getEpic().getId()).removeSubTask(task);
         subTasks.remove(id);
     }
 
