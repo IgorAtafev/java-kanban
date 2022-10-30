@@ -1,17 +1,17 @@
 package ru.yandex.practicum.tasktracker;
 
+import ru.yandex.practicum.tasktracker.manager.Managers;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.Status;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
-import ru.yandex.practicum.tasktracker.manager.InMemoryTaskManager;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
         System.out.println("Тестирование...");
 

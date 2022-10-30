@@ -15,6 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
     private final List<Task> taskHistory = new ArrayList<>();
 
+    private final int historySize = 10;
     private int nextTaskId = 0;
 
     /**
@@ -225,7 +226,7 @@ public class InMemoryTaskManager implements TaskManager {
      * @param task
      */
     private void addTaskToHistory(Task task) {
-        if (taskHistory.size() == HISTORY_SIZE) {
+        if (taskHistory.size() == historySize) {
             taskHistory.remove(0);
         }
         taskHistory.add(task);
