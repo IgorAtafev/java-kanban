@@ -89,7 +89,7 @@ public class Main {
 
         System.out.println(System.lineSeparator());
         System.out.println("3. История просмотров задач:");
-        System.out.println(taskManager.getHistory());
+        System.out.println(taskManager.getHistoryManager().getHistory());
         System.out.println();
 
         System.out.println(System.lineSeparator());

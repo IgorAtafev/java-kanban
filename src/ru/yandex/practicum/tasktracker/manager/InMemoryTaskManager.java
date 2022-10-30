@@ -13,10 +13,14 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
-    private final List<Task> taskHistory = new ArrayList<>();
 
-    private final int historySize = 10;
     private int nextTaskId = 0;
+
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
+
+    public HistoryManager getHistoryManager() {
+        return historyManager;
+    }
 
     /**
      * Returns a list of all tasks
@@ -63,7 +67,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         Task task = tasks.get(id);
-        addTaskToHistory(task);
+        historyManager.add(task);
         return task;
     }
 
@@ -75,7 +79,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         Epic task = epics.get(id);
-        addTaskToHistory(task);
+        historyManager.add(task);
         return task;
     }
 
@@ -87,7 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SubTask getSubTaskById(int id) {
         SubTask task = subTasks.get(id);
-        addTaskToHistory(task);
+        historyManager.add(task);
         return task;
     }
 
@@ -210,25 +214,5 @@ public class InMemoryTaskManager implements TaskManager {
         originalTask.getEpic().removeSubTask(originalTask);
         subTask.getEpic().addSubTask(subTask);
         subTasks.put(subTask.getId(), subTask);
-    }
-
-    /**
-     * Returns the last 10 viewed tasks
-     * @return he last 10 viewed tasks
-     */
-    @Override
-    public List<Task> getHistory() {
-        return taskHistory;
-    }
-
-    /**
-     * Adds a task to history
-     * @param task
-     */
-    private void addTaskToHistory(Task task) {
-        if (taskHistory.size() == historySize) {
-            taskHistory.remove(0);
-        }
-        taskHistory.add(task);
     }
 }

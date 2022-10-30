@@ -7,6 +7,8 @@ import ru.yandex.practicum.tasktracker.model.Task;
 import java.util.List;
 
 public interface TaskManager {
+    HistoryManager getHistoryManager();
+
     /**
      * Returns a list of all tasks
      * @return list of all tasks
@@ -121,10 +123,4 @@ public interface TaskManager {
      * @param subTask
      */
     void updateSubTask(SubTask subTask);
-
-    /**
-     * Returns the last 10 viewed tasks
-     * @return the last 10 viewed tasks
-     */
-    List<Task> getHistory();
 }
