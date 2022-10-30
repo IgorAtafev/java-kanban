@@ -42,10 +42,20 @@ public class Main {
         taskManager.updateTask(taskManager.getTaskById(1));
         System.out.printf("Задача ID = 1 после изменения статуса: %s", taskManager.getTaskById(1));
 
+        System.out.println(System.lineSeparator());
+        System.out.println("3. История просмотров задач:");
+        System.out.println(taskManager.getHistoryManager().getHistory());
+        System.out.println();
+
         System.out.println();
         taskManager.getTaskById(3).setStatus(Status.DONE);
         taskManager.updateTask(taskManager.getTaskById(3));
         System.out.printf("Задача ID = 3 после изменения статуса: %s", taskManager.getTaskById(3));
+        System.out.println();
+
+        System.out.println(System.lineSeparator());
+        System.out.println("3. История просмотров задач:");
+        System.out.println(taskManager.getHistoryManager().getHistory());
         System.out.println();
 
         taskManager.getEpicById(2).setName("Обновленный эпик1");
