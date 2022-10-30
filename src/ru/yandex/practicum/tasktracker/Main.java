@@ -1,16 +1,17 @@
 package ru.yandex.practicum.tasktracker;
 
+import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.Status;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
-import ru.yandex.practicum.tasktracker.manager.TaskManager;
+import ru.yandex.practicum.tasktracker.manager.InMemoryTaskManager;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = new InMemoryTaskManager();
 
         System.out.println("Тестирование...");
 
@@ -40,6 +41,7 @@ public class Main {
         taskManager.getTaskById(1).setStatus(Status.IN_PROGRESS);
         taskManager.updateTask(taskManager.getTaskById(1));
         System.out.printf("Задача ID = 1 после изменения статуса: %s", taskManager.getTaskById(1));
+
         System.out.println();
         taskManager.getTaskById(3).setStatus(Status.DONE);
         taskManager.updateTask(taskManager.getTaskById(3));
@@ -83,6 +85,11 @@ public class Main {
         System.out.printf("Список всех подзадач после изменения статуса: %s", taskManager.getSubTasks());
         System.out.println();
         System.out.printf("Список всех подзадач эпика ID = 2: %s", taskManager.getSubTasksByEpic(2));
+        System.out.println();
+
+        System.out.println(System.lineSeparator());
+        System.out.println("3. История просмотров задач:");
+        System.out.println(taskManager.getHistory());
         System.out.println();
 
         System.out.println(System.lineSeparator());
