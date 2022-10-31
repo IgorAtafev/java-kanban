@@ -7,7 +7,11 @@ import ru.yandex.practicum.tasktracker.model.Task;
 import java.util.List;
 
 public interface TaskManager {
-    HistoryManager getHistoryManager();
+    /**
+     * Returns a list of viewed tasks
+     * @return list of viewed tasks
+     */
+    List<Task> getHistory();
 
     /**
      * Returns a list of all tasks
@@ -35,21 +39,21 @@ public interface TaskManager {
     List<SubTask> getSubTasksByEpic(int id);
 
     /**
-     * Returns a task by id
+     * Returns a task by id and adds a task to the history
      * @param id
      * @return task or null if there was no one
      */
     Task getTaskById(int id);
 
     /**
-     * Returns an epic by id
+     * Returns an epic by id and adds an epic to the history
      * @param id
      * @return epic or null if there was no one
      */
     Epic getEpicById(int id);
 
     /**
-     * Returns a subtask by id
+     * Returns a subtask by id and adds a subtask to the history
      * @param id
      * @return subtask or null if there was no one
      */

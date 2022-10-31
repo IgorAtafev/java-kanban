@@ -44,7 +44,7 @@ public class Main {
 
         System.out.println(System.lineSeparator());
         System.out.println("История просмотров задач:");
-        System.out.println(taskManager.getHistoryManager().getHistory());
+        System.out.println(taskManager.getHistory());
         System.out.println();
 
         System.out.println();
@@ -55,7 +55,7 @@ public class Main {
 
         System.out.println(System.lineSeparator());
         System.out.println("История просмотров задач:");
-        System.out.println(taskManager.getHistoryManager().getHistory());
+        System.out.println(taskManager.getHistory());
         System.out.println();
 
         taskManager.getEpicById(2).setName("Обновленный эпик1");
@@ -99,7 +99,7 @@ public class Main {
 
         System.out.println(System.lineSeparator());
         System.out.println("История просмотров задач:");
-        System.out.println(taskManager.getHistoryManager().getHistory());
+        System.out.println(taskManager.getHistory());
         System.out.println();
 
         System.out.println(System.lineSeparator());

@@ -13,10 +13,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         return history;
     }
 
-    /**
-     * Adds a task to history
-     * @param task
-     */
     @Override
     public void add(Task task) {
         if (history.size() == HISTORY_SIZE) {
