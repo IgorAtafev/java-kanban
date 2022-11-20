@@ -14,4 +14,10 @@ public interface HistoryManager {
      * @param task
      */
     void add(Task task);
+
+    /**
+     * Removes a task to history by index
+     * @param id
+     */
+    void remove(int id);
 }

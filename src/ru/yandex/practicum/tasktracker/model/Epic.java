@@ -62,7 +62,7 @@ public class Epic extends Task {
             }
         }
 
-        return isStatusNew ? Status.NEW : isStatusDone ? Status.DONE : Status.IN_PROGRESS;
+        return isStatusNew ? Status.NEW : (isStatusDone ? Status.DONE : Status.IN_PROGRESS);
     }
 
     @Override
