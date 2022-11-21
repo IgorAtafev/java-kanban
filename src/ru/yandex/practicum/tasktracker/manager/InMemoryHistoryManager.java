@@ -2,27 +2,86 @@ package ru.yandex.practicum.tasktracker.manager;
 
 import ru.yandex.practicum.tasktracker.model.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final List<Task> history = new ArrayList<>();
+    private Node first;
+    private Node last;
 
-    @Override
-    public List<Task> getHistory() {
-        return history;
-    }
+    private final Map<Integer, Node> nodes = new HashMap<>();
 
     @Override
     public void add(Task task) {
-        if (history.size() == HISTORY_SIZE) {
-            remove(0);
-        }
-        history.add(task);
+        remove(task.getId());
+        linkLast(task);
     }
 
     @Override
     public void remove(int id) {
-        history.remove(0);
+        removeNode(nodes.get(id));
+    }
+
+    @Override
+    public List<Task> getHistory() {
+
+        return null;
+    }
+
+    /**
+     * Adds a task to the end of the linked list
+     * @param task
+     */
+    private void linkLast(Task task) {
+        final Node oldLast = last;
+        final Node newNode = new Node(oldLast, task, null);
+        last = newNode;
+        if (oldLast == null) {
+            first = newNode;
+        } else {
+            oldLast.next = newNode;
+        }
+
+        nodes.put(task.getId(), newNode);
+    }
+
+    /**
+     * Removes a linked list node
+     * @param node
+     */
+    private void removeNode(Node node) {
+        if (node == null) {
+            return;
+        }
+
+        final Node next = node.next;
+        final Node prev = node.prev;
+
+        if (prev == null) {
+            first = next;
+        } else {
+            prev.next = next;
+            node.prev = null;
+        }
+
+        if (next == null) {
+            last = prev;
+        } else {
+            next.prev = prev;
+            node.next = null;
+        }
+
+        node.item = null;
+    }
+
+    private static class Node {
+        Task item;
+        Node next;
+        Node prev;
+
+        Node(Node prev, Task item, Node next) {
+            this.item = item;
+            this.next = next;
+            this.prev = prev;
+        }
     }
 }
