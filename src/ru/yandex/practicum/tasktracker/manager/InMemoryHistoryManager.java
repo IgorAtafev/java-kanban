@@ -8,6 +8,11 @@ import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Class implements the work of the task history in the form of a doubly linked list.
+ * Only the last view of the task should be displayed in the history.
+ * The previous view should be deleted immediately after the new one appears - in O(1)
+ */
 public class InMemoryHistoryManager implements HistoryManager {
     private Node first;
     private Node last;
@@ -21,15 +26,13 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void remove(int id) {
-        removeNode(nodes.remove(id));
+    public void remove(int taskId) {
+        removeNode(nodes.remove(taskId));
     }
 
     @Override
-    public void removeAll(Set<Integer> ids) {
-        for (int id : ids) {
-            remove(id);
-        }
+    public void removeAll(Set<Integer> taskIds) {
+        taskIds.forEach(this::remove);
     }
 
     @Override
@@ -45,14 +48,11 @@ public class InMemoryHistoryManager implements HistoryManager {
         return history;
     }
 
-    /**
-     * Adds a task to the end of the linked list
-     * @param task
-     */
     private void linkLast(Task task) {
         final Node oldLast = last;
-        final Node newNode = new Node(oldLast, task, null);
+        final Node newNode = new Node(task);
 
+        newNode.prev = oldLast;
         last = newNode;
         if (oldLast == null) {
             first = newNode;
@@ -63,10 +63,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         nodes.put(task.getId(), newNode);
     }
 
-    /**
-     * Removes a linked list node
-     * @param node
-     */
     private void removeNode(Node node) {
         if (node == null) {
             return;
@@ -88,8 +84,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             next.prev = prev;
             node.next = null;
         }
-
-        node.item = null;
     }
 
     private static class Node {
@@ -97,10 +91,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node next;
         Node prev;
 
-        Node(Node prev, Task item, Node next) {
+        Node(Task item) {
             this.item = item;
-            this.next = next;
-            this.prev = prev;
         }
     }
 }

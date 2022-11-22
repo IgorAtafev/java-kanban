@@ -145,6 +145,7 @@ public class Main {
         taskManager.updateSubTask(taskManager.getSubTaskById(7));
         System.out.printf("Эпик ID = 4 после изменения статуса его подзадач: %s", taskManager.getEpicById(4));
         System.out.println();
+        taskManager.deleteSubTasks();
         System.out.printf("Список всех подзадач эпика ID = 4: %s", taskManager.getSubTasksByEpic(4));
         System.out.println();
 

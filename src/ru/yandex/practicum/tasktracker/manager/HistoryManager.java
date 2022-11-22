@@ -14,15 +14,15 @@ public interface HistoryManager {
 
     /**
      * Removes a task by id
-     * @param id
+     * @param taskId
      */
-    void remove(int id);
+    void remove(int taskId);
 
     /**
      * Removes a task by ids
-     * @param ids
+     * @param taskIds
      */
-    void removeAll(Set<Integer> ids);
+    void removeAll(Set<Integer> taskIds);
 
     /**
      * Returns the task history
