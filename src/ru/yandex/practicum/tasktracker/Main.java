@@ -128,6 +128,11 @@ public class Main {
         System.out.println();
 
         System.out.println(System.lineSeparator());
+        System.out.println("История просмотров задач:");
+        System.out.println(taskManager.getHistory());
+        System.out.println();
+
+        System.out.println(System.lineSeparator());
         System.out.println("4. Удаление всех задач:");
 
         taskManager.deleteTasks();
@@ -147,6 +152,11 @@ public class Main {
         System.out.printf("Список всех эпиков после удаления: %s", taskManager.getEpics());
         System.out.println();
         System.out.printf("Список всех подзадач: %s", taskManager.getSubTasks());
+        System.out.println();
+
+        System.out.println(System.lineSeparator());
+        System.out.println("История просмотров задач:");
+        System.out.println(taskManager.getHistory());
         System.out.println();
     }
 

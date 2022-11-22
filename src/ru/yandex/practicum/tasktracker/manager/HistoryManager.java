@@ -3,6 +3,7 @@ package ru.yandex.practicum.tasktracker.manager;
 import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.util.List;
+import java.util.Set;
 
 public interface HistoryManager {
     /**
@@ -12,14 +13,20 @@ public interface HistoryManager {
     void add(Task task);
 
     /**
-     * Removes a task to history by index
+     * Removes a task by id
      * @param id
      */
     void remove(int id);
 
     /**
-     * Returns the task view history
-     * @return task view history
+     * Removes a task by ids
+     * @param ids
+     */
+    void removeAll(Set<Integer> ids);
+
+    /**
+     * Returns the task history
+     * @return task history
      */
     List<Task> getHistory();
 }
