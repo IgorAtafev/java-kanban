@@ -18,19 +18,19 @@ class InMemoryHistoryManagerTest {
     private final HistoryManager historyManager = new InMemoryHistoryManager();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         task1 = createTask(1);
         task2 = createTask(2);
         task3 = createTask(3);
     }
 
     @Test
-    public void getHistory_shouldReturnEmptyHistory() {
+    void getHistory_shouldReturnEmptyHistory() {
         assertTrue(historyManager.getHistory().isEmpty());
     }
 
     @Test
-    public void add_shouldSaveTaskToHistory() {
+    void add_shouldSaveTaskToHistory() {
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(task3);
@@ -42,7 +42,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void add_shouldNotKeepDuplicates() {
+    void add_shouldNotKeepDuplicates() {
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(task3);
@@ -55,7 +55,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void add_shouldMoveTaskToTheEnd_ifTaskAlreadyExistsInHistory() {
+    void add_shouldMoveTaskToTheEnd_ifTaskAlreadyExistsInHistory() {
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(task3);
@@ -68,7 +68,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void remove_shouldRemoveTaskFromHistory() {
+    void remove_shouldRemoveTaskFromHistory() {
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(task3);
@@ -82,7 +82,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void removeAll_shouldRemoveTasksFromHistory() {
+    void removeAll_shouldRemoveTasksFromHistory() {
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(task3);
