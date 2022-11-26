@@ -24,6 +24,7 @@ public class SubTask extends Task {
         }
 
         SubTask subTask = (SubTask) object;
+
         return Objects.equals(epic, subTask.epic);
     }
 

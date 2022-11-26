@@ -3,6 +3,7 @@ package ru.yandex.practicum.tasktracker.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Epic extends Task {
     private final List<SubTask> subTasks = new ArrayList<>();
@@ -62,12 +63,40 @@ public class Epic extends Task {
             }
         }
 
-        return isStatusNew ? Status.NEW : (isStatusDone ? Status.DONE : Status.IN_PROGRESS);
+        if (isStatusNew) {
+            return Status.NEW;
+        }
+
+        if (isStatusDone) {
+            return Status.DONE;
+        }
+
+        return Status.IN_PROGRESS;
     }
 
     @Override
     public void setStatus(Status status) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!super.equals(object)) {
+            return false;
+        }
+
+        if (!(object instanceof SubTask)) {
+            return false;
+        }
+
+        Epic epic = (Epic) object;
+
+        return Objects.equals(subTasks, epic.subTasks);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subTasks);
     }
 
     @Override
