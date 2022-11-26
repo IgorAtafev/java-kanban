@@ -8,6 +8,14 @@ public class Task {
     private String description;
     private Status status;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -22,14 +30,6 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Status getStatus() {
