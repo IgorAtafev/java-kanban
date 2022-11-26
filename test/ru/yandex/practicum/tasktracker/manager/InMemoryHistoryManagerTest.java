@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tasktracker.model.Task;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -87,7 +87,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(task2);
         historyManager.add(task3);
 
-        historyManager.removeAll(new HashSet<>(List.of(1, 3)));
+        historyManager.removeAll(Set.of(1, 3));
 
         List<Task> expected = List.of(task2);
         List<Task> actual = historyManager.getHistory();
