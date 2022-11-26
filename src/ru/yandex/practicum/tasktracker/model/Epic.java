@@ -1,15 +1,14 @@
 package ru.yandex.practicum.tasktracker.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 public class Epic extends Task {
-    private final List<SubTask> subTasks = new ArrayList<>();
+    private final Set<SubTask> subTasks = new HashSet<>();
 
     public List<SubTask> getSubTasks() {
-        return Collections.unmodifiableList(subTasks);
+        return List.copyOf(subTasks);
     }
 
     /**
@@ -85,18 +84,16 @@ public class Epic extends Task {
             return false;
         }
 
-        if (!(object instanceof SubTask)) {
+        if (!(object instanceof Epic)) {
             return false;
         }
 
-        Epic epic = (Epic) object;
-
-        return Objects.equals(subTasks, epic.subTasks);
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), subTasks);
+        return super.hashCode();
     }
 
     @Override
