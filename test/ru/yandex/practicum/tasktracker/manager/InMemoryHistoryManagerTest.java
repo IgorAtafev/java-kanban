@@ -25,12 +25,12 @@ class InMemoryHistoryManagerTest {
 
     @BeforeEach
     void setUp() {
-        task1 = createTask(1, "Задача1", Status.NEW);
-        task2 = createTask(2, "Задача2", Status.IN_PROGRESS);
-        epic1 = createEpic(3, "Эпик1");
-        epic2 = createEpic(4, "Эпик2");
-        subTask1 = createSubTask(5, "Подзадача1", Status.DONE, epic1);
-        subTask2 = createSubTask(6, "Подзадача2", Status.DONE, epic1);
+        task1 = createTask(1);
+        task2 = createTask(2);
+        epic1 = createEpic(3);
+        epic2 = createEpic(4);
+        subTask1 = createSubTask(5, epic1);
+        subTask2 = createSubTask(6, epic1);
     }
 
     @Test
@@ -41,12 +41,10 @@ class InMemoryHistoryManagerTest {
     @Test
     void add_shouldSaveTaskToHistory() {
         historyManager.add(task1);
-        historyManager.add(task2);
         historyManager.add(epic1);
         historyManager.add(subTask1);
-        historyManager.add(subTask2);
 
-        List<Task> expected = List.of(task1, task2, epic1, subTask1, subTask2);
+        List<Task> expected = List.of(task1, epic1, subTask1);
         List<Task> actual = historyManager.getHistory();
 
         assertEquals(expected, actual);
@@ -55,12 +53,14 @@ class InMemoryHistoryManagerTest {
     @Test
     void add_shouldNotKeepDuplicates() {
         historyManager.add(task1);
-        historyManager.add(task2);
+        historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(epic1);
         historyManager.add(epic1);
+        historyManager.add(subTask1);
+        historyManager.add(subTask1);
 
-        List<Task> expected = List.of(task1, task2, epic1);
+        List<Task> expected = List.of(task1, task2, epic1, subTask1);
         List<Task> actual = historyManager.getHistory();
 
         assertEquals(expected, actual);
@@ -74,9 +74,10 @@ class InMemoryHistoryManagerTest {
         historyManager.add(epic2);
         historyManager.add(task1);
         historyManager.add(task1);
+        historyManager.add(subTask2);
         historyManager.add(subTask1);
 
-        List<Task> expected = List.of(epic1, epic2, task1, subTask1);
+        List<Task> expected = List.of(epic1, epic2, task1, subTask2, subTask1);
         List<Task> actual = historyManager.getHistory();
 
         assertEquals(expected, actual);
@@ -140,6 +141,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(subTask2);
         historyManager.add(epic2);
         historyManager.add(epic1);
+        historyManager.add(epic2);
 
         historyManager.removeAll(Set.of(1, 6, 3));
 
@@ -149,28 +151,21 @@ class InMemoryHistoryManagerTest {
         assertEquals(expected, actual);
     }
 
-    private static Task createTask(int id, String name, Status status) {
+    private static Task createTask(int id) {
         Task task = new Task();
         task.setId(id);
-        task.setName(name);
-        task.setStatus(status);
-
         return task;
     }
 
-    private static Epic createEpic(int id, String name) {
+    private static Epic createEpic(int id) {
         Epic epic = new Epic();
         epic.setId(id);
-        epic.setName(name);
-
         return epic;
     }
 
-    private static SubTask createSubTask(int id, String name, Status status, Epic epic) {
+    private static SubTask createSubTask(int id, Epic epic) {
         SubTask subTask = new SubTask();
         subTask.setId(id);
-        subTask.setName(name);
-        subTask.setStatus(status);
         subTask.setEpic(epic);
 
         return subTask;
