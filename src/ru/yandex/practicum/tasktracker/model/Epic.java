@@ -49,6 +49,7 @@ public class Epic extends Task {
 
         boolean isStatusNew = true;
         boolean isStatusDone = true;
+
         for (SubTask subTask : subTasks) {
             if (subTask.getStatus() != Status.NEW) {
                 isStatusNew = false;

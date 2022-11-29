@@ -38,8 +38,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getHistory() {
         final List<Task> history = new ArrayList<>();
-        Node current = first;
 
+        Node current = first;
         while (current != null) {
             history.add(current.item);
             current = current.next;
