@@ -22,12 +22,12 @@ public class Main {
             taskManager.createEpic(createEpic("Эпик" + i, "Описание эпика" + i));
         }
 
-        taskManager.createSubTask(createSubTask(taskManager.getEpicById(2), "Подзадача1",
-                "Описание подзадачи1"));
-        taskManager.createSubTask(createSubTask(taskManager.getEpicById(2), "Подзадача2",
-                "Описание подзадачи2"));
-        taskManager.createSubTask(createSubTask(taskManager.getEpicById(4), "Подзадача3",
-                "Описание подзадачи3"));
+        taskManager.createSubTask(createSubTask("Подзадача1",
+                "Описание подзадачи1", taskManager.getEpicById(2)));
+        taskManager.createSubTask(createSubTask("Подзадача2",
+                "Описание подзадачи2", taskManager.getEpicById(2)));
+        taskManager.createSubTask(createSubTask("Подзадача3",
+                "Описание подзадачи3", taskManager.getEpicById(4)));
 
         System.out.printf("Список всех задач: %s", taskManager.getTasks());
         System.out.println();
@@ -169,8 +169,8 @@ public class Main {
     private static Task createTask(String name, String description) {
         Task task = new Task();
         task.setName(name);
-        task.setStatus(Status.NEW);
         task.setDescription(description);
+        task.setStatus(Status.NEW);
 
         return task;
     }
@@ -193,12 +193,12 @@ public class Main {
      * @param name
      * @param description
      */
-    private static SubTask createSubTask(Epic epic, String name, String description) {
+    private static SubTask createSubTask(String name, String description, Epic epic) {
         SubTask subTask = new SubTask();
-        subTask.setEpic(epic);
         subTask.setName(name);
-        subTask.setStatus(Status.NEW);
         subTask.setDescription(description);
+        subTask.setStatus(Status.NEW);
+        subTask.setEpic(epic);
 
         return subTask;
     }
