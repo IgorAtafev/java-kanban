@@ -71,13 +71,11 @@ class InMemoryHistoryManagerTest {
         historyManager.add(task1);
         historyManager.add(epic1);
         historyManager.add(subTask1);
-        historyManager.add(epic2);
         historyManager.add(task1);
-        historyManager.add(task1);
-        historyManager.add(subTask2);
+        historyManager.add(epic1);
         historyManager.add(subTask1);
 
-        List<Task> expected = List.of(epic1, epic2, task1, subTask2, subTask1);
+        List<Task> expected = List.of(task1, epic1, subTask1);
         List<Task> actual = historyManager.getHistory();
 
         assertEquals(expected, actual);
