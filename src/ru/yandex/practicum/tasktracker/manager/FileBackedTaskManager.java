@@ -6,10 +6,10 @@ import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.nio.file.Path;
 
-public class FileBackedTasksManager extends InMemoryTaskManager {
+public class FileBackedTaskManager extends InMemoryTaskManager {
     private final Path filename;
 
-    public FileBackedTasksManager(String filename) {
+    public FileBackedTaskManager(String filename) {
         this.filename = Path.of(filename);
     }
 
