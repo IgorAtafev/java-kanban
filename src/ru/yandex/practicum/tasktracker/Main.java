@@ -1,5 +1,6 @@
 package ru.yandex.practicum.tasktracker;
 
+import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
 import ru.yandex.practicum.tasktracker.manager.Managers;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.model.Epic;
@@ -11,12 +12,14 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = Managers.getDefault();
+//        TaskManager taskManager = Managers.getDefault();
+        FileBackedTaskManager taskManager = new FileBackedTaskManager();
 
         System.out.println("Тестирование...");
 
         System.out.println(System.lineSeparator());
         System.out.println("1. Создание задач:");
+
         for (int i = 1; i <= 2; i++) {
             taskManager.createTask(createTask("Задача" + i, "Описание задачи" + i));
             taskManager.createEpic(createEpic("Эпик" + i, "Описание эпика" + i));
@@ -133,11 +136,11 @@ public class Main {
         System.out.println();
 
         System.out.println(System.lineSeparator());
-        System.out.println("4. Удаление всех задач:");
-
-        taskManager.deleteTasks();
-        System.out.printf("Список всех задач после удаления: %s", taskManager.getTasks());
-        System.out.println();
+//        System.out.println("4. Удаление всех задач:");
+//
+//        taskManager.deleteTasks();
+//        System.out.printf("Список всех задач после удаления: %s", taskManager.getTasks());
+//        System.out.println();
 
         System.out.printf("Эпик ID = 4: %s", taskManager.getEpicById(4));
         System.out.println();
@@ -145,15 +148,15 @@ public class Main {
         taskManager.updateSubTask(taskManager.getSubTaskById(7));
         System.out.printf("Эпик ID = 4 после изменения статуса его подзадач: %s", taskManager.getEpicById(4));
         System.out.println();
-        taskManager.deleteSubTasks();
+//        taskManager.deleteSubTasks();
         System.out.printf("Список всех подзадач эпика ID = 4: %s", taskManager.getSubTasksByEpic(4));
         System.out.println();
 
-        taskManager.deleteEpics();
-        System.out.printf("Список всех эпиков после удаления: %s", taskManager.getEpics());
-        System.out.println();
-        System.out.printf("Список всех подзадач: %s", taskManager.getSubTasks());
-        System.out.println();
+//        taskManager.deleteEpics();
+//        System.out.printf("Список всех эпиков после удаления: %s", taskManager.getEpics());
+//        System.out.println();
+//        System.out.printf("Список всех подзадач: %s", taskManager.getSubTasks());
+//        System.out.println();
 
         System.out.println(System.lineSeparator());
         System.out.println("История просмотров задач:");

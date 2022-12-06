@@ -35,12 +35,11 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "SubTask{" +
-                "epicId=" + epic.getId() +
-                ", id=" + getId() +
-                ", name='" + getName() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", status='" + getStatus() + '\'' +
-                '}';
+        return getId() +
+                "," + TaskType.SUBTASK +
+                "," + getName() +
+                "," + getStatus() +
+                "," + getDescription() +
+                "," + epic.getId();
     }
 }
