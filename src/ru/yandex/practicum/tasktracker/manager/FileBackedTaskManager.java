@@ -1,18 +1,19 @@
 package ru.yandex.practicum.tasktracker.manager;
 
-import ru.yandex.practicum.tasktracker.model.Epic;
-import ru.yandex.practicum.tasktracker.model.Status;
-import ru.yandex.practicum.tasktracker.model.SubTask;
-import ru.yandex.practicum.tasktracker.model.Task;
+import ru.yandex.practicum.tasktracker.model.*;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final Path filename = Path.of("resources/tasks.csv");
+    private final Map<Integer, Task> tasks = new HashMap<>();
 
     @Override
     public void deleteTasks() {
@@ -86,6 +87,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
+    public static FileBackedTaskManager loadFromFile() {
+        FileBackedTaskManager taskManager = new FileBackedTaskManager();
+
+        return taskManager;
+    }
+
     private void save() {
         try (BufferedWriter writer = Files.newBufferedWriter(filename, StandardCharsets.UTF_8)) {
             String title = "id,type,name,status,description,epic";
@@ -93,17 +100,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.newLine();
 
             for (Task task : getTasks()) {
-                writer.write(task.toString());
+                writer.write(taskToString(task, TaskType.TASK));
                 writer.newLine();
             }
 
-            for (Epic task : getEpics()) {
-                writer.write(task.toString());
+            for (Epic epic : getEpics()) {
+                writer.write(taskToString(epic, TaskType.EPIC));
                 writer.newLine();
             }
 
-            for (SubTask task : getSubTasks()) {
-                writer.write(task.toString());
+            for (SubTask subTask : getSubTasks()) {
+                writer.write(taskToString(subTask, TaskType.SUBTASK));
                 writer.newLine();
             }
 
@@ -115,8 +122,52 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
+    private String taskToString(Task task, TaskType taskType) {
+        String result =  task.getId()
+                + "," + taskType
+                + "," + task.getName()
+                + "," + task.getStatus()
+                + "," + task.getDescription()
+                + ",";
+
+        if (taskType == TaskType.SUBTASK) {
+            result += ((SubTask) task).getEpic().getId();
+        }
+
+        return result;
+    }
+
+    private Task taskFromString(String value) {
+        String[] split = value.split(",");
+
+        Task task = new Task();
+        TaskType taskType = TaskType.valueOf(split[1]);
+
+        if (taskType == TaskType.EPIC) {
+            task = new Epic();
+        } else if (taskType == TaskType.SUBTASK) {
+            task = new SubTask();
+            Epic epic = getEpicById(Integer.parseInt(split[5]));
+            ((SubTask) task).setEpic(epic);
+            epic.addSubTask((SubTask) task);
+        }
+
+        int taskId = Integer.parseInt(split[0]);
+        task.setId(taskId);
+        task.setName(split[2]);
+        if (taskType != TaskType.EPIC) {
+            task.setStatus(Status.valueOf(split[3]));
+        }
+        task.setDescription(split[4]);
+
+        tasks.put(taskId, task);
+
+        return task;
+    }
+
     private String historyToString() {
         StringBuilder stringBuilder = new StringBuilder();
+
         for (Task task : getHistory()) {
             if (stringBuilder.length() > 0) {
                 stringBuilder.append(",");
@@ -125,5 +176,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         return stringBuilder.toString();
+    }
+
+    private List<Task> historyFromString(String value) {
+        //List<Task> history = new
+        return null;
     }
 }

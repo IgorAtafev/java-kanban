@@ -63,21 +63,11 @@ public class Task {
 
     @Override
     public String toString() {
-        return id +
-                "," + TaskType.TASK +
-                "," + name +
-                "," + status +
-                "," + description +
-                ",";
-    }
-
-    /**
-     * Returns a task from a string
-     * @param value
-     * @return task
-     */
-    public Task fromString(String value) {
-        //String[] split
-        return null;
+        return "Task{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

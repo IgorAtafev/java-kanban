@@ -1,4 +1,4 @@
-package ru.yandex.practicum.tasktracker.model;
+package ru.yandex.practicum.tasktracker.manager;
 
 public enum TaskType {
     TASK,
