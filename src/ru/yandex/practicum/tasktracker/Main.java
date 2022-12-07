@@ -72,15 +72,23 @@ public class Main {
         taskManager.updateSubTask(taskManager.getSubTaskById(5));
         System.out.printf("Подзадача ID = 5 после изменения статуса на 'IN_PROGRESS': %s",
                 taskManager.getSubTaskById(5));
+
         System.out.println();
         taskManager.getSubTaskById(6).setStatus(Status.IN_PROGRESS);
         taskManager.updateSubTask(taskManager.getSubTaskById(6));
         System.out.printf("Подзадача ID = 6 после изменения статуса на 'IN_PROGRESS': %s",
                 taskManager.getSubTaskById(6));
         System.out.println();
+
         System.out.printf("Эпик ID = 2 после изменения статуса его подзадач: %s",
                 taskManager.getEpicById(2));
         System.out.println();
+
+        System.out.println(System.lineSeparator());
+        System.out.println("История просмотров задач:");
+        System.out.println(taskManager.getHistory());
+        System.out.println();
+        System.exit(0);
 
         taskManager.getSubTaskById(5).setStatus(Status.DONE);
         taskManager.updateSubTask(taskManager.getSubTaskById(5));

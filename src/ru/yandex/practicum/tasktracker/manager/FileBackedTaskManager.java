@@ -123,7 +123,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private String taskToString(Task task, TaskType taskType) {
-        String result =  task.getId()
+        String string =  task.getId()
                 + "," + taskType
                 + "," + task.getName()
                 + "," + task.getStatus()
@@ -131,10 +131,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 + ",";
 
         if (taskType == TaskType.SUBTASK) {
-            result += ((SubTask) task).getEpic().getId();
+            string += ((SubTask) task).getEpic().getId();
         }
 
-        return result;
+        return string;
     }
 
     private Task taskFromString(String value) {
@@ -143,13 +143,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Task task = new Task();
         TaskType taskType = TaskType.valueOf(split[1]);
 
-        if (taskType == TaskType.EPIC) {
-            task = new Epic();
-        } else if (taskType == TaskType.SUBTASK) {
+        if (taskType == TaskType.SUBTASK) {
             task = new SubTask();
             Epic epic = getEpicById(Integer.parseInt(split[5]));
             ((SubTask) task).setEpic(epic);
             epic.addSubTask((SubTask) task);
+        } else if (taskType == TaskType.EPIC) {
+            task = new Epic();
         }
 
         int taskId = Integer.parseInt(split[0]);
