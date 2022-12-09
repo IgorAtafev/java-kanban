@@ -23,6 +23,10 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+    public void addHistory(Task task) {
+        historyManager.add(task);
+    }
+
     @Override
     public List<Task> getTasks() {
         return new ArrayList<>(tasks.values());
@@ -141,7 +145,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubTask(SubTask subTask) {
         SubTask originalTask = subTasks.get(subTask.getId());
-        originalTask.getEpic().removeSubTask(originalTask);
+        if (originalTask != null) {
+            originalTask.getEpic().removeSubTask(originalTask);
+        }
         subTask.getEpic().addSubTask(subTask);
         subTasks.put(subTask.getId(), subTask);
     }

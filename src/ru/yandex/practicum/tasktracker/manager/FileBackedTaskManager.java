@@ -1,6 +1,9 @@
 package ru.yandex.practicum.tasktracker.manager;
 
-import ru.yandex.practicum.tasktracker.model.*;
+import ru.yandex.practicum.tasktracker.model.Epic;
+import ru.yandex.practicum.tasktracker.model.Status;
+import ru.yandex.practicum.tasktracker.model.SubTask;
+import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -8,12 +11,35 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+/**
+ * Writes to a file and browsing history to a file and restores them from a file
+ */
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private final Path filename = Path.of("resources/tasks.csv");
-    private final Map<Integer, Task> tasks = new HashMap<>();
+    private final Path path = Path.of("resources/tasks.csv");
+    private static Map<Integer, Task> tasksFromFile = new HashMap<>();
+
+    @Override
+    public Task getTaskById(int id) {
+        Task task = super.getTaskById(id);
+        save();
+        return task;
+    }
+
+    @Override
+    public Epic getEpicById(int id) {
+        Epic task = super.getEpicById(id);
+        save();
+        return task;
+    }
+
+    @Override
+    public SubTask getSubTaskById(int id) {
+        SubTask task = super.getSubTaskById(id);
+        save();
+        return task;
+    }
 
     @Override
     public void deleteTasks() {
@@ -87,85 +113,91 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
+    /**
+     * Restore manager data from a file
+     * @return task manager
+     */
     public static FileBackedTaskManager loadFromFile() {
         FileBackedTaskManager taskManager = new FileBackedTaskManager();
+
+        try {
+            String fileContents = Files.readString(taskManager.path);
+
+            if (fileContents.isEmpty()) {
+                return taskManager;
+            }
+
+            String[] lines = fileContents.split(System.lineSeparator());
+            boolean isReadHistory = false;
+            for (int i = 1; i < lines.length; i++) {
+                if (lines[i].isBlank()) {
+                    isReadHistory = true;
+                } else {
+                    if (isReadHistory) {
+                        taskManager.createHistoryFromCsv(lines[i]);
+                    } else {
+                        taskManager.createTaskFromCsv(lines[i]);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка чтения из файла", e);
+        }
 
         return taskManager;
     }
 
     private void save() {
-        try (BufferedWriter writer = Files.newBufferedWriter(filename, StandardCharsets.UTF_8)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             String title = "id,type,name,status,description,epic";
             writer.write(title);
             writer.newLine();
 
             for (Task task : getTasks()) {
-                writer.write(taskToString(task, TaskType.TASK));
+                writer.write(writeTaskToCsv(task, TaskType.TASK));
                 writer.newLine();
             }
 
             for (Epic epic : getEpics()) {
-                writer.write(taskToString(epic, TaskType.EPIC));
+                writer.write(writeTaskToCsv(epic, TaskType.EPIC));
                 writer.newLine();
             }
 
             for (SubTask subTask : getSubTasks()) {
-                writer.write(taskToString(subTask, TaskType.SUBTASK));
+                writer.write(writeTaskToCsv(subTask, TaskType.SUBTASK));
                 writer.newLine();
             }
 
             writer.newLine();
-            writer.write(historyToString());
+            writer.write(writeHistoryToCsv());
             writer.newLine();
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка записи в файл", e);
         }
     }
 
-    private String taskToString(Task task, TaskType taskType) {
-        String string =  task.getId()
-                + "," + taskType
-                + "," + task.getName()
-                + "," + task.getStatus()
-                + "," + task.getDescription()
-                + ",";
+    private String writeTaskToCsv(Task task, TaskType taskType) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(task.getId());
+        stringBuilder.append(",");
+        stringBuilder.append(taskType);
+        stringBuilder.append(",");
+        stringBuilder.append(task.getName());
+        stringBuilder.append(",");
+        stringBuilder.append(task.getStatus());
+        stringBuilder.append(",");
+        stringBuilder.append(task.getDescription());
+        stringBuilder.append(",");
 
         if (taskType == TaskType.SUBTASK) {
-            string += ((SubTask) task).getEpic().getId();
+            stringBuilder.append(((SubTask) task).getEpic().getId());
         }
 
-        return string;
+        return stringBuilder.toString();
     }
 
-    private Task taskFromString(String value) {
-        String[] split = value.split(",");
-
-        Task task = new Task();
-        TaskType taskType = TaskType.valueOf(split[1]);
-
-        if (taskType == TaskType.SUBTASK) {
-            task = new SubTask();
-            Epic epic = getEpicById(Integer.parseInt(split[5]));
-            ((SubTask) task).setEpic(epic);
-            epic.addSubTask((SubTask) task);
-        } else if (taskType == TaskType.EPIC) {
-            task = new Epic();
-        }
-
-        int taskId = Integer.parseInt(split[0]);
-        task.setId(taskId);
-        task.setName(split[2]);
-        if (taskType != TaskType.EPIC) {
-            task.setStatus(Status.valueOf(split[3]));
-        }
-        task.setDescription(split[4]);
-
-        tasks.put(taskId, task);
-
-        return task;
-    }
-
-    private String historyToString() {
+    private String writeHistoryToCsv() {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (Task task : getHistory()) {
@@ -178,8 +210,47 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return stringBuilder.toString();
     }
 
-    private List<Task> historyFromString(String value) {
-        //List<Task> history = new
-        return null;
+    private void createTaskFromCsv(String value) {
+        String[] split = value.split(",");
+        TaskType taskType = TaskType.valueOf(split[1]);
+
+        Task task = new Task();
+        if (taskType == TaskType.EPIC) {
+            task = new Epic();
+        } else if (taskType == TaskType.SUBTASK) {
+            task = new SubTask();
+        }
+
+        int taskId = Integer.parseInt(split[0]);
+        task.setId(taskId);
+        task.setName(split[2]);
+        if (taskType != TaskType.EPIC) {
+            task.setStatus(Status.valueOf(split[3]));
+        }
+        task.setDescription(split[4]);
+
+        if (task instanceof SubTask) {
+            Epic epic = super.getEpicById(Integer.parseInt(split[5]));
+            ((SubTask) task).setEpic(epic);
+            epic.addSubTask((SubTask) task);
+            super.updateSubTask((SubTask) task);
+        } else if (task instanceof Epic) {
+            super.updateEpic((Epic) task);
+        } else {
+            super.updateTask(task);
+        }
+
+        tasksFromFile.put(taskId, task);
+    }
+
+    private void createHistoryFromCsv(String value) {
+        String[] split = value.split(",");
+
+        for (String item : split) {
+            int taskId = Integer.parseInt(item);
+            if (tasksFromFile.containsKey(taskId)) {
+                addHistory(tasksFromFile.get(taskId));
+            }
+        }
     }
 }
