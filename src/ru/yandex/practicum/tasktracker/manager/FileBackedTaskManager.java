@@ -229,13 +229,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
         task.setDescription(split[4]);
 
-        if (task instanceof SubTask) {
+        if (task instanceof Epic) {
+            super.updateEpic((Epic) task);
+        } else if (task instanceof SubTask) {
             Epic epic = super.getEpicById(Integer.parseInt(split[5]));
             ((SubTask) task).setEpic(epic);
-            epic.addSubTask((SubTask) task);
             super.updateSubTask((SubTask) task);
-        } else if (task instanceof Epic) {
-            super.updateEpic((Epic) task);
         } else {
             super.updateTask(task);
         }
