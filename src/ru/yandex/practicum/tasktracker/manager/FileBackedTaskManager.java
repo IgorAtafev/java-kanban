@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final Path path = Path.of("resources/tasks.csv");
-    private static Map<Integer, Task> tasksFromFile = new HashMap<>();
+    private Map<Integer, Task> tasksFromFile = new HashMap<>();
 
     @Override
     public Task getTaskById(int id) {
