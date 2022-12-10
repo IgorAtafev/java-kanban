@@ -123,7 +123,7 @@ public class Main {
         System.out.printf("Удаляем подзадачу ID = 5: %s", taskManager.getSubTaskById(5));
         System.out.println();
         taskManager.deleteSubTaskById(5);
-        System.out.printf("Список всех подзадач эпика ID = 2: %s", taskManager.getSubTasksByEpic(2));
+        System.out.printf("Список всех подзадач эпика ID = 2: %s", taskManager.getEpicById(2));
         System.out.println();
         System.out.printf("Список всех подзадач: %s", taskManager.getSubTasks());
         System.out.println();
