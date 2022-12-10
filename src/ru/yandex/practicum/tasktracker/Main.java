@@ -1,7 +1,6 @@
 package ru.yandex.practicum.tasktracker;
 
 import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
-import ru.yandex.practicum.tasktracker.manager.Managers;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.Status;
@@ -12,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = Managers.getDefault();//new FileBackedTaskManager();
+        TaskManager taskManager = new FileBackedTaskManager();
 
         System.out.println("Тестирование...");
 
@@ -74,6 +73,7 @@ public class Main {
 
         System.out.println();
         taskManager.getSubTaskById(6).setStatus(Status.IN_PROGRESS);
+        taskManager.getSubTaskById(6).setName("Подзадача 1 NEW");
         taskManager.updateSubTask(taskManager.getSubTaskById(6));
         System.out.printf("Подзадача ID = 6 после изменения статуса на 'IN_PROGRESS': %s",
                 taskManager.getSubTaskById(6));
@@ -156,7 +156,7 @@ public class Main {
         System.out.println(taskManager.getHistory());
         System.out.println();
 
-/*        System.out.println(System.lineSeparator());
+        System.out.println(System.lineSeparator());
         System.out.println("4. Восстановление задач и истории просмотров из файла:");
 
         taskManager = FileBackedTaskManager.loadFromFile();
@@ -171,7 +171,7 @@ public class Main {
         System.out.println(System.lineSeparator());
         System.out.println("История просмотров задач:");
         System.out.println(taskManager.getHistory());
-        System.out.println();*/
+        System.out.println();
     }
 
     /**
