@@ -144,11 +144,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        SubTask originalTask = subTasks.get(subTask.getId());
-        if (originalTask != null) {
-            epics.get(originalTask.getEpic().getId()).removeSubTask(originalTask);
+        if (subTasks.get(subTask.getId()) == null) {
+            epics.get(subTask.getEpic().getId()).addSubTask(subTask);
         }
-        epics.get(subTask.getEpic().getId()).addSubTask(subTask);
         subTasks.put(subTask.getId(), subTask);
     }
 }

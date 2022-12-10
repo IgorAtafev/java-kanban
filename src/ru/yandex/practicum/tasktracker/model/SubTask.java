@@ -1,5 +1,7 @@
 package ru.yandex.practicum.tasktracker.model;
 
+import java.util.Objects;
+
 public class SubTask extends Task {
     private Epic epic;
 
@@ -21,12 +23,14 @@ public class SubTask extends Task {
             return false;
         }
 
-        return true;
+        SubTask subTask = (SubTask) object;
+
+        return Objects.equals(epic, subTask.epic);
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return Objects.hash(super.hashCode(), epic);
     }
 
     @Override
