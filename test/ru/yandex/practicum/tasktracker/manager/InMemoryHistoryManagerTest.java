@@ -3,7 +3,6 @@ package ru.yandex.practicum.tasktracker.manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tasktracker.model.Epic;
-import ru.yandex.practicum.tasktracker.model.Status;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
@@ -163,7 +162,6 @@ class InMemoryHistoryManagerTest {
         SubTask subTask = new SubTask();
         subTask.setId(id);
         subTask.setEpic(epic);
-
         return subTask;
     }
 }

@@ -184,7 +184,6 @@ public class Main {
         task.setName(name);
         task.setDescription(description);
         task.setStatus(Status.NEW);
-
         return task;
     }
 
@@ -197,7 +196,6 @@ public class Main {
         Epic epic = new Epic();
         epic.setName(name);
         epic.setDescription(description);
-
         return epic;
     }
 
@@ -212,7 +210,6 @@ public class Main {
         subTask.setDescription(description);
         subTask.setStatus(Status.NEW);
         subTask.setEpic(epic);
-
         return subTask;
     }
 }
