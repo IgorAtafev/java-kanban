@@ -79,7 +79,7 @@ class InMemoryTaskManagerTest {
         taskManager.updateSubTask(subTask1);
         taskManager.updateSubTask(subTask2);
 
-        assertTrue(subTask1.getEpic().getStatus() == Status.NEW);
+        assertTrue(taskManager.getEpicById(subTask1.getEpic().getId()).getStatus() == Status.NEW);
     }
 
     @Test
@@ -87,7 +87,7 @@ class InMemoryTaskManagerTest {
         subTask1.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubTask(subTask1);
 
-        assertTrue(subTask1.getEpic().getStatus() == Status.IN_PROGRESS);
+        assertTrue(taskManager.getEpicById(subTask1.getEpic().getId()).getStatus() == Status.IN_PROGRESS);
     }
 
     @Test
@@ -97,7 +97,7 @@ class InMemoryTaskManagerTest {
         taskManager.updateSubTask(subTask1);
         taskManager.updateSubTask(subTask2);
 
-        assertTrue(subTask1.getEpic().getStatus() == Status.DONE);
+        assertTrue(taskManager.getEpicById(subTask1.getEpic().getId()).getStatus() == Status.DONE);
     }
 
 
