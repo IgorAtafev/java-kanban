@@ -73,7 +73,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void updateSubTask_shouldChangeEpicStatusToInNew_ifStatusOfAllSubtaskChangedToInNew() {
+    void updateSubTask_shouldChangeEpicStatusToInNew_ifStatusOfAllSubtasksChangedToInNew() {
         subTask1.setStatus(Status.NEW);
         subTask2.setStatus(Status.NEW);
         taskManager.updateSubTask(subTask1);
@@ -91,7 +91,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void updateSubTask_shouldChangeEpicStatusToDone_ifStatusOfAllSubtaskChangedToInDone() {
+    void updateSubTask_shouldChangeEpicStatusToDone_ifStatusOfAllSubtasksChangedToInDone() {
         subTask1.setStatus(Status.DONE);
         subTask2.setStatus(Status.DONE);
         taskManager.updateSubTask(subTask1);
