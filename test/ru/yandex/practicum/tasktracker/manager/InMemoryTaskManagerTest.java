@@ -9,8 +9,7 @@ import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
     private Task task1;
@@ -19,7 +18,6 @@ class InMemoryTaskManagerTest {
     private Epic epic2;
     private SubTask subTask1;
     private SubTask subTask2;
-    private SubTask subTask3;
 
     private final TaskManager taskManager = new InMemoryTaskManager();
 
@@ -37,8 +35,17 @@ class InMemoryTaskManagerTest {
         taskManager.createSubTask(subTask1);
         subTask2 = createSubTask("Подзадача2", "Описание подзадачи", epic1);
         taskManager.createSubTask(subTask2);
-        subTask3 = createSubTask("Подзадача3", "Описание подзадачи", epic2);
-        taskManager.createSubTask(subTask3);
+    }
+
+    @Test
+    void getHistory_shouldReturnEmptyHistory() {
+        assertTrue(taskManager.getHistory().isEmpty());
+    }
+
+    @Test
+    void getTasks_shouldCheckForNull() {
+        List<Task> actual = taskManager.getTasks();
+        assertNotNull(actual);
     }
 
     @Test
@@ -50,6 +57,12 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void getEpics_shouldCheckForNull() {
+        List<Epic> actual = taskManager.getEpics();
+        assertNotNull(actual);
+    }
+
+    @Test
     void getEpics_shouldReturnListEpics() {
         List<Epic> expected = List.of(epic1, epic2);
         List<Epic> actual = taskManager.getEpics();
@@ -58,11 +71,23 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void getSubTasks_shouldCheckForNull() {
+        List<SubTask> actual = taskManager.getSubTasks();
+        assertNotNull(actual);
+    }
+
+    @Test
     void getSubTasks_shouldReturnListSubTasks() {
-        List<SubTask> expected = List.of(subTask1, subTask2, subTask3);
+        List<SubTask> expected = List.of(subTask1, subTask2);
         List<SubTask> actual = taskManager.getSubTasks();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void getSubTasksByEpic_shouldCheckForNull() {
+        List<SubTask> actual = taskManager.getSubTasksByEpic(epic1.getId());
+        assertNotNull(actual);
     }
 
     @Test
@@ -74,7 +99,181 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void updateSubTask_shouldChangeEpicStatusToInNew_ifStatusOfAllSubtasksChangedToInNew() {
+    void getTaskById_shouldReturnTaskById() {
+        Task task = taskManager.getTaskById(task1.getId());
+        assertEquals(task1, task);
+    }
+
+    @Test
+    void getTaskById_shouldAddTaskToHistory() {
+        taskManager.getTaskById(task1.getId());
+        List<Task> expected = List.of(task1);
+        List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getEpicById_shouldReturnEpicById() {
+        Epic epic = taskManager.getEpicById(epic1.getId());
+        assertEquals(epic1, epic);
+    }
+
+    @Test
+    void getEpicById_shouldAddTaskToHistory() {
+        taskManager.getEpicById(epic1.getId());
+        List<Task> expected = List.of(epic1);
+        List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getSubTaskById_shouldReturnSubTaskById() {
+        SubTask subTask = taskManager.getSubTaskById(subTask1.getId());
+        assertEquals(subTask1, subTask);
+    }
+
+    @Test
+    void getSubTaskById_shouldAddTaskToHistory() {
+        taskManager.getSubTaskById(subTask1.getId());
+        List<Task> expected = List.of(subTask1);
+        List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteTaskById_shouldRemoveTheTaskFromTheList() {
+        taskManager.deleteTaskById(task1.getId());
+        List<Task> expected = List.of(task2);
+        List<Task> actual = taskManager.getTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteTaskById_shouldRemoveTaskFromHistory() {
+        taskManager.addHistory(task1);
+        taskManager.deleteTaskById(task1.getId());
+        List<Task> expected = List.of();
+        List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteEpicById_shouldRemoveTheEpicFromTheList() {
+        taskManager.deleteEpicById(epic1.getId());
+        List<Epic> expected = List.of(epic2);
+        List<Epic> actual = taskManager.getEpics();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteEpicById_shouldRemoveEpicFromHistory() {
+        taskManager.addHistory(epic1);
+        taskManager.deleteEpicById(epic1.getId());
+        List<Task> expected = List.of();
+        List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteSubTaskById_shouldRemoveTheSubTaskFromTheList() {
+        taskManager.deleteSubTaskById(subTask1.getId());
+        List<SubTask> expected = List.of(subTask2);
+        List<SubTask> actual = taskManager.getSubTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteSubTaskById_shouldRemoveSubTaskFromHistory() {
+        taskManager.addHistory(subTask1);
+        taskManager.deleteSubTaskById(subTask1.getId());
+        List<Task> expected = List.of();
+        List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteTasks_shouldRemoveAllTasksFromTheList() {
+        taskManager.deleteTasks();
+        List<Task> expected = List.of();
+        List<Task> actual = taskManager.getTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteTasks_shouldRemoveAllTasksFromHistory() {
+        taskManager.addHistory(task1);
+        taskManager.addHistory(task2);
+        taskManager.addHistory(epic1);
+        taskManager.addHistory(epic2);
+        taskManager.addHistory(subTask1);
+        taskManager.addHistory(subTask2);
+        taskManager.deleteTasks();
+        List<Task> expected = List.of(epic1, epic2, subTask1, subTask2);
+        List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteEpics_shouldRemoveAllEpicsFromTheList() {
+        taskManager.deleteEpics();
+        List<Epic> expected = List.of();
+        List<Epic> actual = taskManager.getEpics();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteEpics_shouldRemoveAllEpicsFromHistory() {
+        taskManager.addHistory(task1);
+        taskManager.addHistory(task2);
+        taskManager.addHistory(epic1);
+        taskManager.addHistory(epic2);
+        taskManager.addHistory(subTask1);
+        taskManager.addHistory(subTask2);
+        taskManager.deleteEpics();
+        List<Task> expected = List.of(task1, task2);
+        List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteSubTasks_shouldRemoveAllSubTasksFromTheList() {
+        taskManager.deleteSubTasks();
+        List<SubTask> expected = List.of();
+        List<SubTask> actual = taskManager.getSubTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteSubTasks_shouldRemoveAllSubTasksFromHistory() {
+        taskManager.addHistory(task1);
+        taskManager.addHistory(task2);
+        taskManager.addHistory(epic1);
+        taskManager.addHistory(epic2);
+        taskManager.addHistory(subTask1);
+        taskManager.addHistory(subTask2);
+        taskManager.deleteSubTasks();
+        List<Task> expected = List.of(task1, task2, epic1, epic2);
+        List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateSubTask_shouldChangeEpicStatusToNew_ifStatusOfAllSubtasksChangedToNew() {
         subTask1.setStatus(Status.NEW);
         subTask2.setStatus(Status.NEW);
         taskManager.updateSubTask(subTask1);
@@ -92,7 +291,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void updateSubTask_shouldChangeEpicStatusToDone_ifStatusOfAllSubtasksChangedToInDone() {
+    void updateSubTask_shouldChangeEpicStatusToDone_ifStatusOfAllSubtasksChangedToDone() {
         subTask1.setStatus(Status.DONE);
         subTask2.setStatus(Status.DONE);
         taskManager.updateSubTask(subTask1);
@@ -100,7 +299,6 @@ class InMemoryTaskManagerTest {
 
         assertTrue(taskManager.getEpicById(subTask1.getEpic().getId()).getStatus() == Status.DONE);
     }
-
 
     private static Task createTask(String name, String description) {
         Task task = new Task();

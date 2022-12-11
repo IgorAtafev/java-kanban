@@ -23,6 +23,7 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+    @Override
     public void addHistory(Task task) {
         historyManager.add(task);
     }

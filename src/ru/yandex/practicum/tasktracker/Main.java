@@ -29,6 +29,8 @@ public class Main {
                 "Описание подзадачи2", taskManager.getEpicById(2)));
         taskManager.createSubTask(createSubTask("Подзадача3",
                 "Описание подзадачи3", taskManager.getEpicById(4)));
+        taskManager.createSubTask(createSubTask("Подзадача4",
+                "Описание подзадачи4", taskManager.getEpicById(4)));
 
         System.out.printf("Список всех задач: %s", taskManager.getTasks());
         System.out.println();

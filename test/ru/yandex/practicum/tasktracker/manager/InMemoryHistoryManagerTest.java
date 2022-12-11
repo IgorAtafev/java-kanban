@@ -87,7 +87,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(subTask2);
         historyManager.add(subTask1);
 
-        historyManager.remove(1);
+        historyManager.remove(task1.getId());
 
         List<Task> expected = List.of(epic1, task2, epic2, subTask2, subTask1);
         List<Task> actual = historyManager.getHistory();
@@ -104,7 +104,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(subTask2);
         historyManager.add(subTask1);
 
-        historyManager.remove(4);
+        historyManager.remove(epic2.getId());
 
         List<Task> expected = List.of(task1, epic1, task2, subTask2, subTask1);
         List<Task> actual = historyManager.getHistory();
@@ -121,7 +121,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(subTask2);
         historyManager.add(subTask1);
 
-        historyManager.remove(5);
+        historyManager.remove(subTask1.getId());
 
         List<Task> expected = List.of(task1, epic1, task2, epic2, subTask2);
         List<Task> actual = historyManager.getHistory();
@@ -138,7 +138,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(epic1);
         historyManager.add(epic2);
 
-        historyManager.removeAll(Set.of(1, 6, 3));
+        historyManager.removeAll(Set.of(task1.getId(), subTask2.getId(), epic1.getId()));
 
         List<Task> expected = List.of(task2, epic2);
         List<Task> actual = historyManager.getHistory();
