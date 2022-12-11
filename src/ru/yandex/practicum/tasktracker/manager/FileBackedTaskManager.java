@@ -121,7 +121,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager taskManager = new FileBackedTaskManager();
 
         try {
-            String fileContents = Files.readString(taskManager.path);
+            String fileContents = Files.readString(taskManager.path, StandardCharsets.UTF_8);
 
             if (fileContents.isEmpty()) {
                 return taskManager;
