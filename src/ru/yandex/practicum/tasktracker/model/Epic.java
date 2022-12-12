@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Epic extends Task {
+    private final TaskType type = TaskType.EPIC;
     private final Set<SubTask> subTasks = new LinkedHashSet<>();
 
     public List<SubTask> getSubTasks() {
@@ -77,6 +78,11 @@ public class Epic extends Task {
     @Override
     public void setStatus(Status status) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TaskType getType() {
+        return type;
     }
 
     @Override

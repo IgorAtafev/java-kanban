@@ -20,7 +20,7 @@ class InMemoryHistoryManagerTest {
     private SubTask subTask1;
     private SubTask subTask2;
 
-    private final HistoryManager historyManager = new InMemoryHistoryManager();
+    private final InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
 
     @BeforeEach
     void setUp() {

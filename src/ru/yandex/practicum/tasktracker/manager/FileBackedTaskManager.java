@@ -1,24 +1,27 @@
 package ru.yandex.practicum.tasktracker.manager;
 
-import ru.yandex.practicum.tasktracker.model.Epic;
-import ru.yandex.practicum.tasktracker.model.Status;
-import ru.yandex.practicum.tasktracker.model.SubTask;
-import ru.yandex.practicum.tasktracker.model.Task;
+import ru.yandex.practicum.tasktracker.model.*;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Writes to a file and browsing history to a file and restores them from a file
  */
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private final Path path = Path.of("resources/tasks.csv");
+    private final Path path;
     private Map<Integer, Task> tasksFromFile = new HashMap<>();
+    private static final String FILE_HEADER = "id,type,name,status,description,epic";
+
+    public FileBackedTaskManager(String fileName) {
+        this.path = Path.of("resources/" + fileName);
+    }
 
     @Override
     public Task getTaskById(int id) {
@@ -117,54 +120,54 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
      * Restore manager data from a file
      * @return task manager
      */
-    public static FileBackedTaskManager loadFromFile() {
-        FileBackedTaskManager taskManager = new FileBackedTaskManager();
+    public static FileBackedTaskManager loadFromFile(String fileName) {
+        FileBackedTaskManager taskManager = new FileBackedTaskManager(fileName);
 
         try {
-            String fileContents = Files.readString(taskManager.path, StandardCharsets.UTF_8);
+            List<String> lines = Files.readAllLines(taskManager.path, StandardCharsets.UTF_8);
 
-            if (fileContents.isEmpty()) {
+            if (lines.isEmpty()) {
                 return taskManager;
             }
 
-            String[] lines = fileContents.split(System.lineSeparator());
             boolean isReadHistory = false;
-            for (int i = 1; i < lines.length; i++) {
-                if (lines[i].isBlank()) {
+            int counter = 0;
+            for (String line: lines) {
+                if (counter++ == 0) {
+                    continue;
+                }
+
+                if (line.isBlank()) {
                     isReadHistory = true;
+                    continue;
+                }
+
+                if (isReadHistory) {
+                    taskManager.restoreHistoryFromCsv(line);
                 } else {
-                    if (isReadHistory) {
-                        taskManager.createHistoryFromCsv(lines[i]);
-                    } else {
-                        taskManager.createTaskFromCsv(lines[i]);
-                    }
+                    taskManager.restoreTaskFromCsv(line);
                 }
             }
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка чтения из файла", e);
+            throw new ManagerSaveException("Error reading from file", e);
         }
+
+        taskManager.nextTaskId = Collections.max(taskManager.tasksFromFile.keySet());
 
         return taskManager;
     }
 
     private void save() {
         try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-            String title = "id,type,name,status,description,epic";
-            writer.write(title);
+            writer.write(FILE_HEADER);
             writer.newLine();
 
-            for (Task task : getTasks()) {
-                writer.write(writeTaskToCsv(task, TaskType.TASK));
-                writer.newLine();
-            }
+            List<Task> combinedListOfTasks = Stream.of(getTasks(), getEpics(), getSubTasks())
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
 
-            for (Epic epic : getEpics()) {
-                writer.write(writeTaskToCsv(epic, TaskType.EPIC));
-                writer.newLine();
-            }
-
-            for (SubTask subTask : getSubTasks()) {
-                writer.write(writeTaskToCsv(subTask, TaskType.SUBTASK));
+            for (Task task : combinedListOfTasks) {
+                writer.write(task.toCsvRow());
                 writer.newLine();
             }
 
@@ -172,47 +175,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.write(writeHistoryToCsv());
             writer.newLine();
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка записи в файл", e);
+            throw new ManagerSaveException("Error writing to file", e);
         }
-    }
-
-    private String writeTaskToCsv(Task task, TaskType taskType) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append(task.getId());
-        stringBuilder.append(",");
-        stringBuilder.append(taskType);
-        stringBuilder.append(",");
-        stringBuilder.append(task.getName());
-        stringBuilder.append(",");
-        stringBuilder.append(task.getStatus());
-        stringBuilder.append(",");
-        stringBuilder.append(task.getDescription());
-        stringBuilder.append(",");
-
-        if (taskType == TaskType.SUBTASK) {
-            stringBuilder.append(((SubTask) task).getEpic().getId());
-        }
-
-        return stringBuilder.toString();
     }
 
     private String writeHistoryToCsv() {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (Task task : getHistory()) {
-            if (stringBuilder.length() > 0) {
-                stringBuilder.append(",");
-            }
-            stringBuilder.append(task.getId());
-        }
-
-        return stringBuilder.toString();
+        return getHistory().stream()
+                .map(Task::getId)
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
     }
 
-    private void createTaskFromCsv(String value) {
-        String[] split = value.split(",");
-        TaskType taskType = TaskType.valueOf(split[1]);
+    private void restoreTaskFromCsv(String csvLine) {
+        String[] values = csvLine.split(",");
+        TaskType taskType = TaskType.valueOf(values[1]);
 
         Task task = new Task();
         if (taskType == TaskType.EPIC) {
@@ -221,19 +197,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             task = new SubTask();
         }
 
-        int taskId = Integer.parseInt(split[0]);
+        int taskId = Integer.parseInt(values[0]);
         task.setId(taskId);
-        task.setName(split[2]);
+        task.setName(values[2]);
         if (taskType != TaskType.EPIC) {
-            task.setStatus(Status.valueOf(split[3]));
+            task.setStatus(Status.valueOf(values[3]));
         }
-        task.setDescription(split[4]);
+        task.setDescription(values[4]);
 
         if (task instanceof Epic) {
             super.updateEpic((Epic) task);
         } else if (task instanceof SubTask) {
-            Epic epic = super.getEpicById(Integer.parseInt(split[5]));
+            int epicId = Integer.parseInt(values[5]);
+            Epic epic = super.getEpicById(epicId);
             ((SubTask) task).setEpic(epic);
+            historyManager.remove(epicId);
             super.updateSubTask((SubTask) task);
         } else {
             super.updateTask(task);
@@ -242,14 +220,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         tasksFromFile.put(taskId, task);
     }
 
-    private void createHistoryFromCsv(String value) {
-        String[] split = value.split(",");
+    private void restoreHistoryFromCsv(String csvLine) {
+        String[] values = csvLine.split(",");
 
-        for (String item : split) {
-            int taskId = Integer.parseInt(item);
-            if (tasksFromFile.containsKey(taskId)) {
-                addHistory(tasksFromFile.get(taskId));
-            }
-        }
+        Arrays.stream(values)
+                .map(Integer::parseInt)
+                .filter(taskId -> tasksFromFile.containsKey(taskId))
+                .collect(Collectors.toList())
+                .forEach(taskId -> historyManager.add(tasksFromFile.get(taskId)));
     }
 }

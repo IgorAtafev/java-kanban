@@ -7,6 +7,7 @@ public class Task {
     private String name;
     private String description;
     private Status status;
+    private final TaskType type = TaskType.TASK;
 
     public int getId() {
         return id;
@@ -40,6 +41,10 @@ public class Task {
         this.status = status;
     }
 
+    public TaskType getType() {
+        return type;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -70,5 +75,24 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 '}';
+    }
+
+    /**
+     * Returns the task as a string in CSV format
+     * @return string in CSV format
+     */
+    public String toCsvRow() {
+        return new StringBuilder()
+                .append(getId())
+                .append(",")
+                .append(getType())
+                .append(",")
+                .append(getName())
+                .append(",")
+                .append(getStatus())
+                .append(",")
+                .append(getDescription())
+                .append(",")
+                .toString();
     }
 }

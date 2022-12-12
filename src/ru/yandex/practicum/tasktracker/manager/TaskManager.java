@@ -14,12 +14,6 @@ public interface TaskManager {
     List<Task> getHistory();
 
     /**
-     * Adds a task to history
-     * @param task
-     */
-    void addHistory(Task task);
-
-    /**
      * Returns a list of all tasks
      * @return list of all tasks
      */

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.tasktracker;
 
 import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
-import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.Status;
 import ru.yandex.practicum.tasktracker.model.SubTask;
@@ -11,7 +10,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = new FileBackedTaskManager();
+        String fileName = "tasks.csv";
+        FileBackedTaskManager taskManager = new FileBackedTaskManager(fileName);
 
         System.out.println("Тестирование...");
 
@@ -161,7 +161,7 @@ public class Main {
         System.out.println(System.lineSeparator());
         System.out.println("4. Восстановление задач и истории просмотров из файла:");
 
-        taskManager = FileBackedTaskManager.loadFromFile();
+        taskManager = FileBackedTaskManager.loadFromFile(fileName);
 
         System.out.printf("Список всех задач: %s", taskManager.getTasks());
         System.out.println();

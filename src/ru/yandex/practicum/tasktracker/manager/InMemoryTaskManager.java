@@ -10,22 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
+    protected int nextTaskId = 0;
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
+
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
 
-    private int nextTaskId = 0;
-
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
-
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
-    }
-
-    @Override
-    public void addHistory(Task task) {
-        historyManager.add(task);
     }
 
     @Override
@@ -100,8 +94,9 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpicById(int id) {
         historyManager.remove(id);
         for (SubTask subTask : epics.get(id).getSubTasks()) {
-            historyManager.remove(subTask.getId());
-            subTasks.remove(subTask.getId());
+            int subTaskId = subTask.getId();
+            historyManager.remove(subTaskId);
+            subTasks.remove(subTaskId);
         }
         epics.remove(id);
     }

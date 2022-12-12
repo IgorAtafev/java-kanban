@@ -19,7 +19,7 @@ class InMemoryTaskManagerTest {
     private SubTask subTask1;
     private SubTask subTask2;
 
-    private final TaskManager taskManager = new InMemoryTaskManager();
+    private final InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
     @BeforeEach
     void setUp() {
@@ -154,7 +154,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteTaskById_shouldRemoveTaskFromHistory() {
-        taskManager.addHistory(task1);
+        taskManager.historyManager.add(task1);
         taskManager.deleteTaskById(task1.getId());
         List<Task> expected = List.of();
         List<Task> actual = taskManager.getHistory();
@@ -173,7 +173,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteEpicById_shouldRemoveEpicFromHistory() {
-        taskManager.addHistory(epic1);
+        taskManager.historyManager.add(epic1);
         taskManager.deleteEpicById(epic1.getId());
         List<Task> expected = List.of();
         List<Task> actual = taskManager.getHistory();
@@ -192,7 +192,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteSubTaskById_shouldRemoveSubTaskFromHistory() {
-        taskManager.addHistory(subTask1);
+        taskManager.historyManager.add(subTask1);
         taskManager.deleteSubTaskById(subTask1.getId());
         List<Task> expected = List.of();
         List<Task> actual = taskManager.getHistory();
@@ -211,12 +211,12 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteTasks_shouldRemoveAllTasksFromHistory() {
-        taskManager.addHistory(task1);
-        taskManager.addHistory(task2);
-        taskManager.addHistory(epic1);
-        taskManager.addHistory(epic2);
-        taskManager.addHistory(subTask1);
-        taskManager.addHistory(subTask2);
+        taskManager.historyManager.add(task1);
+        taskManager.historyManager.add(task2);
+        taskManager.historyManager.add(epic1);
+        taskManager.historyManager.add(epic2);
+        taskManager.historyManager.add(subTask1);
+        taskManager.historyManager.add(subTask2);
         taskManager.deleteTasks();
         List<Task> expected = List.of(epic1, epic2, subTask1, subTask2);
         List<Task> actual = taskManager.getHistory();
@@ -235,12 +235,12 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteEpics_shouldRemoveAllEpicsFromHistory() {
-        taskManager.addHistory(task1);
-        taskManager.addHistory(task2);
-        taskManager.addHistory(epic1);
-        taskManager.addHistory(epic2);
-        taskManager.addHistory(subTask1);
-        taskManager.addHistory(subTask2);
+        taskManager.historyManager.add(task1);
+        taskManager.historyManager.add(task2);
+        taskManager.historyManager.add(epic1);
+        taskManager.historyManager.add(epic2);
+        taskManager.historyManager.add(subTask1);
+        taskManager.historyManager.add(subTask2);
         taskManager.deleteEpics();
         List<Task> expected = List.of(task1, task2);
         List<Task> actual = taskManager.getHistory();
@@ -259,12 +259,12 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteSubTasks_shouldRemoveAllSubTasksFromHistory() {
-        taskManager.addHistory(task1);
-        taskManager.addHistory(task2);
-        taskManager.addHistory(epic1);
-        taskManager.addHistory(epic2);
-        taskManager.addHistory(subTask1);
-        taskManager.addHistory(subTask2);
+        taskManager.historyManager.add(task1);
+        taskManager.historyManager.add(task2);
+        taskManager.historyManager.add(epic1);
+        taskManager.historyManager.add(epic2);
+        taskManager.historyManager.add(subTask1);
+        taskManager.historyManager.add(subTask2);
         taskManager.deleteSubTasks();
         List<Task> expected = List.of(task1, task2, epic1, epic2);
         List<Task> actual = taskManager.getHistory();
