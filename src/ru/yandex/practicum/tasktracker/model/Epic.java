@@ -35,6 +35,11 @@ public class Epic extends Task {
         subTasks.remove(subTask);
     }
 
+    @Override
+    public TaskType getType() {
+        return type;
+    }
+
     /**
      * Returns epic status
      * If the epic has no subtasks or all of them have the NEW status, then the status should be NEW.
@@ -78,11 +83,6 @@ public class Epic extends Task {
     @Override
     public void setStatus(Status status) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public TaskType getType() {
-        return type;
     }
 
     @Override

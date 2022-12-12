@@ -4,10 +4,10 @@ import java.util.Objects;
 
 public class Task {
     private int id;
+    private final TaskType type = TaskType.TASK;
     private String name;
     private String description;
     private Status status;
-    private final TaskType type = TaskType.TASK;
 
     public int getId() {
         return id;
@@ -15,6 +15,10 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public TaskType getType() {
+        return type;
     }
 
     public String getName() {
@@ -39,10 +43,6 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public TaskType getType() {
-        return type;
     }
 
     @Override
