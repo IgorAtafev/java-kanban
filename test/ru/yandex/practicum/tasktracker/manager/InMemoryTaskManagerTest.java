@@ -295,8 +295,7 @@ class InMemoryTaskManagerTest {
     void deleteSubTasks_shouldRemoveAllEpicSubtasks() {
         taskManager.deleteSubTasks();
         List<Epic> expected = List.of();
-        List<Epic> actual = taskManager.getEpics()
-                .stream()
+        List<Epic> actual = taskManager.getEpics().stream()
                 .filter(epic -> !epic.getSubTasks().isEmpty())
                 .collect(Collectors.toList());
 
