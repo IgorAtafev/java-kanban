@@ -317,34 +317,6 @@ class InMemoryTaskManagerTest {
         assertEquals(expected, actual);
     }
 
-    @Test
-    void updateSubTask_shouldChangeEpicStatusToNew_ifStatusOfAllSubtasksChangedToNew() {
-        subTask1.setStatus(Status.NEW);
-        subTask2.setStatus(Status.NEW);
-        taskManager.updateSubTask(subTask1);
-        taskManager.updateSubTask(subTask2);
-
-        assertTrue(taskManager.getEpicById(subTask1.getEpic().getId()).getStatus() == Status.NEW);
-    }
-
-    @Test
-    void updateSubTask_shouldChangeEpicStatusToInProgress_ifStatusOfOneSubtaskChangedToInProgress() {
-        subTask1.setStatus(Status.IN_PROGRESS);
-        taskManager.updateSubTask(subTask1);
-
-        assertTrue(taskManager.getEpicById(subTask1.getEpic().getId()).getStatus() == Status.IN_PROGRESS);
-    }
-
-    @Test
-    void updateSubTask_shouldChangeEpicStatusToDone_ifStatusOfAllSubtasksChangedToDone() {
-        subTask1.setStatus(Status.DONE);
-        subTask2.setStatus(Status.DONE);
-        taskManager.updateSubTask(subTask1);
-        taskManager.updateSubTask(subTask2);
-
-        assertTrue(taskManager.getEpicById(subTask1.getEpic().getId()).getStatus() == Status.DONE);
-    }
-
     private static Task createTask(String name, String description) {
         Task task = new Task();
         task.setName(name);
