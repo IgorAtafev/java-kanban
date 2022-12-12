@@ -93,11 +93,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteEpicById(int id) {
         historyManager.remove(id);
-        for (SubTask subTask : epics.get(id).getSubTasks()) {
-            int subTaskId = subTask.getId();
-            historyManager.remove(subTaskId);
-            subTasks.remove(subTaskId);
-        }
+        epics.get(id).getSubTasks()
+                .stream()
+                .map(SubTask::getId)
+                .peek(historyManager::remove)
+                .forEach(subTasks::remove);
         epics.remove(id);
     }
 

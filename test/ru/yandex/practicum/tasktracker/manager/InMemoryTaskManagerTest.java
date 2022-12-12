@@ -8,6 +8,7 @@ import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +19,7 @@ class InMemoryTaskManagerTest {
     private Epic epic2;
     private SubTask subTask1;
     private SubTask subTask2;
+    private SubTask subTask3;
 
     private final InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
@@ -35,6 +37,8 @@ class InMemoryTaskManagerTest {
         taskManager.createSubTask(subTask1);
         subTask2 = createSubTask("Подзадача2", "Описание подзадачи", epic1);
         taskManager.createSubTask(subTask2);
+        subTask3 = createSubTask("Подзадача3", "Описание подзадачи", epic2);
+        taskManager.createSubTask(subTask3);
     }
 
     @Test
@@ -77,8 +81,8 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getSubTasks_shouldReturnListSubTasks() {
-        List<SubTask> expected = List.of(subTask1, subTask2);
+    void getSubTasks_shouldReturnListSubtasks() {
+        List<SubTask> expected = List.of(subTask1, subTask2, subTask3);
         List<SubTask> actual = taskManager.getSubTasks();
 
         assertEquals(expected, actual);
@@ -91,7 +95,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getSubTasksByEpic_shouldReturnListSubTasksByEpic() {
+    void getSubTasksByEpic_shouldReturnListSubtasksByEpic() {
         List<SubTask> expected = List.of(subTask1, subTask2);
         List<SubTask> actual = taskManager.getSubTasksByEpic(epic1.getId());
 
@@ -120,7 +124,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getEpicById_shouldAddTaskToHistory() {
+    void getEpicById_shouldAddEpicToHistory() {
         taskManager.getEpicById(epic1.getId());
         List<Task> expected = List.of(epic1);
         List<Task> actual = taskManager.getHistory();
@@ -129,13 +133,13 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getSubTaskById_shouldReturnSubTaskById() {
+    void getSubTaskById_shouldReturnSubtaskById() {
         SubTask subTask = taskManager.getSubTaskById(subTask1.getId());
         assertEquals(subTask1, subTask);
     }
 
     @Test
-    void getSubTaskById_shouldAddTaskToHistory() {
+    void getSubTaskById_shouldAddSubtaskToHistory() {
         taskManager.getSubTaskById(subTask1.getId());
         List<Task> expected = List.of(subTask1);
         List<Task> actual = taskManager.getHistory();
@@ -172,26 +176,47 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deleteEpicById_shouldRemoveEpicFromHistory() {
-        taskManager.historyManager.add(epic1);
+    void deleteEpicById_shouldRemoveAllEpicSubtasks() {
         taskManager.deleteEpicById(epic1.getId());
-        List<Task> expected = List.of();
-        List<Task> actual = taskManager.getHistory();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void deleteSubTaskById_shouldRemoveSubTask() {
-        taskManager.deleteSubTaskById(subTask1.getId());
-        List<SubTask> expected = List.of(subTask2);
+        List<SubTask> expected = List.of(subTask3);
         List<SubTask> actual = taskManager.getSubTasks();
 
         assertEquals(expected, actual);
     }
 
     @Test
-    void deleteSubTaskById_shouldRemoveSubTaskFromHistory() {
+    void deleteEpicById_shouldRemoveEpicAndAllEpicSubtasksFromHistory() {
+        taskManager.historyManager.add(epic1);
+        taskManager.historyManager.add(subTask1);
+        taskManager.historyManager.add(subTask2);
+        taskManager.historyManager.add(subTask3);
+        taskManager.deleteEpicById(epic1.getId());
+        List<Task> expected = List.of(subTask3);
+        List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteSubTaskById_shouldRemoveSubtask() {
+        taskManager.deleteSubTaskById(subTask1.getId());
+        List<SubTask> expected = List.of(subTask2, subTask3);
+        List<SubTask> actual = taskManager.getSubTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteSubTaskById_shouldRemoveSubtaskFromEpic() {
+        taskManager.deleteSubTaskById(subTask1.getId());
+        List<SubTask> expected = List.of(subTask2);
+        List<SubTask> actual = taskManager.getEpicById(subTask1.getEpic().getId()).getSubTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteSubTaskById_shouldRemoveSubtaskFromHistory() {
         taskManager.historyManager.add(subTask1);
         taskManager.deleteSubTaskById(subTask1.getId());
         List<Task> expected = List.of();
@@ -234,7 +259,16 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deleteEpics_shouldRemoveAllEpicsFromHistory() {
+    void deleteEpics_shouldRemoveAllSubtasks() {
+        taskManager.deleteEpics();
+        List<SubTask> expected = List.of();
+        List<SubTask> actual = taskManager.getSubTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteEpics_shouldRemoveAllEpicsAndAllSubtasksFromHistory() {
         taskManager.historyManager.add(task1);
         taskManager.historyManager.add(task2);
         taskManager.historyManager.add(epic1);
@@ -249,7 +283,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deleteSubTasks_shouldRemoveAllSubTasks() {
+    void deleteSubTasks_shouldRemoveAllSubtasks() {
         taskManager.deleteSubTasks();
         List<SubTask> expected = List.of();
         List<SubTask> actual = taskManager.getSubTasks();
@@ -258,7 +292,19 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deleteSubTasks_shouldRemoveAllSubTasksFromHistory() {
+    void deleteSubTasks_shouldRemoveAllEpicSubtasks() {
+        taskManager.deleteSubTasks();
+        List<Epic> expected = List.of();
+        List<Epic> actual = taskManager.getEpics()
+                .stream()
+                .filter(epic -> !epic.getSubTasks().isEmpty())
+                .collect(Collectors.toList());
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteSubTasks_shouldRemoveAllSubtasksFromHistory() {
         taskManager.historyManager.add(task1);
         taskManager.historyManager.add(task2);
         taskManager.historyManager.add(epic1);

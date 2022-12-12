@@ -226,7 +226,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Arrays.stream(values)
                 .map(Integer::parseInt)
                 .filter(taskId -> tasksFromFile.containsKey(taskId))
-                .collect(Collectors.toList())
                 .forEach(taskId -> historyManager.add(tasksFromFile.get(taskId)));
     }
 }
