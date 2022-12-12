@@ -24,12 +24,7 @@ class InMemoryHistoryManagerTest {
 
     @BeforeEach
     void setUp() {
-        task1 = createTask(1);
-        task2 = createTask(2);
-        epic1 = createEpic(3);
-        epic2 = createEpic(4);
-        subTask1 = createSubTask(5, epic1);
-        subTask2 = createSubTask(6, epic1);
+        createTestTasks();
     }
 
     @Test
@@ -146,19 +141,28 @@ class InMemoryHistoryManagerTest {
         assertEquals(expected, actual);
     }
 
-    private static Task createTask(int id) {
+    private void createTestTasks() {
+        task1 = createTask(1);
+        task2 = createTask(2);
+        epic1 = createEpic(3);
+        epic2 = createEpic(4);
+        subTask1 = createSubTask(5, epic1);
+        subTask2 = createSubTask(6, epic1);
+    }
+
+    private Task createTask(int id) {
         Task task = new Task();
         task.setId(id);
         return task;
     }
 
-    private static Epic createEpic(int id) {
+    private Epic createEpic(int id) {
         Epic epic = new Epic();
         epic.setId(id);
         return epic;
     }
 
-    private static SubTask createSubTask(int id, Epic epic) {
+    private SubTask createSubTask(int id, Epic epic) {
         SubTask subTask = new SubTask();
         subTask.setId(id);
         subTask.setEpic(epic);

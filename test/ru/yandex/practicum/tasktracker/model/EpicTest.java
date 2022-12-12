@@ -8,7 +8,8 @@ import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EpicTest {
-    private Epic epic;
+    private Epic epic1;
+    private Epic epic2;
     private SubTask subTask1;
     private SubTask subTask2;
 
@@ -16,12 +17,12 @@ class EpicTest {
 
     @BeforeEach
     void setUp() {
-        epic = createEpic("Эпик1", "Описание эпика");
-        taskManager.createEpic(epic);
-        subTask1 = createSubTask("Подзадача1", "Описание подзадачи", epic);
-        taskManager.createSubTask(subTask1);
-        subTask2 = createSubTask("Подзадача2", "Описание подзадачи", epic);
-        taskManager.createSubTask(subTask2);
+        createTestTasks();
+    }
+
+    @Test
+    void getStatus_shouldChangeEpicStatusToNew_ifThereAreNoSubtasks() {
+        assertTrue(taskManager.getEpicById(epic2.getId()).getStatus() == Status.NEW);
     }
 
     @Test
@@ -62,14 +63,25 @@ class EpicTest {
         assertTrue(taskManager.getEpicById(subTask1.getEpic().getId()).getStatus() == Status.IN_PROGRESS);
     }
 
-    private static Epic createEpic(String name, String description) {
+    private void createTestTasks() {
+        epic1 = createEpic("Эпик1", "Описание эпика");
+        taskManager.createEpic(epic1);
+        epic2 = createEpic("Эпик2", "Описание эпика");
+        taskManager.createEpic(epic2);
+        subTask1 = createSubTask("Подзадача1", "Описание подзадачи", epic1);
+        taskManager.createSubTask(subTask1);
+        subTask2 = createSubTask("Подзадача2", "Описание подзадачи", epic1);
+        taskManager.createSubTask(subTask2);
+    }
+
+    private Epic createEpic(String name, String description) {
         Epic epic = new Epic();
         epic.setName(name);
         epic.setDescription(description);
         return epic;
     }
 
-    private static SubTask createSubTask(String name, String description, Epic epic) {
+    private SubTask createSubTask(String name, String description, Epic epic) {
         SubTask subTask = new SubTask();
         subTask.setName(name);
         subTask.setDescription(description);

@@ -10,7 +10,9 @@ import ru.yandex.practicum.tasktracker.model.Task;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class InMemoryTaskManagerTest {
     private Task task1;
@@ -25,20 +27,7 @@ class InMemoryTaskManagerTest {
 
     @BeforeEach
     void setUp() {
-        task1 = createTask("Задача1", "Описание задачи");
-        taskManager.createTask(task1);
-        task2 = createTask("Задача2", "Описание задачи");
-        taskManager.createTask(task2);
-        epic1 = createEpic("Эпик1", "Описание эпика");
-        taskManager.createEpic(epic1);
-        epic2 = createEpic("Эпик2", "Описание эпика");
-        taskManager.createEpic(epic2);
-        subTask1 = createSubTask("Подзадача1", "Описание подзадачи", epic1);
-        taskManager.createSubTask(subTask1);
-        subTask2 = createSubTask("Подзадача2", "Описание подзадачи", epic1);
-        taskManager.createSubTask(subTask2);
-        subTask3 = createSubTask("Подзадача3", "Описание подзадачи", epic2);
-        taskManager.createSubTask(subTask3);
+        createTestTasks();
     }
 
     @Test
@@ -53,7 +42,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getTasks_shouldReturnListTasks() {
+    void getTasks_shouldReturnListOfTasks() {
         List<Task> expected = List.of(task1, task2);
         List<Task> actual = taskManager.getTasks();
 
@@ -67,7 +56,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getEpics_shouldReturnListEpics() {
+    void getEpics_shouldReturnListOfEpics() {
         List<Epic> expected = List.of(epic1, epic2);
         List<Epic> actual = taskManager.getEpics();
 
@@ -81,7 +70,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getSubTasks_shouldReturnListSubtasks() {
+    void getSubTasks_shouldReturnListOfSubtasks() {
         List<SubTask> expected = List.of(subTask1, subTask2, subTask3);
         List<SubTask> actual = taskManager.getSubTasks();
 
@@ -95,7 +84,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getSubTasksByEpic_shouldReturnListSubtasksByEpic() {
+    void getSubTasksByEpic_shouldReturnListOfSubtasksByEpic() {
         List<SubTask> expected = List.of(subTask1, subTask2);
         List<SubTask> actual = taskManager.getSubTasksByEpic(epic1.getId());
 
@@ -317,7 +306,24 @@ class InMemoryTaskManagerTest {
         assertEquals(expected, actual);
     }
 
-    private static Task createTask(String name, String description) {
+    private void createTestTasks() {
+        task1 = createTask("Задача1", "Описание задачи");
+        taskManager.createTask(task1);
+        task2 = createTask("Задача2", "Описание задачи");
+        taskManager.createTask(task2);
+        epic1 = createEpic("Эпик1", "Описание эпика");
+        taskManager.createEpic(epic1);
+        epic2 = createEpic("Эпик2", "Описание эпика");
+        taskManager.createEpic(epic2);
+        subTask1 = createSubTask("Подзадача1", "Описание подзадачи", epic1);
+        taskManager.createSubTask(subTask1);
+        subTask2 = createSubTask("Подзадача2", "Описание подзадачи", epic1);
+        taskManager.createSubTask(subTask2);
+        subTask3 = createSubTask("Подзадача3", "Описание подзадачи", epic2);
+        taskManager.createSubTask(subTask3);
+    }
+
+    private Task createTask(String name, String description) {
         Task task = new Task();
         task.setName(name);
         task.setDescription(description);
@@ -325,14 +331,14 @@ class InMemoryTaskManagerTest {
         return task;
     }
 
-    private static Epic createEpic(String name, String description) {
+    private Epic createEpic(String name, String description) {
         Epic epic = new Epic();
         epic.setName(name);
         epic.setDescription(description);
         return epic;
     }
 
-    private static SubTask createSubTask(String name, String description, Epic epic) {
+    private SubTask createSubTask(String name, String description, Epic epic) {
         SubTask subTask = new SubTask();
         subTask.setName(name);
         subTask.setDescription(description);
