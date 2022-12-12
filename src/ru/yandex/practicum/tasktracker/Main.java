@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
 
         String fileName = "tasks.csv";
-        FileBackedTaskManager taskManager = new FileBackedTaskManager(fileName);
+        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(fileName);
 
         System.out.println("Тестирование...");
 

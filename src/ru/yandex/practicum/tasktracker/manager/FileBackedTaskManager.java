@@ -7,7 +7,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,11 +19,11 @@ import java.util.stream.Stream;
  * Writes to a file and browsing history to a file and restores them from a file
  */
 public class FileBackedTaskManager extends InMemoryTaskManager {
+    private static final String FILE_HEADER = "id,type,name,status,description,epic";
     private final Path path;
     private Map<Integer, Task> tasksFromFile = new HashMap<>();
-    private static final String FILE_HEADER = "id,type,name,status,description,epic";
 
-    public FileBackedTaskManager(String fileName) {
+    private FileBackedTaskManager(String fileName) {
         this.path = Path.of("resources/" + fileName);
     }
 
@@ -131,12 +135,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
 
             boolean isReadHistory = false;
-            int counter = 0;
-            for (String line: lines) {
-                if (counter++ == 0) {
-                    continue;
-                }
-
+            for (int i = 1; i < lines.size(); i++) {
+                String line = lines.get(i);
                 if (line.isBlank()) {
                     isReadHistory = true;
                     continue;
@@ -162,12 +162,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.write(FILE_HEADER);
             writer.newLine();
 
-            List<Task> combinedListOfTasks = Stream.of(getTasks(), getEpics(), getSubTasks())
+            List<String> taskLines = Stream.of(getTasks(), getEpics(), getSubTasks())
                     .flatMap(List::stream)
+                    .map(Task::toCsvRow)
                     .collect(Collectors.toList());
 
-            for (Task task : combinedListOfTasks) {
-                writer.write(task.toCsvRow());
+            for (String line : taskLines) {
+                writer.write(line);
                 writer.newLine();
             }
 

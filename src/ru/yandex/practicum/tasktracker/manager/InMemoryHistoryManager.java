@@ -16,7 +16,6 @@ import java.util.ArrayList;
 public class InMemoryHistoryManager implements HistoryManager {
     private Node first;
     private Node last;
-
     private final Map<Integer, Node> nodes = new HashMap<>();
 
     @Override
