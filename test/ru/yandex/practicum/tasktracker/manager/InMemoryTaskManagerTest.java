@@ -144,7 +144,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deleteTaskById_shouldRemoveTheTaskFromTheList() {
+    void deleteTaskById_shouldRemoveTask() {
         taskManager.deleteTaskById(task1.getId());
         List<Task> expected = List.of(task2);
         List<Task> actual = taskManager.getTasks();
@@ -163,7 +163,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deleteEpicById_shouldRemoveTheEpicFromTheList() {
+    void deleteEpicById_shouldRemoveEpic() {
         taskManager.deleteEpicById(epic1.getId());
         List<Epic> expected = List.of(epic2);
         List<Epic> actual = taskManager.getEpics();
@@ -182,7 +182,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deleteSubTaskById_shouldRemoveTheSubTaskFromTheList() {
+    void deleteSubTaskById_shouldRemoveSubTask() {
         taskManager.deleteSubTaskById(subTask1.getId());
         List<SubTask> expected = List.of(subTask2);
         List<SubTask> actual = taskManager.getSubTasks();
@@ -201,7 +201,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deleteTasks_shouldRemoveAllTasksFromTheList() {
+    void deleteTasks_shouldRemoveAllTasks() {
         taskManager.deleteTasks();
         List<Task> expected = List.of();
         List<Task> actual = taskManager.getTasks();
@@ -225,7 +225,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deleteEpics_shouldRemoveAllEpicsFromTheList() {
+    void deleteEpics_shouldRemoveAllEpics() {
         taskManager.deleteEpics();
         List<Epic> expected = List.of();
         List<Epic> actual = taskManager.getEpics();
@@ -249,7 +249,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deleteSubTasks_shouldRemoveAllSubTasksFromTheList() {
+    void deleteSubTasks_shouldRemoveAllSubTasks() {
         taskManager.deleteSubTasks();
         List<SubTask> expected = List.of();
         List<SubTask> actual = taskManager.getSubTasks();
