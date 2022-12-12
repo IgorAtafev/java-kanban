@@ -4,7 +4,6 @@ import java.util.Objects;
 
 public class Task {
     private int id;
-    private final TaskType type = TaskType.TASK;
     private String name;
     private String description;
     private Status status;
@@ -18,7 +17,7 @@ public class Task {
     }
 
     public TaskType getType() {
-        return type;
+        return TaskType.TASK;
     }
 
     public String getName() {
@@ -82,17 +81,6 @@ public class Task {
      * @return string in CSV format
      */
     public String toCsvRow() {
-        return new StringBuilder()
-                .append(getId())
-                .append(",")
-                .append(getType())
-                .append(",")
-                .append(getName())
-                .append(",")
-                .append(getStatus())
-                .append(",")
-                .append(getDescription())
-                .append(",")
-                .toString();
+        return String.format("%d,%s,%s,%s,%s", getId(), getType(), getName(), getStatus(), getDescription());
     }
 }

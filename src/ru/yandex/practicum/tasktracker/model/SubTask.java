@@ -3,7 +3,6 @@ package ru.yandex.practicum.tasktracker.model;
 import java.util.Objects;
 
 public class SubTask extends Task {
-    private final TaskType type = TaskType.SUBTASK;
     private Epic epic;
 
     public Epic getEpic() {
@@ -16,7 +15,7 @@ public class SubTask extends Task {
 
     @Override
     public TaskType getType() {
-        return type;
+        return TaskType.SUBTASK;
     }
 
     @Override
@@ -52,8 +51,6 @@ public class SubTask extends Task {
 
     @Override
     public String toCsvRow() {
-        return new StringBuilder(super.toCsvRow())
-                .append(epic.getId())
-                .toString();
+        return String.format("%s,%d", super.toCsvRow(), epic.getId());
     }
 }
