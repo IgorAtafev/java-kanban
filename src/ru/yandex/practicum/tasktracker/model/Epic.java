@@ -1,5 +1,7 @@
 package ru.yandex.practicum.tasktracker.model;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -81,6 +83,33 @@ public class Epic extends Task {
 
     @Override
     public void setStatus(Status status) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        return subTasks.stream()
+                .filter(task -> task.getStartTime() != null)
+                .map(SubTask::getStartTime)
+                .min(Comparator.comparing(LocalDateTime::getMinute))
+                .get();
+    }
+
+    @Override
+    public void setStartTime(LocalDateTime startTime) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getDuration() {
+        return subTasks.stream()
+                .filter(task -> task.getStartTime() != null)
+                .mapToInt(SubTask::getDuration)
+                .sum();
+    }
+
+    @Override
+    public void setDuration(int duration) {
         throw new UnsupportedOperationException();
     }
 
