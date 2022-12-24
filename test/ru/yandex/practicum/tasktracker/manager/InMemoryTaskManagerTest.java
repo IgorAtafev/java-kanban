@@ -7,10 +7,13 @@ import ru.yandex.practicum.tasktracker.model.Status;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -37,8 +40,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getTasks_shouldCheckForNull() {
-        List<Task> actual = taskManager.getTasks();
-        assertNotNull(actual);
+        assertNotNull(taskManager.getTasks());
     }
 
     @Test
@@ -51,8 +53,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getEpics_shouldCheckForNull() {
-        List<Epic> actual = taskManager.getEpics();
-        assertNotNull(actual);
+        assertNotNull(taskManager.getEpics());
     }
 
     @Test
@@ -65,8 +66,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getSubTasks_shouldCheckForNull() {
-        List<SubTask> actual = taskManager.getSubTasks();
-        assertNotNull(actual);
+        assertNotNull(taskManager.getSubTasks());
     }
 
     @Test
@@ -79,8 +79,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getSubTasksByEpic_shouldCheckForNull() {
-        List<SubTask> actual = taskManager.getSubTasksByEpic(epic1.getId());
-        assertNotNull(actual);
+        assertNotNull(taskManager.getSubTasksByEpic(epic1.getId()));
     }
 
     @Test
@@ -321,6 +320,195 @@ class InMemoryTaskManagerTest {
 
         List<Task> expected = List.of(task1, task2, epic1, epic2);
         List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getPrioritizedTasks_shouldCheckForNull() {
+        assertNotNull(taskManager.getPrioritizedTasks());
+    }
+
+    @Test
+    void getPrioritizedTasks_shouldReturnListOfPrioritizedTasks() {
+        List<Task> expected = List.of(task1, task2, subTask1, subTask2, subTask3);
+        List<Task> actual = List.copyOf(taskManager.getPrioritizedTasks());
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void createTask_shouldAddTheTaskToThePrioritizedTasks_ifTasksDoNotOverlapInTime() {
+        Task task3 = createTask("Новая задача", "Описание задачи");
+        task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        task3.setDuration(15);
+
+        Task task4 = createTask("Новая задача2", "Описание задачи");
+        task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        task4.setDuration(30);
+
+        Task task5 = createTask("Новая задача5", "Описание задачи");
+        task5.setStartTime(LocalDateTime.of(2022, 12, 22, 10, 0));
+        task5.setDuration(45);
+
+        taskManager.createTask(task3);
+        taskManager.createTask(task4);
+        taskManager.createTask(task5);
+
+        List<Task> expectedTasks = List.of(task1, task2, task3, task4, task5);
+        List<Task> actualTasks = taskManager.getTasks();
+
+        assertEquals(expectedTasks, actualTasks);
+
+        List<Task> expectedPrioritizedTasks = List.of(task5, task4, task3, task1, task2, subTask1, subTask2, subTask3);
+        List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
+
+        assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
+    }
+
+    @Test
+    void createTask_shouldThrowAnException_ifTasksOverlapInTimeAndStartTimeBetweenStartTimeAndEndTime() {
+        Task task3 = createTask("Новая задача", "Описание задачи");
+        task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        task3.setDuration(15);
+
+        Task task4 = createTask("Новая задача2", "Описание задачи");
+        task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        task4.setDuration(15);
+
+        Task task5 = createTask("Новая задача3", "Описание задачи");
+        task5.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 40));
+        task5.setDuration(30);
+
+        taskManager.createTask(task3);
+        taskManager.createTask(task4);
+
+        TaskCreateOrUpdateException exception = assertThrows(
+                TaskCreateOrUpdateException.class,
+                () -> taskManager.createTask(task5)
+        );
+        assertEquals("Task execution time overlaps with other tasks", exception.getMessage());
+
+        List<Task> expectedTasks = List.of(task1, task2, task3, task4);
+        List<Task> actualTasks = taskManager.getTasks();
+
+        assertEquals(expectedTasks, actualTasks);
+
+        List<Task> expectedPrioritizedTasks = List.of(task4, task3, task1, task2, subTask1, subTask2, subTask3);
+        List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
+
+        assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
+    }
+
+    @Test
+    void createTask_shouldThrowAnException_ifTasksOverlapInTimeAndEndTimeBetweenStartTimeAndEndTime() {
+        Task task3 = createTask("Новая задача", "Описание задачи");
+        task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        task3.setDuration(15);
+
+        Task task4 = createTask("Новая задача2", "Описание задачи");
+        task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        task4.setDuration(15);
+
+        Task task5 = createTask("Новая задача3", "Описание задачи");
+        task5.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
+        task5.setDuration(20);
+
+        taskManager.createTask(task3);
+        taskManager.createTask(task4);
+
+        TaskCreateOrUpdateException exception = assertThrows(
+                TaskCreateOrUpdateException.class,
+                () -> taskManager.createTask(task5)
+        );
+        assertEquals("Task execution time overlaps with other tasks", exception.getMessage());
+
+        List<Task> expectedTasks = List.of(task1, task2, task3, task4);
+        List<Task> actualTasks = taskManager.getTasks();
+
+        assertEquals(expectedTasks, actualTasks);
+
+        List<Task> expectedPrioritizedTasks = List.of(task4, task3, task1, task2, subTask1, subTask2, subTask3);
+        List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
+
+        assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
+    }
+
+    @Test
+    void createTask_shouldThrowAnException_ifTasksOverlapInTimeAndStartTimeEqualStartTimeAndEndTimeEqualEndTime() {
+        Task task3 = createTask("Новая задача", "Описание задачи");
+        task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        task3.setDuration(15);
+
+        Task task4 = createTask("Новая задача2", "Описание задачи");
+        task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        task4.setDuration(15);
+
+        Task task5 = createTask("Новая задача3", "Описание задачи");
+        task5.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        task5.setDuration(15);
+
+        taskManager.createTask(task3);
+        taskManager.createTask(task4);
+
+        TaskCreateOrUpdateException exception = assertThrows(
+                TaskCreateOrUpdateException.class,
+                () -> taskManager.createTask(task5)
+        );
+        assertEquals("Task execution time overlaps with other tasks", exception.getMessage());
+
+        List<Task> expectedTasks = List.of(task1, task2, task3, task4);
+        List<Task> actualTasks = taskManager.getTasks();
+
+        assertEquals(expectedTasks, actualTasks);
+
+        List<Task> expectedPrioritizedTasks = List.of(task4, task3, task1, task2, subTask1, subTask2, subTask3);
+        List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
+
+        assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
+    }
+
+    @Test
+    void createTask_shouldThrowAnException_ifTasksOverlapInTimeAndStartTimeBeforeStartTimeAndEndTimeAfterEndTime() {
+        Task task3 = createTask("Новая задача", "Описание задачи");
+        task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        task3.setDuration(15);
+
+        Task task4 = createTask("Новая задача2", "Описание задачи");
+        task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        task4.setDuration(15);
+
+        Task task5 = createTask("Новая задача3", "Описание задачи");
+        task5.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
+        task5.setDuration(30);
+
+        taskManager.createTask(task3);
+        taskManager.createTask(task4);
+
+        TaskCreateOrUpdateException exception = assertThrows(
+                TaskCreateOrUpdateException.class,
+                () -> taskManager.createTask(task5)
+        );
+        assertEquals("Task execution time overlaps with other tasks", exception.getMessage());
+
+        List<Task> expectedTasks = List.of(task1, task2, task3, task4);
+        List<Task> actualTasks = taskManager.getTasks();
+
+        assertEquals(expectedTasks, actualTasks);
+
+        List<Task> expectedPrioritizedTasks = List.of(task4, task3, task1, task2, subTask1, subTask2, subTask3);
+        List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
+
+        assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
+    }
+
+    @Test
+    void createEpic_shouldCreateEpic() {
+        Epic epic3 = createEpic("Новый эпик", "Описание эпика");
+        taskManager.createEpic(epic3);
+
+        List<Epic> expected = List.of(epic1, epic2, epic3);
+        List<Epic> actual = taskManager.getEpics();
 
         assertEquals(expected, actual);
     }

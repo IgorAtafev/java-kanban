@@ -88,12 +88,12 @@ class EpicTest {
     }
 
     @Test
-    void getStartTime_shouldSetEpicStartTimeToNull_ifThereAreNoSubtasks() {
+    void getStartTime_shouldCheckForNull_ifThereAreNoSubtasks() {
         assertNull(taskManager.getEpicById(epic2.getId()).getStartTime());
     }
 
     @Test
-    void getStartTime_shouldSetEpicStartTimeToNull_ifStartTimeOfAllSubtasksIsNull() {
+    void getStartTime_shouldCheckForNull_ifStartTimeOfAllSubtasksIsNull() {
         assertNull(taskManager.getEpicById(epic1.getId()).getStartTime());
     }
 
@@ -172,12 +172,12 @@ class EpicTest {
     }
 
     @Test
-    void getEndTime_shouldSetEpicEndTimeToNull_ifThereAreNoSubtasks() {
+    void getEndTime_shouldCheckForNull_ifThereAreNoSubtasks() {
         assertNull(taskManager.getEpicById(epic2.getId()).getEndTime());
     }
 
     @Test
-    void getEndTime_shouldSetEpicEndTimeToNull_ifStartTimeOfAllSubtasksIsNull() {
+    void getEndTime_shouldCheckForNull_ifStartTimeOfAllSubtasksIsNull() {
         assertNull(taskManager.getEpicById(epic1.getId()).getEndTime());
     }
 

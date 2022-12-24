@@ -131,6 +131,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createSubTask(SubTask subTask) {
         subTask.setId(++nextTaskId);
+        addTaskToPrioritizedTasks(subTask);
         epics.get(subTask.getEpic().getId()).addSubTask(subTask);
         subTasks.put(subTask.getId(), subTask);
     }
@@ -162,30 +163,28 @@ public class InMemoryTaskManager implements TaskManager {
         prioritizedTasks.remove(task);
 
         if (task.getStartTime() != null) {
-            prioritizedTasks.stream()
-                    .filter(prioritizedTask -> prioritizedTask.getStartTime() != null)
-                    .noneMatch(prioritizedTask -> checkTasksOverlapInExecutionTime(task, prioritizedTask));
-//            for (Task prioritizedTask : prioritizedTasks) {
-//                if (prioritizedTask.getStartTime() != null) {
-//                    checkTasksOverlapInExecutionTime(task, prioritizedTask);
-//                }
-//            }
+            for (Task prioritizedTask : prioritizedTasks) {
+                if (prioritizedTask.getStartTime() != null) {
+                    checkTasksOverlapInTime(task, prioritizedTask);
+                }
+            }
         }
 
         prioritizedTasks.add(task);
     }
 
-    private boolean checkTasksOverlapInExecutionTime(Task firstTask, Task secondTask) {
+    private void checkTasksOverlapInTime(Task firstTask, Task secondTask) {
         if (firstTask.getStartTime().equals(secondTask.getStartTime())
                 && firstTask.getEndTime().equals(secondTask.getEndTime())
                 || firstTask.getStartTime().isAfter(secondTask.getStartTime())
                 && firstTask.getStartTime().isBefore(secondTask.getEndTime())
                 || firstTask.getEndTime().isAfter(secondTask.getStartTime())
                 && firstTask.getEndTime().isBefore(secondTask.getEndTime())
+                || firstTask.getStartTime().isBefore(secondTask.getStartTime())
+                && firstTask.getEndTime().isAfter(secondTask.getEndTime())
         ) {
+
             throw new TaskCreateOrUpdateException("Task execution time overlaps with other tasks");
         }
-
-        return true;
     }
 }
