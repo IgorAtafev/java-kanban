@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Epic extends Task {
     private final Set<SubTask> subTasks = new LinkedHashSet<>();
@@ -83,34 +84,52 @@ public class Epic extends Task {
 
     @Override
     public void setStatus(Status status) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Status setting is not supported for epic");
     }
 
+    /**
+     * Returns the epic start date and time equal to the start date and time of the earliest subtask
+     * @return start date and time of the epic
+     */
     @Override
     public LocalDateTime getStartTime() {
         return subTasks.stream()
-                .filter(task -> task.getStartTime() != null)
+                .min(Comparator.comparing(SubTask::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())))
                 .map(SubTask::getStartTime)
-                .min(Comparator.comparing(LocalDateTime::getMinute))
-                .get();
+                .orElse(null);
     }
 
     @Override
     public void setStartTime(LocalDateTime startTime) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Setting start time is not supported for epic");
     }
 
+    /**
+     * Returns the duration of an epic equal to the duration of all its subtasks
+     * @return duration of an epic
+     */
     @Override
     public int getDuration() {
         return subTasks.stream()
-                .filter(task -> task.getStartTime() != null)
                 .mapToInt(SubTask::getDuration)
                 .sum();
     }
 
     @Override
     public void setDuration(int duration) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Setting duration is not supported for epic");
+    }
+
+    /**
+     * Returns the end date and time of the epic, equal to the end date and time of the latest subtask
+     * @return end date and time of the epic
+     */
+    @Override
+    public LocalDateTime getEndTime() {
+        return subTasks.stream()
+                .max(Comparator.comparing(SubTask::getEndTime, Comparator.nullsFirst(Comparator.naturalOrder())))
+                .map(SubTask::getEndTime)
+                .orElse(null);
     }
 
     @Override
@@ -134,6 +153,9 @@ public class Epic extends Task {
                 ", name='" + getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status='" + getStatus() + '\'' +
+                ", startTime='" + getStartTime() + '\'' +
+                ", duration='" + getDuration() + '\'' +
+                ", endTime='" + getEndTime() + '\'' +
                 ", subTasks=" + subTasks +
                 '}';
     }

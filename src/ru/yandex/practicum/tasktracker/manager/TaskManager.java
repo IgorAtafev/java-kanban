@@ -5,6 +5,7 @@ import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     /**
@@ -127,4 +128,10 @@ public interface TaskManager {
      * @param subTask
      */
     void updateSubTask(SubTask subTask);
+
+    /**
+     * Returns a list of tasks and subtasks sorted by start time
+     * @return list of tasks and subtasks
+     */
+    Set<Task> getPrioritizedTasks();
 }

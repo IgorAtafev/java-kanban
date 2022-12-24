@@ -69,6 +69,10 @@ public class Task {
      * @return date and time the task ended
      */
     public LocalDateTime getEndTime() {
+        if (getStartTime() == null) {
+            return null;
+        }
+
         return getStartTime().plus(Duration.ofMinutes(getDuration()));
     }
 
@@ -84,14 +88,12 @@ public class Task {
 
         Task task = (Task) object;
 
-        return id == task.id && Objects.equals(name, task.name)
-                && Objects.equals(description, task.description)
-                && status == task.status;
+        return id == task.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, status);
+        return Objects.hash(id);
     }
 
     @Override
@@ -101,6 +103,9 @@ public class Task {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", duration='" + duration + '\'' +
+                ", endTime='" + getEndTime() + '\'' +
                 '}';
     }
 

@@ -5,9 +5,12 @@ import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class InMemoryTaskManager implements TaskManager {
     protected int nextTaskId = 0;
@@ -16,6 +19,10 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, SubTask> subTasks = new HashMap<>();
+
+    private final Set<Task> prioritizedTasks = new TreeSet<>(
+            Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                    .thenComparingInt(Task::getId));
 
     @Override
     public List<Task> getHistory() {
@@ -139,9 +146,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        if (subTasks.get(subTask.getId()) == null) {
-            epics.get(subTask.getEpic().getId()).addSubTask(subTask);
-        }
+        int epicId = subTask.getEpic().getId();
+        epics.get(epicId).removeSubTask(subTask);
+        epics.get(epicId).addSubTask(subTask);
         subTasks.put(subTask.getId(), subTask);
+    }
+
+    @Override
+    public Set<Task> getPrioritizedTasks() {
+        return prioritizedTasks;
     }
 }
