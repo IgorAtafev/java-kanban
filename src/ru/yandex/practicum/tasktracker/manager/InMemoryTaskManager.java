@@ -118,6 +118,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createTask(Task task) {
         task.setId(++nextTaskId);
+        addTaskToPrioritizedTasks(task);
         tasks.put(task.getId(), task);
     }
 
@@ -155,5 +156,36 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Set<Task> getPrioritizedTasks() {
         return prioritizedTasks;
+    }
+
+    private void addTaskToPrioritizedTasks(Task task) {
+        prioritizedTasks.remove(task);
+
+        if (task.getStartTime() != null) {
+            prioritizedTasks.stream()
+                    .filter(prioritizedTask -> prioritizedTask.getStartTime() != null)
+                    .noneMatch(prioritizedTask -> checkTasksOverlapInExecutionTime(task, prioritizedTask));
+//            for (Task prioritizedTask : prioritizedTasks) {
+//                if (prioritizedTask.getStartTime() != null) {
+//                    checkTasksOverlapInExecutionTime(task, prioritizedTask);
+//                }
+//            }
+        }
+
+        prioritizedTasks.add(task);
+    }
+
+    private boolean checkTasksOverlapInExecutionTime(Task firstTask, Task secondTask) {
+        if (firstTask.getStartTime().equals(secondTask.getStartTime())
+                && firstTask.getEndTime().equals(secondTask.getEndTime())
+                || firstTask.getStartTime().isAfter(secondTask.getStartTime())
+                && firstTask.getStartTime().isBefore(secondTask.getEndTime())
+                || firstTask.getEndTime().isAfter(secondTask.getStartTime())
+                && firstTask.getEndTime().isBefore(secondTask.getEndTime())
+        ) {
+            throw new TaskCreateOrUpdateException("Task execution time overlaps with other tasks");
+        }
+
+        return true;
     }
 }

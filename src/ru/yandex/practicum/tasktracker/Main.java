@@ -39,6 +39,9 @@ public class Main {
         System.out.printf("Список всех подзадач: %s", taskManager.getSubTasks());
         System.out.println();
 
+        System.out.printf("Список приоритетных задач: %s", taskManager.getPrioritizedTasks());
+        System.out.println();
+
         System.out.println(System.lineSeparator());
         System.out.println("2. Обновление задач:");
         taskManager.getTaskById(1).setStatus(Status.IN_PROGRESS);

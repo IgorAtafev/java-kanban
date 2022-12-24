@@ -196,15 +196,15 @@ class EpicTest {
 
     @Test
     void getEndTime_shouldSetTheEndTimeOfTheEpicEqualToTheMaxEndTimeOfAllSubtasks_ifStartTimeOfAllSubtasksIsNotNull() {
-        LocalDateTime startTime1 = LocalDateTime.of(2022, 12, 22, 13, 30);
-        LocalDateTime startTime2 = LocalDateTime.of(2022, 12, 22, 12, 0);
-        LocalDateTime startTime3 = LocalDateTime.of(2022, 12, 22, 12, 23);
+        LocalDateTime startTime1 = LocalDateTime.of(2022, 12, 22, 12, 23);
+        LocalDateTime startTime2 = LocalDateTime.of(2022, 12, 22, 13, 30);
+        LocalDateTime startTime3 = LocalDateTime.of(2022, 12, 22, 12, 0);
 
         int duration1 = 15;
         int duration2 = 20;
         int duration3 = 40;
 
-        LocalDateTime expected = startTime1.plus(Duration.ofMinutes(duration1));
+        LocalDateTime expected = startTime2.plus(Duration.ofMinutes(duration2));
 
         subTask1.setStartTime(startTime1);
         subTask2.setStartTime(startTime2);
