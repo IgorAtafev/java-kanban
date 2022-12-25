@@ -186,18 +186,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void checkTasksOverlapInTime(Task firstTask, Task secondTask) {
         boolean isStartTimeWithinInterval = firstTask.getStartTime().isAfter(secondTask.getStartTime())
-                && firstTask.getStartTime().isBefore(secondTask.getEndTime());
-        boolean isEndTimeWithinInterval = firstTask.getEndTime().isAfter(secondTask.getStartTime())
-                && firstTask.getEndTime().isBefore(secondTask.getEndTime());
-
-        boolean isStartTimeOutOfInterval = firstTask.getStartTime().isBefore(secondTask.getStartTime())
+                && firstTask.getStartTime().isBefore(secondTask.getEndTime())
                 || firstTask.getStartTime().equals(secondTask.getStartTime());
-        boolean isEndTimeOutOfInterval = firstTask.getEndTime().isAfter(secondTask.getEndTime())
+
+        boolean isEndTimeWithinInterval = firstTask.getEndTime().isAfter(secondTask.getStartTime())
+                && firstTask.getEndTime().isBefore(secondTask.getEndTime())
                 || firstTask.getEndTime().equals(secondTask.getEndTime());
 
-        if (isStartTimeWithinInterval || isEndTimeWithinInterval
-                || (isStartTimeOutOfInterval && isEndTimeOutOfInterval)
-        ) {
+        boolean isStartTimeAndEndTimeOutOfInterval = firstTask.getStartTime().isBefore(secondTask.getStartTime())
+                && firstTask.getEndTime().isAfter(secondTask.getEndTime());
+
+        if (isStartTimeWithinInterval || isEndTimeWithinInterval || isStartTimeAndEndTimeOutOfInterval) {
             throw new TaskCreateOrUpdateException("Task execution time overlaps with other tasks");
         }
     }
