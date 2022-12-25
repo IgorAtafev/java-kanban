@@ -88,12 +88,14 @@ public class Task {
 
         Task task = (Task) object;
 
-        return id == task.id;
+        return id == task.id  && Objects.equals(name, task.name)
+                && Objects.equals(description, task.description)
+                && status == task.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name, description, status);
     }
 
     @Override
