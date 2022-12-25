@@ -518,10 +518,12 @@ class InMemoryTaskManagerTest {
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
 
+        task1 = taskManager.getTaskById(task1.getId());
         taskManager.removeTaskFromPrioritizedTasks(task1);
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
         task1.setDuration(30);
 
+        task2 = taskManager.getTaskById(task2.getId());
         taskManager.removeTaskFromPrioritizedTasks(task2);
         task2.setStartTime(LocalDateTime.of(2022, 12, 22, 10, 0));
         task2.setDuration(45);
