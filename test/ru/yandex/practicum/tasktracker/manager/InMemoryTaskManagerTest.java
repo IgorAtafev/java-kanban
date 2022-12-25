@@ -337,7 +337,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void createTask_shouldAddTheTaskToThePrioritizedTasks_ifTasksDoNotOverlapInTime() {
+    void createTask_shouldAddTheTaskToThePrioritizedTasks_ifTasksDoesNotIntersectInTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
@@ -366,7 +366,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void createTask_shouldThrowAnException_ifTasksOverlapInTimeAndStartTimeBetweenStartTimeAndEndTime() {
+    void createTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeBetweenStartTimeAndEndTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
@@ -386,7 +386,7 @@ class InMemoryTaskManagerTest {
                 TaskCreateOrUpdateException.class,
                 () -> taskManager.createTask(task5)
         );
-        assertEquals("Task execution time overlaps with other tasks", exception.getMessage());
+        assertEquals("Task execution time intersect with other tasks", exception.getMessage());
 
         List<Task> expectedTasks = List.of(task1, task2, task3, task4);
         List<Task> actualTasks = taskManager.getTasks();
@@ -400,7 +400,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void createTask_shouldThrowAnException_ifTasksOverlapInTimeAndEndTimeBetweenStartTimeAndEndTime() {
+    void createTask_shouldThrowAnException_ifTasksIntersectInTimeAndEndTimeBetweenStartTimeAndEndTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
@@ -420,7 +420,7 @@ class InMemoryTaskManagerTest {
                 TaskCreateOrUpdateException.class,
                 () -> taskManager.createTask(task5)
         );
-        assertEquals("Task execution time overlaps with other tasks", exception.getMessage());
+        assertEquals("Task execution time intersect with other tasks", exception.getMessage());
 
         List<Task> expectedTasks = List.of(task1, task2, task3, task4);
         List<Task> actualTasks = taskManager.getTasks();
@@ -434,7 +434,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void createTask_shouldThrowAnException_ifTasksOverlapInTimeAndStartTimeBeforeStartTimeAndEndTimeAfterEndTime() {
+    void createTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeBeforeStartTimeAndEndTimeAfterEndTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
@@ -454,7 +454,7 @@ class InMemoryTaskManagerTest {
                 TaskCreateOrUpdateException.class,
                 () -> taskManager.createTask(task5)
         );
-        assertEquals("Task execution time overlaps with other tasks", exception.getMessage());
+        assertEquals("Task execution time intersect with other tasks", exception.getMessage());
 
         List<Task> expectedTasks = List.of(task1, task2, task3, task4);
         List<Task> actualTasks = taskManager.getTasks();
@@ -468,7 +468,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void createTask_shouldThrowAnException_ifTasksOverlapInTimeAndStartTimeEqualStartTimeAndEndTimeEqualEndTime() {
+    void createTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeEqualStartTimeAndEndTimeEqualEndTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
@@ -488,7 +488,7 @@ class InMemoryTaskManagerTest {
                 TaskCreateOrUpdateException.class,
                 () -> taskManager.createTask(task5)
         );
-        assertEquals("Task execution time overlaps with other tasks", exception.getMessage());
+        assertEquals("Task execution time intersect with other tasks", exception.getMessage());
 
         List<Task> expectedTasks = List.of(task1, task2, task3, task4);
         List<Task> actualTasks = taskManager.getTasks();
@@ -513,18 +513,16 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void updateTask_shouldAddTheTaskToThePrioritizedTasks_ifTasksDoNotOverlapInTime() {
+    void updateTask_shouldAddTheTaskToThePrioritizedTasks_ifTasksDoesNotIntersectInTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
 
         task1 = taskManager.getTaskById(task1.getId());
-        taskManager.removeTaskFromPrioritizedTasks(task1);
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
         task1.setDuration(30);
 
         task2 = taskManager.getTaskById(task2.getId());
-        taskManager.removeTaskFromPrioritizedTasks(task2);
         task2.setStartTime(LocalDateTime.of(2022, 12, 22, 10, 0));
         task2.setDuration(45);
 
@@ -539,7 +537,7 @@ class InMemoryTaskManagerTest {
 
         List<Task> expectedPrioritizedTasks = List.of(task2, task1, task3, subTask1, subTask2, subTask3);
         List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
-
+        System.out.println(taskManager.getPrioritizedTasks());
         assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
     }
 

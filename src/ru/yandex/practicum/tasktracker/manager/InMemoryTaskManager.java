@@ -164,11 +164,13 @@ public class InMemoryTaskManager implements TaskManager {
      * Adds a task to prioritized list
      * @param task
      */
-    public void addTaskToPrioritizedTasks(Task task) {
+    private void addTaskToPrioritizedTasks(Task task) {
+        removeTaskFromSetTasks(task, prioritizedTasks);
+
         if (task.getStartTime() != null) {
             for (Task prioritizedTask : prioritizedTasks) {
                 if (prioritizedTask.getStartTime() != null) {
-                    checkTasksOverlapInTime(task, prioritizedTask);
+                    checkTasksIntersectionInTime(task, prioritizedTask);
                 }
             }
         }
@@ -176,15 +178,7 @@ public class InMemoryTaskManager implements TaskManager {
         prioritizedTasks.add(task);
     }
 
-    /**
-     * Removes a task from the prioritized list
-     * @param task
-     */
-    public void removeTaskFromPrioritizedTasks(Task task) {
-        prioritizedTasks.remove(task);
-    }
-
-    private void checkTasksOverlapInTime(Task firstTask, Task secondTask) {
+    private void checkTasksIntersectionInTime(Task firstTask, Task secondTask) {
         boolean isStartTimeWithinInterval = firstTask.getStartTime().isAfter(secondTask.getStartTime())
                 && firstTask.getStartTime().isBefore(secondTask.getEndTime())
                 || firstTask.getStartTime().equals(secondTask.getStartTime());
@@ -197,7 +191,15 @@ public class InMemoryTaskManager implements TaskManager {
                 && firstTask.getEndTime().isAfter(secondTask.getEndTime());
 
         if (isStartTimeWithinInterval || isEndTimeWithinInterval || isStartTimeAndEndTimeOutOfInterval) {
-            throw new TaskCreateOrUpdateException("Task execution time overlaps with other tasks");
+            throw new TaskCreateOrUpdateException("Task execution time intersect with other tasks");
+        }
+    }
+
+    private void removeTaskFromSetTasks(Task task, Set<Task> setTasks) {
+        List<Task> tempList = new ArrayList<>(setTasks);
+        if (tempList.remove(task)) {
+            setTasks.clear();
+            setTasks.addAll(tempList);
         }
     }
 }
