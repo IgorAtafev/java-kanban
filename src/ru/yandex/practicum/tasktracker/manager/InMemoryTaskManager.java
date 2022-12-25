@@ -1,5 +1,6 @@
 package ru.yandex.practicum.tasktracker.manager;
 
+import ru.yandex.practicum.tasktracker.manager.exception.TaskCreateOrUpdateException;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
@@ -156,8 +157,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Set<Task> getPrioritizedTasks() {
-        return prioritizedTasks;
+    public List<Task> getPrioritizedTasks() {
+        return List.copyOf(prioritizedTasks);
     }
 
     /**
