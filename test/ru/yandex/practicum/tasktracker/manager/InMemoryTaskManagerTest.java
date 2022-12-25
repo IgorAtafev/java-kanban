@@ -537,7 +537,7 @@ class InMemoryTaskManagerTest {
 
         List<Task> expectedPrioritizedTasks = List.of(task2, task1, task3, subTask1, subTask2, subTask3);
         List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
-        System.out.println(taskManager.getPrioritizedTasks());
+
         assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
     }
 
