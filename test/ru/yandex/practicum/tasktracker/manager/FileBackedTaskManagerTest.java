@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
-    private final String fileToSave = "test/save_tasks.csv";
+    private final String fileToSave = "test/empty.csv";
 
     @Override
     protected FileBackedTaskManager createTaskManager() {

@@ -1,5 +1,7 @@
 package ru.yandex.practicum.tasktracker.model;
 
+import ru.yandex.practicum.tasktracker.util.DateTimeFormatterHelper;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -116,6 +118,11 @@ public class Task {
      * @return string in CSV format
      */
     public String toCsvRow() {
-        return String.format("%d,%s,%s,%s,%s", getId(), getType(), getName(), getStatus(), getDescription());
+        String pattern = "dd.MM.YYYY HH:mm";
+        String startTime = DateTimeFormatterHelper.format(getStartTime(), pattern);
+        String endTime = DateTimeFormatterHelper.format(getEndTime(), pattern);
+
+        return String.format("%d,%s,%s,%s,%s,%s,%s,%s", getId(), getType(), getName(), getStatus(), getDescription(),
+                startTime, getDuration(), endTime);
     }
 }

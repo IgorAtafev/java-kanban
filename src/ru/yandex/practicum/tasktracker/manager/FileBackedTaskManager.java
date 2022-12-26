@@ -2,6 +2,7 @@ package ru.yandex.practicum.tasktracker.manager;
 
 import ru.yandex.practicum.tasktracker.manager.exception.ManagerSaveException;
 import ru.yandex.practicum.tasktracker.model.*;
+import ru.yandex.practicum.tasktracker.util.DateTimeFormatterHelper;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
  * Writes to a file and browsing history to a file and restores them from a file
  */
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private static final String FILE_HEADER = "id,type,name,status,description,epic";
+    private static final String FILE_HEADER = "id,type,name,status,description,start_time,duration,end_time,epic";
     private final Path path;
     private Map<Integer, Task> tasksFromFile = new HashMap<>();
 
@@ -131,7 +132,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             List<String> lines = Files.readAllLines(taskManager.path, StandardCharsets.UTF_8);
 
-            if (lines.isEmpty()) {
+            if (lines.size() <= 1) {
                 return taskManager;
             }
 
@@ -163,15 +164,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.write(FILE_HEADER);
             writer.newLine();
 
-            List<String> taskLines = Stream.of(getTasks(), getEpics(), getSubTasks())
+            Stream.of(getTasks(), getEpics(), getSubTasks())
                     .flatMap(List::stream)
                     .map(Task::toCsvRow)
-                    .collect(Collectors.toList());
-
-            for (String line : taskLines) {
-                writer.write(line);
-                writer.newLine();
-            }
+                    .forEach(line -> {
+                            try {
+                                writer.write(line);
+                                writer.newLine();
+                            } catch (IOException e) {
+                                throw new ManagerSaveException("Error writing to file", e);
+                            }
+                    });
 
             writer.newLine();
             writer.write(writeHistoryToCsv());
@@ -204,13 +207,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         task.setName(values[2]);
         if (taskType != TaskType.EPIC) {
             task.setStatus(Status.valueOf(values[3]));
+            task.setStartTime(DateTimeFormatterHelper.parse(values[5], "dd.MM.YYYY HH:mm"));
+            task.setDuration(Integer.parseInt(values[6]));
         }
         task.setDescription(values[4]);
 
         if (task instanceof Epic) {
             super.updateEpic((Epic) task);
         } else if (task instanceof SubTask) {
-            int epicId = Integer.parseInt(values[5]);
+            int epicId = Integer.parseInt(values[8]);
             Epic epic = super.getEpicById(epicId);
             ((SubTask) task).setEpic(epic);
             historyManager.remove(epicId);
