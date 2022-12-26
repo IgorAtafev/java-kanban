@@ -149,11 +149,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     taskManager.restoreTaskFromCsv(line);
                 }
             }
+
+            taskManager.nextTaskId = Collections.max(taskManager.tasksFromFile.keySet());
         } catch (IOException e) {
             throw new ManagerSaveException("Error reading from file", e);
         }
-
-        taskManager.nextTaskId = Collections.max(taskManager.tasksFromFile.keySet());
 
         return taskManager;
     }

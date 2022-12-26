@@ -8,6 +8,7 @@ import ru.yandex.practicum.tasktracker.model.Status;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,10 +27,11 @@ class InMemoryTaskManagerTest {
     private SubTask subTask2;
     private SubTask subTask3;
 
-    private final InMemoryTaskManager taskManager = new InMemoryTaskManager();
+    private InMemoryTaskManager taskManager;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
+        taskManager = createTaskManager();
         createTestTasks();
     }
 
@@ -825,6 +827,10 @@ class InMemoryTaskManagerTest {
                 () -> taskManager.updateSubTask(subTask3)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
+    }
+
+    protected InMemoryTaskManager createTaskManager() {
+        return new InMemoryTaskManager();
     }
 
     private void createTestTasks() {
