@@ -5,7 +5,6 @@ import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -32,17 +31,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getTasks() {
-        return new ArrayList<>(tasks.values());
+        return List.copyOf(tasks.values());
     }
 
     @Override
     public List<Epic> getEpics() {
-        return new ArrayList<>(epics.values());
+        return List.copyOf(epics.values());
     }
 
     @Override
     public List<SubTask> getSubTasks() {
-        return new ArrayList<>(subTasks.values());
+        return List.copyOf(subTasks.values());
     }
 
     @Override
@@ -74,6 +73,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTasks() {
         historyManager.removeAll(tasks.keySet());
+        prioritizedTasks.removeAll(tasks.values());
         tasks.clear();
     }
 
@@ -81,6 +81,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpics() {
         historyManager.removeAll(subTasks.keySet());
         historyManager.removeAll(epics.keySet());
+        prioritizedTasks.removeAll(subTasks.values());
         subTasks.clear();
         epics.clear();
     }
@@ -88,6 +89,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSubTasks() {
         historyManager.removeAll(subTasks.keySet());
+        prioritizedTasks.removeAll(subTasks.values());
         epics.values().forEach(Epic::clearSubTasks);
         subTasks.clear();
     }
@@ -95,6 +97,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTaskById(int id) {
         historyManager.remove(id);
+        prioritizedTasks.remove(tasks.get(id));
         tasks.remove(id);
     }
 
@@ -102,6 +105,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpicById(int id) {
         historyManager.remove(id);
         epics.get(id).getSubTasks().stream()
+                .peek(prioritizedTasks::remove)
                 .map(SubTask::getId)
                 .peek(historyManager::remove)
                 .forEach(subTasks::remove);
@@ -112,6 +116,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubTaskById(int id) {
         historyManager.remove(id);
         SubTask task = subTasks.get(id);
+        prioritizedTasks.remove(task);
         epics.get(task.getEpic().getId()).removeSubTask(task);
         subTasks.remove(id);
     }
@@ -150,6 +155,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask subTask) {
+        addTaskToPrioritizedTasks(subTask);
         if (subTasks.get(subTask.getId()) == null) {
             epics.get(subTask.getEpic().getId()).addSubTask(subTask);
         }
@@ -161,12 +167,8 @@ public class InMemoryTaskManager implements TaskManager {
         return List.copyOf(prioritizedTasks);
     }
 
-    /**
-     * Adds a task to prioritized list
-     * @param task
-     */
     private void addTaskToPrioritizedTasks(Task task) {
-        removeTaskFromSetTasks(task, prioritizedTasks);
+        prioritizedTasks.remove(task);
 
         if (task.getStartTime() != null) {
             for (Task prioritizedTask : prioritizedTasks) {
@@ -193,14 +195,6 @@ public class InMemoryTaskManager implements TaskManager {
 
         if (isStartTimeWithinInterval || isEndTimeWithinInterval || isStartTimeAndEndTimeOutOfInterval) {
             throw new TaskCreateOrUpdateException("Task execution time intersect with other tasks");
-        }
-    }
-
-    private void removeTaskFromSetTasks(Task task, Set<Task> setTasks) {
-        List<Task> tempList = new ArrayList<>(setTasks);
-        if (tempList.remove(task)) {
-            setTasks.clear();
-            setTasks.addAll(tempList);
         }
     }
 }

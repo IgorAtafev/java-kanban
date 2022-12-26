@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -107,6 +108,22 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void getTaskById_shouldThrowAnException_ifIdDoesNotExist() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.getTaskById(100)
+        );
+    }
+
+    @Test
+    void getTaskById_shouldThrowAnException_ifIdIsZero() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.getTaskById(0)
+        );
+    }
+
+    @Test
     void getEpicById_shouldReturnEpicById() {
         Epic epic = taskManager.getEpicById(epic1.getId());
         assertEquals(epic1, epic);
@@ -123,6 +140,22 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void getEpicById_shouldThrowAnException_ifIdDoesNotExist() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.getEpicById(100)
+        );
+    }
+
+    @Test
+    void getEpicById_shouldThrowAnException_ifIdIsZero() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.getEpicById(0)
+        );
+    }
+
+    @Test
     void getSubTaskById_shouldReturnSubtaskById() {
         SubTask subTask = taskManager.getSubTaskById(subTask1.getId());
         assertEquals(subTask1, subTask);
@@ -136,6 +169,22 @@ class InMemoryTaskManagerTest {
         List<Task> actual = taskManager.getHistory();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void getSubTaskById_shouldThrowAnException_ifIdDoesNotExist() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.getSubTaskById(100)
+        );
+    }
+
+    @Test
+    void getSubTaskById_shouldThrowAnException_ifIdIsZero() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.getSubTaskById(0)
+        );
     }
 
     @Test
@@ -157,6 +206,32 @@ class InMemoryTaskManagerTest {
         List<Task> actual = taskManager.getHistory();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteTaskById_shouldRemoveTaskFromPrioritizedTasks() {
+        taskManager.deleteTaskById(task2.getId());
+
+        List<Task> expected = List.of(task1, subTask1, subTask2, subTask3);
+        List<Task> actual = taskManager.getPrioritizedTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteTaskById_shouldThrowAnException_ifIdDoesNotExist() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.deleteTaskById(100)
+        );
+    }
+
+    @Test
+    void deleteTaskById_shouldThrowAnException_ifIdIsZero() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.deleteTaskById(0)
+        );
     }
 
     @Test
@@ -194,6 +269,32 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void deleteEpicById_shouldRemoveEpicAndAllEpicSubtasksFromPrioritizedTasks() {
+        taskManager.deleteEpicById(epic1.getId());
+
+        List<Task> expected = List.of(task1, task2, subTask3);
+        List<Task> actual = taskManager.getPrioritizedTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteEpicById_shouldThrowAnException_ifIdDoesNotExist() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.deleteEpicById(100)
+        );
+    }
+
+    @Test
+    void deleteEpicById_shouldThrowAnException_ifIdIsZero() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.deleteEpicById(0)
+        );
+    }
+
+    @Test
     void deleteSubTaskById_shouldRemoveSubtask() {
         taskManager.deleteSubTaskById(subTask1.getId());
 
@@ -225,6 +326,32 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void deleteSubTaskById_shouldRemoveSubtaskFromPrioritizedTasks() {
+        taskManager.deleteSubTaskById(subTask1.getId());
+
+        List<Task> expected = List.of(task1, task2, subTask2, subTask3);
+        List<Task> actual = taskManager.getPrioritizedTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteSubTaskById_shouldThrowAnException_ifIdDoesNotExist() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.deleteSubTaskById(100)
+        );
+    }
+
+    @Test
+    void deleteSubTaskById_shouldThrowAnException_ifIdIsZero() {
+        assertThrows(
+                NullPointerException.class,
+                () -> taskManager.deleteSubTaskById(0)
+        );
+    }
+
+    @Test
     void deleteTasks_shouldRemoveAllTasks() {
         taskManager.deleteTasks();
 
@@ -246,6 +373,16 @@ class InMemoryTaskManagerTest {
 
         List<Task> expected = List.of(epic1, epic2, subTask1, subTask2);
         List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteTasks_shouldRemoveAllTasksFromPrioritizedTasks() {
+        taskManager.deleteTasks();
+
+        List<Task> expected = List.of(subTask1, subTask2, subTask3);
+        List<Task> actual = taskManager.getPrioritizedTasks();
 
         assertEquals(expected, actual);
     }
@@ -282,6 +419,16 @@ class InMemoryTaskManagerTest {
 
         List<Task> expected = List.of(task1, task2);
         List<Task> actual = taskManager.getHistory();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteEpics_shouldRemoveAllEpicsAndAllSubtasksFromPrioritizedTasks() {
+        taskManager.deleteEpics();
+
+        List<Task> expected = List.of(task1, task2);
+        List<Task> actual = taskManager.getPrioritizedTasks();
 
         assertEquals(expected, actual);
     }
@@ -325,6 +472,16 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void deleteSubTasks_shouldRemoveAllSubtasksFromPrioritizedTasks() {
+        taskManager.deleteSubTasks();
+
+        List<Task> expected = List.of(task1, task2);
+        List<Task> actual = taskManager.getPrioritizedTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void getPrioritizedTasks_shouldCheckForNull() {
         assertNotNull(taskManager.getPrioritizedTasks());
     }
@@ -342,25 +499,29 @@ class InMemoryTaskManagerTest {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
+        taskManager.createTask(task3);
 
         Task task4 = createTask("Новая задача2", "Описание задачи");
         task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
         task4.setDuration(30);
-
-        Task task5 = createTask("Новая задача5", "Описание задачи");
-        task5.setStartTime(LocalDateTime.of(2022, 12, 22, 10, 0));
-        task5.setDuration(45);
-
-        taskManager.createTask(task3);
         taskManager.createTask(task4);
-        taskManager.createTask(task5);
 
-        List<Task> expectedTasks = List.of(task1, task2, task3, task4, task5);
+        SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
+        subTask4.setStartTime(LocalDateTime.of(2022, 12, 22, 10, 0));
+        subTask4.setDuration(45);
+        taskManager.createSubTask(subTask4);
+
+        List<Task> expectedTasks = List.of(task1, task2, task3, task4);
         List<Task> actualTasks = taskManager.getTasks();
 
         assertEquals(expectedTasks, actualTasks);
 
-        List<Task> expectedPrioritizedTasks = List.of(task5, task4, task3, task1, task2, subTask1, subTask2, subTask3);
+        List<SubTask> expectedSubTasks = List.of(subTask1, subTask2, subTask3, subTask4);
+        List<SubTask> actualSubTasks = taskManager.getSubTasks();
+
+        assertEquals(expectedSubTasks, actualSubTasks);
+
+        List<Task> expectedPrioritizedTasks = List.of(subTask4, task4, task3, task1, task2, subTask1, subTask2, subTask3);
         List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
 
         assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
@@ -371,67 +532,45 @@ class InMemoryTaskManagerTest {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
-
-        Task task4 = createTask("Новая задача2", "Описание задачи");
-        task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        task4.setDuration(15);
-
-        Task task5 = createTask("Новая задача3", "Описание задачи");
-        task5.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 40));
-        task5.setDuration(30);
-
         taskManager.createTask(task3);
-        taskManager.createTask(task4);
+
+        SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
+        subTask4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        subTask4.setDuration(15);
+        taskManager.createSubTask(subTask4);
+
+        SubTask subTask5 = createSubTask("Новая подзадача2", "Описание подзадачи", epic2);
+        subTask5.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 40));
+        subTask5.setDuration(30);
 
         TaskCreateOrUpdateException exception = assertThrows(
                 TaskCreateOrUpdateException.class,
-                () -> taskManager.createTask(task5)
+                () -> taskManager.createSubTask(subTask5)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
-
-        List<Task> expectedTasks = List.of(task1, task2, task3, task4);
-        List<Task> actualTasks = taskManager.getTasks();
-
-        assertEquals(expectedTasks, actualTasks);
-
-        List<Task> expectedPrioritizedTasks = List.of(task4, task3, task1, task2, subTask1, subTask2, subTask3);
-        List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
-
-        assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
     }
 
     @Test
     void createTask_shouldThrowAnException_ifTasksIntersectInTimeAndEndTimeBetweenStartTimeAndEndTime() {
+        SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
+        subTask4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        subTask4.setDuration(15);
+        taskManager.createSubTask(subTask4);
+
         Task task3 = createTask("Новая задача", "Описание задачи");
-        task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
         task3.setDuration(15);
+        taskManager.createTask(task3);
 
         Task task4 = createTask("Новая задача2", "Описание задачи");
-        task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        task4.setDuration(15);
-
-        Task task5 = createTask("Новая задача3", "Описание задачи");
-        task5.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
-        task5.setDuration(20);
-
-        taskManager.createTask(task3);
-        taskManager.createTask(task4);
+        task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
+        task4.setDuration(20);
 
         TaskCreateOrUpdateException exception = assertThrows(
                 TaskCreateOrUpdateException.class,
-                () -> taskManager.createTask(task5)
+                () -> taskManager.createTask(task4)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
-
-        List<Task> expectedTasks = List.of(task1, task2, task3, task4);
-        List<Task> actualTasks = taskManager.getTasks();
-
-        assertEquals(expectedTasks, actualTasks);
-
-        List<Task> expectedPrioritizedTasks = List.of(task4, task3, task1, task2, subTask1, subTask2, subTask3);
-        List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
-
-        assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
     }
 
     @Test
@@ -439,33 +578,22 @@ class InMemoryTaskManagerTest {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
+        taskManager.createTask(task3);
 
         Task task4 = createTask("Новая задача2", "Описание задачи");
         task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
         task4.setDuration(15);
-
-        Task task5 = createTask("Новая задача3", "Описание задачи");
-        task5.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
-        task5.setDuration(30);
-
-        taskManager.createTask(task3);
         taskManager.createTask(task4);
+
+        SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
+        subTask4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
+        subTask4.setDuration(30);
 
         TaskCreateOrUpdateException exception = assertThrows(
                 TaskCreateOrUpdateException.class,
-                () -> taskManager.createTask(task5)
+                () -> taskManager.createSubTask(subTask4)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
-
-        List<Task> expectedTasks = List.of(task1, task2, task3, task4);
-        List<Task> actualTasks = taskManager.getTasks();
-
-        assertEquals(expectedTasks, actualTasks);
-
-        List<Task> expectedPrioritizedTasks = List.of(task4, task3, task1, task2, subTask1, subTask2, subTask3);
-        List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
-
-        assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
     }
 
     @Test
@@ -473,33 +601,22 @@ class InMemoryTaskManagerTest {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task3.setDuration(15);
+        taskManager.createTask(task3);
+
+        SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
+        subTask4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        subTask4.setDuration(15);
+        taskManager.createSubTask(subTask4);
 
         Task task4 = createTask("Новая задача2", "Описание задачи");
-        task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
         task4.setDuration(15);
-
-        Task task5 = createTask("Новая задача3", "Описание задачи");
-        task5.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        task5.setDuration(15);
-
-        taskManager.createTask(task3);
-        taskManager.createTask(task4);
 
         TaskCreateOrUpdateException exception = assertThrows(
                 TaskCreateOrUpdateException.class,
-                () -> taskManager.createTask(task5)
+                () -> taskManager.createTask(task4)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
-
-        List<Task> expectedTasks = List.of(task1, task2, task3, task4);
-        List<Task> actualTasks = taskManager.getTasks();
-
-        assertEquals(expectedTasks, actualTasks);
-
-        List<Task> expectedPrioritizedTasks = List.of(task4, task3, task1, task2, subTask1, subTask2, subTask3);
-        List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
-
-        assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
     }
 
     @Test
@@ -515,31 +632,132 @@ class InMemoryTaskManagerTest {
 
     @Test
     void updateTask_shouldAddTheTaskToThePrioritizedTasks_ifTasksDoesNotIntersectInTime() {
-        Task task3 = createTask("Новая задача", "Описание задачи");
-        task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        task3.setDuration(15);
-
         task1 = taskManager.getTaskById(task1.getId());
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
         task1.setDuration(30);
+        taskManager.updateTask(task1);
 
         task2 = taskManager.getTaskById(task2.getId());
         task2.setStartTime(LocalDateTime.of(2022, 12, 22, 10, 0));
         task2.setDuration(45);
-
-        taskManager.createTask(task3);
-        taskManager.updateTask(task1);
         taskManager.updateTask(task2);
 
-        List<Task> expectedTasks = List.of(task1, task2, task3);
+        subTask2 = taskManager.getSubTaskById(subTask2.getId());
+        subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        subTask2.setDuration(15);
+        taskManager.updateSubTask(subTask2);
+
+        subTask1 = taskManager.getSubTaskById(subTask1.getId());
+        subTask1.setStartTime(LocalDateTime.of(2022, 12, 22, 12, 30));
+        subTask1.setDuration(15);
+        taskManager.updateSubTask(subTask1);
+
+        List<Task> expectedTasks = List.of(task1, task2);
         List<Task> actualTasks = taskManager.getTasks();
 
         assertEquals(expectedTasks, actualTasks);
 
-        List<Task> expectedPrioritizedTasks = List.of(task2, task1, task3, subTask1, subTask2, subTask3);
+        List<SubTask> expectedSubTasks = List.of(subTask1, subTask2, subTask3);
+        List<SubTask> actualSubTasks = taskManager.getSubTasks();
+
+        assertEquals(expectedSubTasks, actualSubTasks);
+
+        List<Task> expectedPrioritizedTasks = List.of(task2, task1, subTask2, subTask1, subTask3);
         List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
 
         assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
+    }
+
+    @Test
+    void updateTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeBetweenStartTimeAndEndTime() {
+        task1 = taskManager.getTaskById(task1.getId());
+        task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        task1.setDuration(15);
+        taskManager.updateTask(task1);
+
+        subTask2 = taskManager.getSubTaskById(subTask2.getId());
+        subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        subTask2.setDuration(15);
+        taskManager.updateSubTask(subTask2);
+
+        task2 = taskManager.getTaskById(task2.getId());
+        task2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 40));
+        task2.setDuration(30);
+
+        TaskCreateOrUpdateException exception = assertThrows(
+                TaskCreateOrUpdateException.class,
+                () -> taskManager.updateTask(task2)
+        );
+        assertEquals("Task execution time intersect with other tasks", exception.getMessage());
+    }
+
+    @Test
+    void updateTask_shouldThrowAnException_ifTasksIntersectInTimeAndEndTimeBetweenStartTimeAndEndTime() {
+        task1 = taskManager.getTaskById(task1.getId());
+        task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
+        task1.setDuration(20);
+        taskManager.updateTask(task1);
+
+        subTask2 = taskManager.getSubTaskById(subTask2.getId());
+        subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 50));
+        subTask2.setDuration(15);
+        taskManager.updateSubTask(subTask2);
+
+        subTask1 = taskManager.getSubTaskById(subTask1.getId());
+        subTask1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        subTask1.setDuration(55);
+
+        TaskCreateOrUpdateException exception = assertThrows(
+                TaskCreateOrUpdateException.class,
+                () -> taskManager.updateSubTask(subTask1)
+        );
+        assertEquals("Task execution time intersect with other tasks", exception.getMessage());
+    }
+
+    @Test
+    void updateTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeBeforeStartTimeAndEndTimeAfterEndTime() {
+        task1 = taskManager.getTaskById(task1.getId());
+        task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        task1.setDuration(15);
+        taskManager.updateTask(task1);
+
+        subTask2 = taskManager.getSubTaskById(subTask2.getId());
+        subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        subTask2.setDuration(15);
+        taskManager.updateSubTask(subTask2);
+
+        task2 = taskManager.getTaskById(task2.getId());
+        task2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
+        task2.setDuration(30);
+
+        TaskCreateOrUpdateException exception = assertThrows(
+                TaskCreateOrUpdateException.class,
+                () -> taskManager.updateTask(task2)
+        );
+        assertEquals("Task execution time intersect with other tasks", exception.getMessage());
+    }
+
+    @Test
+    void updateTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeEqualStartTimeAndEndTimeEqualEndTime() {
+        task1 = taskManager.getTaskById(task1.getId());
+        task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        task1.setDuration(15);
+        taskManager.updateTask(task1);
+
+        task2 = taskManager.getTaskById(task2.getId());
+        task2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        task2.setDuration(15);
+        taskManager.updateTask(task2);
+
+        subTask3 = taskManager.getSubTaskById(subTask3.getId());
+        subTask3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
+        subTask3.setDuration(15);
+
+        TaskCreateOrUpdateException exception = assertThrows(
+                TaskCreateOrUpdateException.class,
+                () -> taskManager.updateSubTask(subTask3)
+        );
+        assertEquals("Task execution time intersect with other tasks", exception.getMessage());
     }
 
     private void createTestTasks() {
