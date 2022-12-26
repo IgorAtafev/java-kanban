@@ -495,6 +495,17 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void createTask_shouldCreateTask() {
+        Task task3 = createEpic("Новая задача", "Описание задачи");
+        taskManager.createTask(task3);
+
+        List<Task> expected = List.of(task1, task2, task3);
+        List<Task> actual = taskManager.getTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void createTask_shouldAddTheTaskToThePrioritizedTasks_ifTasksDoesNotIntersectInTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
@@ -626,6 +637,17 @@ class InMemoryTaskManagerTest {
 
         List<Epic> expected = List.of(epic1, epic2, epic3);
         List<Epic> actual = taskManager.getEpics();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void createSubTask_shouldCreateSubtask() {
+        SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
+        taskManager.createSubTask(subTask4);
+
+        List<SubTask> expected = List.of(subTask1, subTask2, subTask3, subTask4);
+        List<SubTask> actual = taskManager.getSubTasks();
 
         assertEquals(expected, actual);
     }
