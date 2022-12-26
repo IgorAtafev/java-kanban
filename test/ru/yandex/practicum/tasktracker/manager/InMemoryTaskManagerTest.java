@@ -495,7 +495,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void createTask_shouldCreateTask() {
+    void createTask_shouldCreateATask() {
         Task task3 = createEpic("Новая задача", "Описание задачи");
         taskManager.createTask(task3);
 
@@ -503,6 +503,74 @@ class InMemoryTaskManagerTest {
         List<Task> actual = taskManager.getTasks();
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void createEpic_shouldCreateAnEpic() {
+        Epic epic3 = createEpic("Новый эпик", "Описание эпика");
+        taskManager.createEpic(epic3);
+
+        List<Epic> expected = List.of(epic1, epic2, epic3);
+        List<Epic> actual = taskManager.getEpics();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void createSubTask_shouldCreateASubtask() {
+        SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
+        taskManager.createSubTask(subTask4);
+
+        List<SubTask> expected = List.of(subTask1, subTask2, subTask3, subTask4);
+        List<SubTask> actual = taskManager.getSubTasks();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateTask_shouldUpdateTheTask() {
+        task1.setName("Обновленная задача");
+        task1.setDescription("Описание обновленной задачи");
+        taskManager.updateTask(task1);
+
+        List<Task> expected = List.of(task1, task2);
+        List<Task> actual = taskManager.getTasks();
+
+        assertEquals(expected, actual);
+
+        assertEquals(taskManager.getTaskById(task1.getId()).getName(), "Обновленная задача");
+        assertEquals(taskManager.getTaskById(task1.getId()).getDescription(), "Описание обновленной задачи");
+    }
+
+    @Test
+    void updateEpic_shouldUpdateTheEpic() {
+        epic1.setName("Обновленный эпик");
+        epic1.setDescription("Описание обновленного эпика");
+        taskManager.updateEpic(epic1);
+
+        List<Epic> expected = List.of(epic1, epic2);
+        List<Epic> actual = taskManager.getEpics();
+
+        assertEquals(expected, actual);
+
+        assertEquals(taskManager.getEpicById(epic1.getId()).getName(), "Обновленный эпик");
+        assertEquals(taskManager.getEpicById(epic1.getId()).getDescription(), "Описание обновленного эпика");
+    }
+
+    @Test
+    void updateSubTask_shouldUpdateSubtask() {
+        subTask1.setName("Обновленная подзадача");
+        subTask1.setDescription("Описание обновленной подзадачи");
+        taskManager.updateSubTask(subTask1);
+
+        List<SubTask> expected = List.of(subTask1, subTask2, subTask3);
+        List<SubTask> actual = taskManager.getSubTasks();
+
+        assertEquals(expected, actual);
+
+        assertEquals(taskManager.getSubTaskById(subTask1.getId()).getName(), "Обновленная подзадача");
+        assertEquals(taskManager.getSubTaskById(subTask1.getId()).getDescription(),
+                "Описание обновленной подзадачи");
     }
 
     @Test
@@ -628,28 +696,6 @@ class InMemoryTaskManagerTest {
                 () -> taskManager.createTask(task4)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
-    }
-
-    @Test
-    void createEpic_shouldCreateEpic() {
-        Epic epic3 = createEpic("Новый эпик", "Описание эпика");
-        taskManager.createEpic(epic3);
-
-        List<Epic> expected = List.of(epic1, epic2, epic3);
-        List<Epic> actual = taskManager.getEpics();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void createSubTask_shouldCreateSubtask() {
-        SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
-        taskManager.createSubTask(subTask4);
-
-        List<SubTask> expected = List.of(subTask1, subTask2, subTask3, subTask4);
-        List<SubTask> actual = taskManager.getSubTasks();
-
-        assertEquals(expected, actual);
     }
 
     @Test
