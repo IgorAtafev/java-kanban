@@ -118,7 +118,7 @@ public class Task {
      * @return string in CSV format
      */
     public String toCsvRow() {
-        String pattern = "dd.MM.YYYY HH:mm";
+        String pattern = "dd.MM.yyyy HH:mm";
         String startTime = DateTimeFormatterHelper.format(getStartTime(), pattern);
         String endTime = DateTimeFormatterHelper.format(getEndTime(), pattern);
 

@@ -176,9 +176,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                             }
                     });
 
-            writer.newLine();
-            writer.write(writeHistoryToCsv());
-            writer.newLine();
+            if (!getHistory().isEmpty()) {
+                writer.newLine();
+                writer.write(writeHistoryToCsv());
+                writer.newLine();
+            }
         } catch (IOException e) {
             throw new ManagerSaveException("Error writing to file", e);
         }
@@ -207,7 +209,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         task.setName(values[2]);
         if (taskType != TaskType.EPIC) {
             task.setStatus(Status.valueOf(values[3]));
-            task.setStartTime(DateTimeFormatterHelper.parse(values[5], "dd.MM.YYYY HH:mm"));
+            task.setStartTime(DateTimeFormatterHelper.parse(values[5], "dd.MM.yyyy HH:mm"));
             task.setDuration(Integer.parseInt(values[6]));
         }
         task.setDescription(values[4]);

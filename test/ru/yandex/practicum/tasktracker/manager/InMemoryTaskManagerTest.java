@@ -19,20 +19,24 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InMemoryTaskManagerTest {
-    private Task task1;
-    private Task task2;
-    private Epic epic1;
-    private Epic epic2;
-    private SubTask subTask1;
-    private SubTask subTask2;
-    private SubTask subTask3;
+    protected Task task1;
+    protected Task task2;
+    protected Epic epic1;
+    protected Epic epic2;
+    protected SubTask subTask1;
+    protected SubTask subTask2;
+    protected SubTask subTask3;
 
     private InMemoryTaskManager taskManager;
+
+    protected InMemoryTaskManager createTaskManager() {
+        return new InMemoryTaskManager();
+    }
 
     @BeforeEach
     void setUp() throws IOException {
         taskManager = createTaskManager();
-        createTestTasks();
+        createTestTasks(taskManager);
     }
 
     @Test
@@ -829,11 +833,7 @@ class InMemoryTaskManagerTest {
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
     }
 
-    protected InMemoryTaskManager createTaskManager() {
-        return new InMemoryTaskManager();
-    }
-
-    private void createTestTasks() {
+    protected void createTestTasks(TaskManager taskManager) {
         task1 = createTask("Задача1", "Описание задачи");
         taskManager.createTask(task1);
         task2 = createTask("Задача2", "Описание задачи");
