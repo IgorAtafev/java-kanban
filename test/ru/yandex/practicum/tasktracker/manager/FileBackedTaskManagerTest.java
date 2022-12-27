@@ -2,13 +2,21 @@ package ru.yandex.practicum.tasktracker.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.tasktracker.manager.exception.ManagerSaveException;
+import ru.yandex.practicum.tasktracker.model.Epic;
+import ru.yandex.practicum.tasktracker.model.Status;
+import ru.yandex.practicum.tasktracker.model.SubTask;
+import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
     private static final String FILE_HEADER = "id,type,name,status,description,start_time,duration,end_time,epic";
@@ -23,8 +31,12 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
     }
 
     @BeforeEach
-    void setUp() throws IOException {
-        Files.writeString(Path.of("resources/" + emptyFile), "");
+    void setUp() {
+        try {
+            Files.writeString(Path.of("resources/" + emptyFile), "");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         super.setUp();
     }
 
@@ -245,8 +257,73 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         assertEquals(expected, actual);
     }
 
-/*    @Test
-    void loadFromFile_shouldLoadTasksFromFileAndRestoreTaskListsAndHistory() {
+    @Test
+    void loadFromFile_shouldThrowAnException_ifTheFileIsNotFound() {
+        ManagerSaveException exception = assertThrows(
+                ManagerSaveException.class,
+                () -> FileBackedTaskManager.loadFromFile("file_not_found")
+        );
+        assertEquals("Error reading from file", exception.getMessage());
+    }
 
-    }*/
+    @Test
+    void loadFromFile_shouldLoadTasksFromFileAndRestoreTaskListsAndHistory() {
+        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(fileToLoad);
+
+        Task task1 = createTask("Задача1", "Описание задачи");
+        task1.setId(1);
+        task1.setStatus(Status.IN_PROGRESS);
+        task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 15));
+        task1.setDuration(30);
+
+        Task task2 = createTask("Задача2", "Описание задачи");
+        task2.setId(2);
+        task2.setStatus(Status.NEW);
+        task2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
+        task2.setDuration(15);
+
+        Epic epic1 = createEpic("Эпик1", "Описание эпика");
+        epic1.setId(3);
+        Epic epic2 = createEpic("Эпик2", "Описание эпика");
+        epic2.setId(4);
+
+        SubTask subTask1 = createSubTask("Подзадача1", "Описание подзадачи", epic1);
+        subTask1.setId(5);
+        subTask1.setStatus(Status.DONE);
+        subTask1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 50));
+        subTask1.setDuration(15);
+
+        SubTask subTask2 = createSubTask("Подзадача2", "Описание подзадачи", epic1);
+        subTask2.setId(6);
+        subTask2.setStatus(Status.DONE);
+        subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 12, 5));
+        subTask2.setDuration(25);
+
+        List<Task> expectedTasks = List.of(task1, task2);
+        List<Task> actualTasks = taskManager.getTasks();
+
+        assertEquals(expectedTasks, actualTasks);
+
+        List<Epic> expectedEpics = List.of(epic1, epic2);
+        List<Epic> actualEpics = taskManager.getEpics();
+
+        assertEquals(expectedEpics, actualEpics);
+
+        List<SubTask> expectedSubTasks = List.of(subTask1, subTask2);
+        List<SubTask> actualSubTasks = taskManager.getSubTasks();
+
+        assertEquals(expectedSubTasks, actualSubTasks);
+
+        List<Task> expectedHistory = List.of(epic1, task2, subTask2);
+        List<Task> actualHistory = taskManager.getHistory();
+
+        assertEquals(expectedHistory, actualHistory);
+
+        assertTrue(taskManager.nextTaskId == 6);
+
+        List<Task> expectedPrioritizedTasks = List.of(task2, task1, subTask1, subTask2);
+        List<Task> actualPrioritizedTasks = List.copyOf(taskManager.getPrioritizedTasks());
+
+        assertEquals(expectedPrioritizedTasks, actualPrioritizedTasks);
+    }
 }

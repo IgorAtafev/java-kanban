@@ -8,7 +8,6 @@ import ru.yandex.practicum.tasktracker.model.Status;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +33,7 @@ class InMemoryTaskManagerTest {
     }
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         taskManager = createTaskManager();
         createTestTasks(taskManager);
     }
@@ -850,7 +849,7 @@ class InMemoryTaskManagerTest {
         taskManager.createSubTask(subTask3);
     }
 
-    private Task createTask(String name, String description) {
+    protected Task createTask(String name, String description) {
         Task task = new Task();
         task.setName(name);
         task.setDescription(description);
@@ -858,14 +857,14 @@ class InMemoryTaskManagerTest {
         return task;
     }
 
-    private Epic createEpic(String name, String description) {
+    protected Epic createEpic(String name, String description) {
         Epic epic = new Epic();
         epic.setName(name);
         epic.setDescription(description);
         return epic;
     }
 
-    private SubTask createSubTask(String name, String description, Epic epic) {
+    protected SubTask createSubTask(String name, String description, Epic epic) {
         SubTask subTask = new SubTask();
         subTask.setName(name);
         subTask.setDescription(description);
