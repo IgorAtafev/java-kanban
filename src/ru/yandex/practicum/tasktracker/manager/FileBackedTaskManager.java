@@ -28,14 +28,14 @@ import java.util.stream.Stream;
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private static final String FILE_HEADER = "id,type,name,status,description,start_time,duration,end_time,epic";
 
-    private static final int INDEX_TO_ID_TASK = 0;
-    private static final int INDEX_TO_TYPE_TASK = 1;
-    private static final int INDEX_TO_NAME_TASK = 2;
-    private static final int INDEX_TO_STATUS_TASK = 3;
-    private static final int INDEX_TO_DESCRIPTION_TASK = 4;
-    private static final int INDEX_TO_START_TIME_TASK = 5;
-    private static final int INDEX_TO_DURATION_TASK = 6;
-    private static final int INDEX_TO_EPIC_TASK = 8;
+    private static final int TASK_ID_INDEX = 0;
+    private static final int TASK_TYPE_INDEX = 1;
+    private static final int TASK_NAME_INDEX = 2;
+    private static final int TASK_STATUS_INDEX = 3;
+    private static final int TASK_DESCRIPTION_INDEX = 4;
+    private static final int TASK_START_TIME_INDEX = 5;
+    private static final int TASK_DURATION_INDEX = 6;
+    private static final int TASK_EPIC_INDEX = 8;
 
     private final Path path;
     private final Map<Integer, Task> tasksFromFile = new HashMap<>();
@@ -206,7 +206,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void restoreTaskFromCsv(String csvLine) {
         String[] values = csvLine.split(",");
-        TaskType taskType = TaskType.valueOf(values[INDEX_TO_TYPE_TASK]);
+        TaskType taskType = TaskType.valueOf(values[TASK_TYPE_INDEX]);
 
         Task task = new Task();
         if (taskType == TaskType.EPIC) {
@@ -215,26 +215,26 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             task = new SubTask();
         }
 
-        int taskId = Integer.parseInt(values[INDEX_TO_ID_TASK]);
+        int taskId = Integer.parseInt(values[TASK_ID_INDEX]);
         task.setId(taskId);
-        task.setName(values[INDEX_TO_NAME_TASK]);
+        task.setName(values[TASK_NAME_INDEX]);
         if (taskType != TaskType.EPIC) {
-            task.setStatus(Status.valueOf(values[INDEX_TO_STATUS_TASK]));
-            task.setStartTime(DateTimeFormatterHelper.parse(values[INDEX_TO_START_TIME_TASK], "dd.MM.yyyy HH:mm"));
+            task.setStatus(Status.valueOf(values[TASK_STATUS_INDEX]));
+            task.setStartTime(DateTimeFormatterHelper.parse(values[TASK_START_TIME_INDEX], "dd.MM.yyyy HH:mm"));
 
             Duration duration = null;
-            long durationOfMinutes = Integer.parseInt(values[INDEX_TO_DURATION_TASK]);
+            long durationOfMinutes = Integer.parseInt(values[TASK_DURATION_INDEX]);
             if (durationOfMinutes != 0) {
                 duration = Duration.ofMinutes(durationOfMinutes);
             }
             task.setDuration(duration);
         }
-        task.setDescription(values[INDEX_TO_DESCRIPTION_TASK]);
+        task.setDescription(values[TASK_DESCRIPTION_INDEX]);
 
         if (task instanceof Epic) {
             super.updateEpic((Epic) task);
         } else if (task instanceof SubTask) {
-            int epicId = Integer.parseInt(values[INDEX_TO_EPIC_TASK]);
+            int epicId = Integer.parseInt(values[TASK_EPIC_INDEX]);
             Epic epic = super.getEpicById(epicId);
             ((SubTask) task).setEpic(epic);
             historyManager.remove(epicId);
