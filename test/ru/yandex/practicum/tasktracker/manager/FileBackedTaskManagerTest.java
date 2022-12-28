@@ -293,12 +293,14 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         subTask1.setStatus(Status.DONE);
         subTask1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 50));
         subTask1.setDuration(Duration.ofMinutes(15));
+        epic1.addSubTask(subTask1);
 
         SubTask subTask2 = createSubTask("Подзадача2", "Описание подзадачи", epic1);
         subTask2.setId(6);
         subTask2.setStatus(Status.DONE);
         subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 12, 5));
         subTask2.setDuration(Duration.ofMinutes(25));
+        epic1.addSubTask(subTask2);
 
         List<Task> expectedTasks = List.of(task1, task2);
         List<Task> actualTasks = taskManager.getTasks();

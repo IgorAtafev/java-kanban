@@ -2,9 +2,11 @@ package ru.yandex.practicum.tasktracker.model;
 
 import ru.yandex.practicum.tasktracker.util.DateTimeFormatterHelper;
 
+import javax.swing.text.html.Option;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Task {
     private int id;
@@ -128,8 +130,8 @@ public class Task {
         String startTime = DateTimeFormatterHelper.format(getStartTime(), pattern);
         String endTime = DateTimeFormatterHelper.format(getEndTime(), pattern);
 
-        Duration duration = getDuration();
         long minutes = 0;
+        Duration duration = getDuration();
         if (duration != null) {
             minutes = duration.toMinutes();
         }

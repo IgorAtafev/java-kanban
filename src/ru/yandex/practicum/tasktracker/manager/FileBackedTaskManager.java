@@ -218,17 +218,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         int taskId = Integer.parseInt(values[TASK_ID_INDEX]);
         task.setId(taskId);
         task.setName(values[TASK_NAME_INDEX]);
+
         if (taskType != TaskType.EPIC) {
             task.setStatus(Status.valueOf(values[TASK_STATUS_INDEX]));
             task.setStartTime(DateTimeFormatterHelper.parse(values[TASK_START_TIME_INDEX], "dd.MM.yyyy HH:mm"));
 
-            Duration duration = null;
             long minutes = Integer.parseInt(values[TASK_DURATION_INDEX]);
             if (minutes != 0) {
-                duration = Duration.ofMinutes(minutes);
+                task.setDuration(Duration.ofMinutes(minutes));
             }
-            task.setDuration(duration);
         }
+
         task.setDescription(values[TASK_DESCRIPTION_INDEX]);
 
         if (task instanceof Epic) {
