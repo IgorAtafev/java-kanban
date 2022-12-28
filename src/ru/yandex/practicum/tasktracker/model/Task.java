@@ -129,12 +129,12 @@ public class Task {
         String endTime = DateTimeFormatterHelper.format(getEndTime(), pattern);
 
         Duration duration = getDuration();
-        long durationToMinutes = 0;
+        long minutes = 0;
         if (duration != null) {
-            durationToMinutes = duration.toMinutes();
+            minutes = duration.toMinutes();
         }
 
         return String.format("%d,%s,%s,%s,%s,%s,%s,%s", getId(), getType(), getName(), getStatus(), getDescription(),
-                startTime, durationToMinutes, endTime);
+                startTime, minutes, endTime);
     }
 }
