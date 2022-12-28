@@ -2,8 +2,6 @@ package ru.yandex.practicum.tasktracker.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.tasktracker.manager.InMemoryTaskManager;
-import ru.yandex.practicum.tasktracker.manager.TaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -20,8 +18,6 @@ class EpicTest {
     private SubTask subTask2;
     private SubTask subTask3;
 
-    private final TaskManager taskManager = new InMemoryTaskManager();
-
     @BeforeEach
     void setUp() {
         createTestTasks();
@@ -29,7 +25,7 @@ class EpicTest {
 
     @Test
     void getStatus_shouldChangeEpicStatusToNew_ifThereAreNoSubtasks() {
-        assertTrue(taskManager.getEpicById(epic2.getId()).getStatus() == Status.NEW);
+        assertTrue(epic2.getStatus() == Status.NEW);
     }
 
     @Test
@@ -38,11 +34,7 @@ class EpicTest {
         subTask2.setStatus(Status.NEW);
         subTask3.setStatus(Status.NEW);
 
-        taskManager.updateSubTask(subTask1);
-        taskManager.updateSubTask(subTask2);
-        taskManager.updateSubTask(subTask3);
-
-        assertTrue(taskManager.getEpicById(epic1.getId()).getStatus() == Status.NEW);
+        assertTrue(epic1.getStatus() == Status.NEW);
     }
 
     @Test
@@ -51,18 +43,13 @@ class EpicTest {
         subTask2.setStatus(Status.DONE);
         subTask3.setStatus(Status.DONE);
 
-        taskManager.updateSubTask(subTask1);
-        taskManager.updateSubTask(subTask2);
-        taskManager.updateSubTask(subTask3);
-
-        assertTrue(taskManager.getEpicById(epic1.getId()).getStatus() == Status.DONE);
+        assertTrue(epic1.getStatus() == Status.DONE);
     }
 
     @Test
     void getStatus_shouldChangeEpicStatusToInProgress_ifStatusOfOneSubtaskChangedToInProgress() {
         subTask1.setStatus(Status.IN_PROGRESS);
-        taskManager.updateSubTask(subTask1);
-        assertTrue(taskManager.getEpicById(epic1.getId()).getStatus() == Status.IN_PROGRESS);
+        assertTrue(epic1.getStatus() == Status.IN_PROGRESS);
     }
 
     @Test
@@ -71,11 +58,7 @@ class EpicTest {
         subTask2.setStatus(Status.NEW);
         subTask3.setStatus(Status.DONE);
 
-        taskManager.updateSubTask(subTask1);
-        taskManager.updateSubTask(subTask2);
-        taskManager.updateSubTask(subTask3);
-
-        assertTrue(taskManager.getEpicById(epic1.getId()).getStatus() == Status.IN_PROGRESS);
+        assertTrue(epic1.getStatus() == Status.IN_PROGRESS);
     }
 
     @Test
@@ -89,20 +72,19 @@ class EpicTest {
 
     @Test
     void getStartTime_shouldCheckForNull_ifThereAreNoSubtasks() {
-        assertNull(taskManager.getEpicById(epic2.getId()).getStartTime());
+        assertNull(epic2.getStartTime());
     }
 
     @Test
     void getStartTime_shouldCheckForNull_ifStartTimeOfAllSubtasksIsNull() {
-        assertNull(taskManager.getEpicById(epic1.getId()).getStartTime());
+        assertNull(epic1.getStartTime());
     }
 
     @Test
     void getStartTime_shouldSetTheStartTimeOfTheEpicEqualToSubtaskStartTime_ifStartTimeOfOneSubtaskIsNotNull() {
         LocalDateTime startTime = LocalDateTime.of(2022, 12, 22, 11, 0);
-
         subTask3.setStartTime(startTime);
-        assertEquals(startTime, taskManager.getEpicById(epic1.getId()).getStartTime());
+        assertEquals(startTime, epic1.getStartTime());
     }
 
     @Test
@@ -117,7 +99,7 @@ class EpicTest {
         subTask2.setStartTime(startTime2);
         subTask3.setStartTime(startTime3);
 
-        assertEquals(expected, taskManager.getEpicById(epic1.getId()).getStartTime());
+        assertEquals(expected, epic1.getStartTime());
     }
 
     @Test
@@ -129,82 +111,81 @@ class EpicTest {
         assertEquals("Setting start time is not supported for epic", exception.getMessage());
     }
 
-/*    @Test
-    void getDuration_shouldSetEpicDurationToZero_ifThereAreNoSubtasks() {
-        assertTrue(taskManager.getEpicById(epic2.getId()).getDuration() == 0);
+    @Test
+    void getDuration_shouldCheckForNull_ifThereAreNoSubtasks() {
+        assertNull(epic2.getDuration());
     }
 
     @Test
-    void getDuration_shouldSetEpicDurationToZero_ifDurationOfAllSubtasksIsZero() {
-        assertTrue(taskManager.getEpicById(epic1.getId()).getDuration() == 0);
-    }*/
+    void getDuration_shouldCheckForNull_ifDurationOfAllSubtasksIsNull() {
+        assertNull(epic1.getDuration());
+    }
 
-/*    @Test
-    void getDuration_shouldSetTheDurationOfTheEpicEqualToSubtaskDuration_ifDurationOfOneSubtaskIsNotZero() {
-        int duration = 15;
-
+    @Test
+    void getDuration_shouldSetTheDurationOfTheEpicEqualToSubtaskDuration_ifDurationOfOneSubtaskIsNotNull() {
+        Duration duration = Duration.ofMinutes(15);
         subTask3.setDuration(duration);
-        assertTrue(taskManager.getEpicById(epic1.getId()).getDuration() == duration);
-    }*/
+        assertEquals(duration, epic1.getDuration());
+    }
 
-/*    @Test
-    void getDuration_shouldSetTheDurationOfTheEpicEqualToTheDurationOfAllSubtasks_ifDurationOfAllSubtasksIsNotZero() {
-        int duration1 = 15;
-        int duration2 = 30;
-        int duration3 = 45;
+    @Test
+    void getDuration_shouldSetTheDurationOfTheEpicEqualToTheDurationOfAllSubtasks_ifDurationOfAllSubtasksIsNotNull() {
+        Duration duration1 = Duration.ofMinutes(15);
+        Duration duration2 = Duration.ofMinutes(30);
+        Duration duration3 = Duration.ofMinutes(45);
 
-        Duration expected = Duration.ofMinutes(duration1 + duration2 + duration3);
+        Duration expected = duration1.plus(duration2).plus(duration3);
 
         subTask1.setDuration(duration1);
         subTask2.setDuration(duration2);
         subTask3.setDuration(duration3);
 
-        assertTrue(taskManager.getEpicById(epic1.getId()).getDuration() == expected);
-    }*/
+        assertEquals(expected, epic1.getDuration());
+    }
 
-/*    @Test
+    @Test
     void setDuration_shouldThrowAnException() {
         UnsupportedOperationException exception = assertThrows(
                 UnsupportedOperationException.class,
-                () -> epic1.setDuration(30)
+                () -> epic1.setDuration(Duration.ofMinutes(30))
         );
         assertEquals("Setting duration is not supported for epic", exception.getMessage());
-    }*/
+    }
 
     @Test
     void getEndTime_shouldCheckForNull_ifThereAreNoSubtasks() {
-        assertNull(taskManager.getEpicById(epic2.getId()).getEndTime());
+        assertNull(epic2.getEndTime());
     }
 
     @Test
     void getEndTime_shouldCheckForNull_ifStartTimeOfAllSubtasksIsNull() {
-        assertNull(taskManager.getEpicById(epic1.getId()).getEndTime());
+        assertNull(epic1.getEndTime());
     }
 
-/*    @Test
+    @Test
     void getEndTime_shouldSetTheEndTimeOfTheEpicEqualToSubtaskEndTime_ifStartTimeOfOneSubtaskIsNotNull() {
         LocalDateTime startTime = LocalDateTime.of(2022, 12, 22, 11, 0);
-        int duration = 15;
+        Duration duration = Duration.ofMinutes(15);
 
-        LocalDateTime expected = startTime.plus(Duration.ofMinutes(duration));
+        LocalDateTime expected = startTime.plus(duration);
 
         subTask3.setStartTime(startTime);
         subTask3.setDuration(duration);
 
-        assertEquals(expected, taskManager.getEpicById(epic1.getId()).getEndTime());
-    }*/
+        assertEquals(expected, epic1.getEndTime());
+    }
 
-/*    @Test
+    @Test
     void getEndTime_shouldSetTheEndTimeOfTheEpicEqualToTheMaxEndTimeOfAllSubtasks_ifStartTimeOfAllSubtasksIsNotNull() {
         LocalDateTime startTime1 = LocalDateTime.of(2022, 12, 22, 12, 23);
         LocalDateTime startTime2 = LocalDateTime.of(2022, 12, 22, 13, 30);
         LocalDateTime startTime3 = LocalDateTime.of(2022, 12, 22, 12, 0);
 
-        int duration1 = 15;
-        int duration2 = 20;
-        int duration3 = 40;
+        Duration duration1 = Duration.ofMinutes(15);
+        Duration duration2 = Duration.ofMinutes(20);
+        Duration duration3 = Duration.ofMinutes(40);
 
-        LocalDateTime expected = startTime2.plus(Duration.ofMinutes(duration2));
+        LocalDateTime expected = startTime2.plus(duration2);
 
         subTask1.setStartTime(startTime1);
         subTask2.setStartTime(startTime2);
@@ -213,20 +194,18 @@ class EpicTest {
         subTask2.setDuration(duration2);
         subTask3.setDuration(duration3);
 
-        assertEquals(expected, taskManager.getEpicById(epic1.getId()).getEndTime());
-    }*/
+        assertEquals(expected, epic1.getEndTime());
+    }
 
     private void createTestTasks() {
         epic1 = createEpic("Эпик1", "Описание эпика");
-        taskManager.createEpic(epic1);
         epic2 = createEpic("Эпик2", "Описание эпика");
-        taskManager.createEpic(epic2);
         subTask1 = createSubTask("Подзадача1", "Описание подзадачи", epic1);
-        taskManager.createSubTask(subTask1);
         subTask2 = createSubTask("Подзадача2", "Описание подзадачи", epic1);
-        taskManager.createSubTask(subTask2);
         subTask3 = createSubTask("Подзадача3", "Описание подзадачи", epic1);
-        taskManager.createSubTask(subTask3);
+        epic1.addSubTask(subTask1);
+        epic1.addSubTask(subTask2);
+        epic1.addSubTask(subTask3);
     }
 
     private Epic createEpic(String name, String description) {
