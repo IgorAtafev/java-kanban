@@ -183,13 +183,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void checkTasksIntersectionInTime(Task firstTask, Task secondTask) {
-        boolean isValidIntersectionForStartTime = firstTask.getStartTime().isBefore(secondTask.getStartTime())
-                || firstTask.getStartTime().equals(secondTask.getStartTime())
-                || firstTask.getStartTime().isAfter(secondTask.getStartTime());
-
-        boolean isValidIntersectionForEndTime = firstTask.getEndTime().isBefore(secondTask.getEndTime())
-                || firstTask.getEndTime().equals(secondTask.getEndTime())
-                || firstTask.getEndTime().isAfter(secondTask.getEndTime());
+        boolean isValidIntersectionForStartTime = firstTask.getStartTime().isBefore(secondTask.getEndTime());
+        boolean isValidIntersectionForEndTime = firstTask.getEndTime().isAfter(secondTask.getStartTime());
 
         if (isValidIntersectionForStartTime && isValidIntersectionForEndTime) {
             throw new TaskIntersectionException("Task execution time intersect with other tasks");

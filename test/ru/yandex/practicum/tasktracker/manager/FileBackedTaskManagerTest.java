@@ -11,6 +11,7 @@ import ru.yandex.practicum.tasktracker.model.Task;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -75,11 +76,11 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         taskManager.getSubTaskById(subTask1.getId());
 
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        task1.setDuration(30);
+        task1.setDuration(Duration.ofMinutes(30));
         taskManager.updateTask(task1);
 
         subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        subTask2.setDuration(15);
+        subTask2.setDuration(Duration.ofMinutes(15));
         taskManager.updateSubTask(subTask2);
 
         String expected = String.format("%s%n%s%n%s%n%s%n%s%n%s%n%s%n%s%n%n%d,%d,%d%n", FILE_HEADER,
@@ -274,13 +275,13 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         task1.setId(1);
         task1.setStatus(Status.IN_PROGRESS);
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 15));
-        task1.setDuration(30);
+        task1.setDuration(Duration.ofMinutes(30));
 
         Task task2 = createTask("Задача2", "Описание задачи");
         task2.setId(2);
         task2.setStatus(Status.NEW);
         task2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        task2.setDuration(15);
+        task2.setDuration(Duration.ofMinutes(15));
 
         Epic epic1 = createEpic("Эпик1", "Описание эпика");
         epic1.setId(3);
@@ -291,13 +292,13 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         subTask1.setId(5);
         subTask1.setStatus(Status.DONE);
         subTask1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 50));
-        subTask1.setDuration(15);
+        subTask1.setDuration(Duration.ofMinutes(15));
 
         SubTask subTask2 = createSubTask("Подзадача2", "Описание подзадачи", epic1);
         subTask2.setId(6);
         subTask2.setStatus(Status.DONE);
         subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 12, 5));
-        subTask2.setDuration(25);
+        subTask2.setDuration(Duration.ofMinutes(25));
 
         List<Task> expectedTasks = List.of(task1, task2);
         List<Task> actualTasks = taskManager.getTasks();

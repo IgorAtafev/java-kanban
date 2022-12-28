@@ -112,17 +112,17 @@ public class Epic extends Task {
      */
     @Override
     public Duration getDuration() {
-        Stream<Duration> DurationStream = subTasks.stream()
-                .map(SubTask::getDuration);
-
-        if (DurationStream.allMatch(Objects::isNull)) {
+        if (subTasks.stream()
+                .map(SubTask::getDuration).allMatch(Objects::isNull)
+        ) {
             return null;
         }
 
-        return Duration.ofMinutes(DurationStream
-                    .filter(Objects::nonNull)
-                    .mapToLong(Duration::toMinutes)
-                    .sum());
+        return Duration.ofMinutes(subTasks.stream()
+                        .map(SubTask::getDuration)
+                        .filter(Objects::nonNull)
+                        .mapToLong(Duration::toMinutes)
+                        .sum());
     }
 
     @Override

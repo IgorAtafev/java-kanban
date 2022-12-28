@@ -2,12 +2,13 @@ package ru.yandex.practicum.tasktracker.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.tasktracker.manager.exception.TaskCreateOrUpdateException;
+import ru.yandex.practicum.tasktracker.manager.exception.TaskIntersectionException;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.Status;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -581,17 +582,17 @@ class InMemoryTaskManagerTest {
     void createTask_shouldAddTheTaskToThePrioritizedTasks_ifTasksDoesNotIntersectInTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        task3.setDuration(15);
+        task3.setDuration(Duration.ofMinutes(15));
         taskManager.createTask(task3);
 
         Task task4 = createTask("Новая задача2", "Описание задачи");
         task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        task4.setDuration(30);
+        task4.setDuration(Duration.ofMinutes(30));
         taskManager.createTask(task4);
 
         SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
         subTask4.setStartTime(LocalDateTime.of(2022, 12, 22, 10, 0));
-        subTask4.setDuration(45);
+        subTask4.setDuration(Duration.ofMinutes(45));
         taskManager.createSubTask(subTask4);
 
         List<Task> expectedTasks = List.of(task1, task2, task3, task4);
@@ -614,20 +615,20 @@ class InMemoryTaskManagerTest {
     void createTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeBetweenStartTimeAndEndTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        task3.setDuration(15);
+        task3.setDuration(Duration.ofMinutes(15));
         taskManager.createTask(task3);
 
         SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
         subTask4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        subTask4.setDuration(15);
+        subTask4.setDuration(Duration.ofMinutes(15));
         taskManager.createSubTask(subTask4);
 
         SubTask subTask5 = createSubTask("Новая подзадача2", "Описание подзадачи", epic2);
         subTask5.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 40));
-        subTask5.setDuration(30);
+        subTask5.setDuration(Duration.ofMinutes(30));
 
-        TaskCreateOrUpdateException exception = assertThrows(
-                TaskCreateOrUpdateException.class,
+        TaskIntersectionException exception = assertThrows(
+                TaskIntersectionException.class,
                 () -> taskManager.createSubTask(subTask5)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
@@ -637,20 +638,20 @@ class InMemoryTaskManagerTest {
     void createTask_shouldThrowAnException_ifTasksIntersectInTimeAndEndTimeBetweenStartTimeAndEndTime() {
         SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
         subTask4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        subTask4.setDuration(15);
+        subTask4.setDuration(Duration.ofMinutes(15));
         taskManager.createSubTask(subTask4);
 
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        task3.setDuration(15);
+        task3.setDuration(Duration.ofMinutes(15));
         taskManager.createTask(task3);
 
         Task task4 = createTask("Новая задача2", "Описание задачи");
         task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
-        task4.setDuration(20);
+        task4.setDuration(Duration.ofMinutes(20));
 
-        TaskCreateOrUpdateException exception = assertThrows(
-                TaskCreateOrUpdateException.class,
+        TaskIntersectionException exception = assertThrows(
+                TaskIntersectionException.class,
                 () -> taskManager.createTask(task4)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
@@ -660,20 +661,20 @@ class InMemoryTaskManagerTest {
     void createTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeBeforeStartTimeAndEndTimeAfterEndTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        task3.setDuration(15);
+        task3.setDuration(Duration.ofMinutes(15));
         taskManager.createTask(task3);
 
         Task task4 = createTask("Новая задача2", "Описание задачи");
         task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        task4.setDuration(15);
+        task4.setDuration(Duration.ofMinutes(15));
         taskManager.createTask(task4);
 
         SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
         subTask4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
-        subTask4.setDuration(30);
+        subTask4.setDuration(Duration.ofMinutes(30));
 
-        TaskCreateOrUpdateException exception = assertThrows(
-                TaskCreateOrUpdateException.class,
+        TaskIntersectionException exception = assertThrows(
+                TaskIntersectionException.class,
                 () -> taskManager.createSubTask(subTask4)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
@@ -683,20 +684,20 @@ class InMemoryTaskManagerTest {
     void createTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeEqualStartTimeAndEndTimeEqualEndTime() {
         Task task3 = createTask("Новая задача", "Описание задачи");
         task3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        task3.setDuration(15);
+        task3.setDuration(Duration.ofMinutes(15));
         taskManager.createTask(task3);
 
         SubTask subTask4 = createSubTask("Новая подзадача", "Описание подзадачи", epic1);
         subTask4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        subTask4.setDuration(15);
+        subTask4.setDuration(Duration.ofMinutes(15));
         taskManager.createSubTask(subTask4);
 
         Task task4 = createTask("Новая задача2", "Описание задачи");
         task4.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        task4.setDuration(15);
+        task4.setDuration(Duration.ofMinutes(15));
 
-        TaskCreateOrUpdateException exception = assertThrows(
-                TaskCreateOrUpdateException.class,
+        TaskIntersectionException exception = assertThrows(
+                TaskIntersectionException.class,
                 () -> taskManager.createTask(task4)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
@@ -706,22 +707,22 @@ class InMemoryTaskManagerTest {
     void updateTask_shouldAddTheTaskToThePrioritizedTasks_ifTasksDoesNotIntersectInTime() {
         task1 = taskManager.getTaskById(task1.getId());
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        task1.setDuration(30);
+        task1.setDuration(Duration.ofMinutes(30));
         taskManager.updateTask(task1);
 
         task2 = taskManager.getTaskById(task2.getId());
         task2.setStartTime(LocalDateTime.of(2022, 12, 22, 10, 0));
-        task2.setDuration(45);
+        task2.setDuration(Duration.ofMinutes(45));
         taskManager.updateTask(task2);
 
         subTask2 = taskManager.getSubTaskById(subTask2.getId());
         subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        subTask2.setDuration(15);
+        subTask2.setDuration(Duration.ofMinutes(15));
         taskManager.updateSubTask(subTask2);
 
         subTask1 = taskManager.getSubTaskById(subTask1.getId());
         subTask1.setStartTime(LocalDateTime.of(2022, 12, 22, 12, 30));
-        subTask1.setDuration(15);
+        subTask1.setDuration(Duration.ofMinutes(15));
         taskManager.updateSubTask(subTask1);
 
         List<Task> expectedTasks = List.of(task1, task2);
@@ -744,20 +745,20 @@ class InMemoryTaskManagerTest {
     void updateTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeBetweenStartTimeAndEndTime() {
         task1 = taskManager.getTaskById(task1.getId());
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        task1.setDuration(15);
+        task1.setDuration(Duration.ofMinutes(15));
         taskManager.updateTask(task1);
 
         subTask2 = taskManager.getSubTaskById(subTask2.getId());
         subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        subTask2.setDuration(15);
+        subTask2.setDuration(Duration.ofMinutes(15));
         taskManager.updateSubTask(subTask2);
 
         task2 = taskManager.getTaskById(task2.getId());
         task2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 40));
-        task2.setDuration(30);
+        task2.setDuration(Duration.ofMinutes(30));
 
-        TaskCreateOrUpdateException exception = assertThrows(
-                TaskCreateOrUpdateException.class,
+        TaskIntersectionException exception = assertThrows(
+                TaskIntersectionException.class,
                 () -> taskManager.updateTask(task2)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
@@ -767,20 +768,20 @@ class InMemoryTaskManagerTest {
     void updateTask_shouldThrowAnException_ifTasksIntersectInTimeAndEndTimeBetweenStartTimeAndEndTime() {
         task1 = taskManager.getTaskById(task1.getId());
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
-        task1.setDuration(20);
+        task1.setDuration(Duration.ofMinutes(20));
         taskManager.updateTask(task1);
 
         subTask2 = taskManager.getSubTaskById(subTask2.getId());
         subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 50));
-        subTask2.setDuration(15);
+        subTask2.setDuration(Duration.ofMinutes(15));
         taskManager.updateSubTask(subTask2);
 
         subTask1 = taskManager.getSubTaskById(subTask1.getId());
         subTask1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        subTask1.setDuration(55);
+        subTask1.setDuration(Duration.ofMinutes(55));
 
-        TaskCreateOrUpdateException exception = assertThrows(
-                TaskCreateOrUpdateException.class,
+        TaskIntersectionException exception = assertThrows(
+                TaskIntersectionException.class,
                 () -> taskManager.updateSubTask(subTask1)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
@@ -790,20 +791,20 @@ class InMemoryTaskManagerTest {
     void updateTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeBeforeStartTimeAndEndTimeAfterEndTime() {
         task1 = taskManager.getTaskById(task1.getId());
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        task1.setDuration(15);
+        task1.setDuration(Duration.ofMinutes(15));
         taskManager.updateTask(task1);
 
         subTask2 = taskManager.getSubTaskById(subTask2.getId());
         subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        subTask2.setDuration(15);
+        subTask2.setDuration(Duration.ofMinutes(15));
         taskManager.updateSubTask(subTask2);
 
         task2 = taskManager.getTaskById(task2.getId());
         task2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 20));
-        task2.setDuration(30);
+        task2.setDuration(Duration.ofMinutes(30));
 
-        TaskCreateOrUpdateException exception = assertThrows(
-                TaskCreateOrUpdateException.class,
+        TaskIntersectionException exception = assertThrows(
+                TaskIntersectionException.class,
                 () -> taskManager.updateTask(task2)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
@@ -813,20 +814,20 @@ class InMemoryTaskManagerTest {
     void updateTask_shouldThrowAnException_ifTasksIntersectInTimeAndStartTimeEqualStartTimeAndEndTimeEqualEndTime() {
         task1 = taskManager.getTaskById(task1.getId());
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
-        task1.setDuration(15);
+        task1.setDuration(Duration.ofMinutes(15));
         taskManager.updateTask(task1);
 
         task2 = taskManager.getTaskById(task2.getId());
         task2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        task2.setDuration(15);
+        task2.setDuration(Duration.ofMinutes(15));
         taskManager.updateTask(task2);
 
         subTask3 = taskManager.getSubTaskById(subTask3.getId());
         subTask3.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 30));
-        subTask3.setDuration(15);
+        subTask3.setDuration(Duration.ofMinutes(15));
 
-        TaskCreateOrUpdateException exception = assertThrows(
-                TaskCreateOrUpdateException.class,
+        TaskIntersectionException exception = assertThrows(
+                TaskIntersectionException.class,
                 () -> taskManager.updateSubTask(subTask3)
         );
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
