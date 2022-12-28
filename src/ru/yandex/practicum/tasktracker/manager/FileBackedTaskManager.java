@@ -223,9 +223,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             task.setStartTime(DateTimeFormatterHelper.parse(values[TASK_START_TIME_INDEX], "dd.MM.yyyy HH:mm"));
 
             Duration duration = null;
-            long durationOfMinutes = Integer.parseInt(values[TASK_DURATION_INDEX]);
-            if (durationOfMinutes != 0) {
-                duration = Duration.ofMinutes(durationOfMinutes);
+            long minutes = Integer.parseInt(values[TASK_DURATION_INDEX]);
+            if (minutes != 0) {
+                duration = Duration.ofMinutes(minutes);
             }
             task.setDuration(duration);
         }
