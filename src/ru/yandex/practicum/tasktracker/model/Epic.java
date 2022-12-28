@@ -1,10 +1,13 @@
 package ru.yandex.practicum.tasktracker.model;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class Epic extends Task {
     private final Set<SubTask> subTasks = new LinkedHashSet<>();
@@ -108,14 +111,22 @@ public class Epic extends Task {
      * @return duration of an epic
      */
     @Override
-    public int getDuration() {
-        return subTasks.stream()
-                .mapToInt(SubTask::getDuration)
-                .sum();
+    public Duration getDuration() {
+        Stream<Duration> DurationStream = subTasks.stream()
+                .map(SubTask::getDuration);
+
+        if (DurationStream.allMatch(Objects::isNull)) {
+            return null;
+        }
+
+        return Duration.ofMinutes(DurationStream
+                    .filter(Objects::nonNull)
+                    .mapToLong(Duration::toMinutes)
+                    .sum());
     }
 
     @Override
-    public void setDuration(int duration) {
+    public void setDuration(Duration duration) {
         throw new UnsupportedOperationException("Setting duration is not supported for epic");
     }
 

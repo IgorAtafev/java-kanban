@@ -12,7 +12,7 @@ public class Task {
     private String description;
     private Status status;
     private LocalDateTime startTime;
-    private int duration;
+    private Duration duration;
 
     public int getId() {
         return id;
@@ -58,11 +58,11 @@ public class Task {
         this.startTime = startTime;
     }
 
-    public int getDuration() {
+    public Duration getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Duration duration) {
         this.duration = duration;
     }
 
@@ -75,7 +75,11 @@ public class Task {
             return null;
         }
 
-        return getStartTime().plus(Duration.ofMinutes(getDuration()));
+        if (getDuration() == null) {
+            return getStartTime();
+        }
+
+        return getStartTime().plus(getDuration());
     }
 
     @Override
@@ -92,12 +96,14 @@ public class Task {
 
         return id == task.id  && Objects.equals(name, task.name)
                 && Objects.equals(description, task.description)
-                && status == task.status;
+                && getStatus() == task.getStatus()
+                && Objects.equals(getStartTime(), task.getStartTime())
+                && Objects.equals(getDuration(), task.getDuration());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, status);
+        return Objects.hash(id, name, description, getStatus(), getStartTime(), getDuration());
     }
 
     @Override
@@ -122,7 +128,13 @@ public class Task {
         String startTime = DateTimeFormatterHelper.format(getStartTime(), pattern);
         String endTime = DateTimeFormatterHelper.format(getEndTime(), pattern);
 
+        Duration duration = getDuration();
+        long durationToMinutes = 0;
+        if (duration != null) {
+            durationToMinutes = duration.toMinutes();
+        }
+
         return String.format("%d,%s,%s,%s,%s,%s,%s,%s", getId(), getType(), getName(), getStatus(), getDescription(),
-                startTime, getDuration(), endTime);
+                startTime, durationToMinutes, endTime);
     }
 }

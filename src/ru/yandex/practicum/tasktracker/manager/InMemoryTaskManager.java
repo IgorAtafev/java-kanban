@@ -1,10 +1,11 @@
 package ru.yandex.practicum.tasktracker.manager;
 
-import ru.yandex.practicum.tasktracker.manager.exception.TaskCreateOrUpdateException;
+import ru.yandex.practicum.tasktracker.manager.exception.TaskIntersectionException;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -31,17 +32,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getTasks() {
-        return List.copyOf(tasks.values());
+        return new ArrayList<>(tasks.values());
     }
 
     @Override
     public List<Epic> getEpics() {
-        return List.copyOf(epics.values());
+        return new ArrayList<>(epics.values());
     }
 
     @Override
     public List<SubTask> getSubTasks() {
-        return List.copyOf(subTasks.values());
+        return new ArrayList<>(subTasks.values());
     }
 
     @Override
@@ -104,11 +105,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteEpicById(int id) {
         historyManager.remove(id);
-        epics.get(id).getSubTasks().stream()
-                .peek(prioritizedTasks::remove)
-                .map(SubTask::getId)
-                .peek(historyManager::remove)
-                .forEach(subTasks::remove);
+        for (SubTask subTask : epics.get(id).getSubTasks()) {
+            prioritizedTasks.remove(subTask);
+            historyManager.remove(subTask.getId());
+            subTasks.remove(subTask.getId());
+        }
         epics.remove(id);
     }
 
@@ -182,19 +183,16 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void checkTasksIntersectionInTime(Task firstTask, Task secondTask) {
-        boolean isStartTimeWithinInterval = firstTask.getStartTime().isAfter(secondTask.getStartTime())
-                && firstTask.getStartTime().isBefore(secondTask.getEndTime())
-                || firstTask.getStartTime().equals(secondTask.getStartTime());
+        boolean isValidIntersectionForStartTime = firstTask.getStartTime().isBefore(secondTask.getStartTime())
+                || firstTask.getStartTime().equals(secondTask.getStartTime())
+                || firstTask.getStartTime().isAfter(secondTask.getStartTime());
 
-        boolean isEndTimeWithinInterval = firstTask.getEndTime().isAfter(secondTask.getStartTime())
-                && firstTask.getEndTime().isBefore(secondTask.getEndTime())
-                || firstTask.getEndTime().equals(secondTask.getEndTime());
+        boolean isValidIntersectionForEndTime = firstTask.getEndTime().isBefore(secondTask.getEndTime())
+                || firstTask.getEndTime().equals(secondTask.getEndTime())
+                || firstTask.getEndTime().isAfter(secondTask.getEndTime());
 
-        boolean isStartTimeAndEndTimeOutOfInterval = firstTask.getStartTime().isBefore(secondTask.getStartTime())
-                && firstTask.getEndTime().isAfter(secondTask.getEndTime());
-
-        if (isStartTimeWithinInterval || isEndTimeWithinInterval || isStartTimeAndEndTimeOutOfInterval) {
-            throw new TaskCreateOrUpdateException("Task execution time intersect with other tasks");
+        if (isValidIntersectionForStartTime && isValidIntersectionForEndTime) {
+            throw new TaskIntersectionException("Task execution time intersect with other tasks");
         }
     }
 }

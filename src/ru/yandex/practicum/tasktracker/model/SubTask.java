@@ -20,11 +20,7 @@ public class SubTask extends Task {
 
     @Override
     public boolean equals(Object object) {
-        if (!super.equals(object)) {
-            return false;
-        }
-
-        if (!(object instanceof SubTask)) {
+        if (!super.equals(object) || !(object instanceof SubTask)) {
             return false;
         }
 
