@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 public class Epic extends Task {
@@ -111,17 +110,20 @@ public class Epic extends Task {
      */
     @Override
     public Duration getDuration() {
-        if (subTasks.stream()
-                .map(SubTask::getDuration).allMatch(Objects::isNull)
-        ) {
-            return null;
+        Duration totalDuration = null;
+        for (SubTask subTask : subTasks) {
+            if (subTask.getDuration() == null) {
+                continue;
+            }
+
+            if (totalDuration == null) {
+                totalDuration = subTask.getDuration();
+            } else {
+                totalDuration = totalDuration.plus(subTask.getDuration());
+            }
         }
 
-        return Duration.ofMinutes(subTasks.stream()
-                        .map(SubTask::getDuration)
-                        .filter(Objects::nonNull)
-                        .mapToLong(Duration::toMinutes)
-                        .sum());
+        return totalDuration;
     }
 
     @Override
