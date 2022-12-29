@@ -448,7 +448,7 @@ class InMemoryTaskManagerTest {
         taskManager.deleteSubTaskById(subTask1.getId());
 
         List<SubTask> expected = List.of(subTask2);
-        List<SubTask> actual = taskManager.getEpicById(subTask1.getEpic().getId()).getSubTasks();
+        List<SubTask> actual = taskManager.getEpicById(subTask2.getEpic().getId()).getSubTasks();
 
         assertEquals(expected, actual);
     }
