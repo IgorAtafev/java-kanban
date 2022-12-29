@@ -24,7 +24,7 @@ class InMemoryHistoryManagerTest {
 
     @BeforeEach
     void setUp() {
-        createTestTasks();
+        initTasks();
     }
 
     @Test
@@ -141,7 +141,7 @@ class InMemoryHistoryManagerTest {
         assertEquals(expected, actual);
     }
 
-    private void createTestTasks() {
+    private void initTasks() {
         task1 = createTask(1);
         task2 = createTask(2);
         epic1 = createEpic(3);

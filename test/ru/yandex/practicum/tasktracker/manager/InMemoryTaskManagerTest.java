@@ -37,7 +37,7 @@ class InMemoryTaskManagerTest {
     @BeforeEach
     void setUp() throws IOException {
         taskManager = createTaskManager();
-        createTestTasks();
+        initTasks();
     }
 
     @Test
@@ -149,28 +149,6 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getTaskById_shouldThrowAnException_ifIdDoesNotExist() {
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.getTaskById(100)
-        );
-    }
-
-    @Test
-    void getTaskById_shouldThrowAnException_ifIdIsZero() {
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.getTaskById(0)
-        );
-    }
-
-    @Test
     void getEpicById_shouldReturnEpicById() {
         taskManager.createEpic(epic1);
         Epic epic = taskManager.getEpicById(epic1.getId());
@@ -187,28 +165,6 @@ class InMemoryTaskManagerTest {
         List<Task> actual = taskManager.getHistory();
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void getEpicById_shouldThrowAnException_ifIdDoesNotExist() {
-        taskManager.createEpic(epic1);
-        taskManager.createEpic(epic2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.getEpicById(100)
-        );
-    }
-
-    @Test
-    void getEpicById_shouldThrowAnException_ifIdIsZero() {
-        taskManager.createEpic(epic1);
-        taskManager.createEpic(epic2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.getEpicById(0)
-        );
     }
 
     @Test
@@ -232,30 +188,6 @@ class InMemoryTaskManagerTest {
         List<Task> actual = taskManager.getHistory();
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void getSubTaskById_shouldThrowAnException_ifIdDoesNotExist() {
-        taskManager.createEpic(epic1);
-        taskManager.createSubTask(subTask1);
-        taskManager.createSubTask(subTask2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.getSubTaskById(100)
-        );
-    }
-
-    @Test
-    void getSubTaskById_shouldThrowAnException_ifIdIsZero() {
-        taskManager.createEpic(epic1);
-        taskManager.createSubTask(subTask1);
-        taskManager.createSubTask(subTask2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.getSubTaskById(0)
-        );
     }
 
     @Test
@@ -306,31 +238,9 @@ class InMemoryTaskManagerTest {
         taskManager.deleteTaskById(task2.getId());
 
         List<Task> expected = List.of(task1, subTask1, subTask2, subTask3);
-        List<Task> actual = taskManager.getPrioritizedTasks();
+        List<Task> actual = List.copyOf(taskManager.getPrioritizedTasks());
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void deleteTaskById_shouldThrowAnException_ifIdDoesNotExist() {
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.deleteTaskById(100)
-        );
-    }
-
-    @Test
-    void deleteTaskById_shouldThrowAnException_ifIdIsZero() {
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.deleteTaskById(0)
-        );
     }
 
     @Test
@@ -396,31 +306,9 @@ class InMemoryTaskManagerTest {
         taskManager.deleteEpicById(epic1.getId());
 
         List<Task> expected = List.of(task1, task2, subTask3);
-        List<Task> actual = taskManager.getPrioritizedTasks();
+        List<Task> actual = List.copyOf(taskManager.getPrioritizedTasks());
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void deleteEpicById_shouldThrowAnException_ifIdDoesNotExist() {
-        taskManager.createEpic(epic1);
-        taskManager.createEpic(epic2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.deleteEpicById(100)
-        );
-    }
-
-    @Test
-    void deleteEpicById_shouldThrowAnException_ifIdIsZero() {
-        taskManager.createEpic(epic1);
-        taskManager.createEpic(epic2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.deleteEpicById(0)
-        );
     }
 
     @Test
@@ -481,33 +369,9 @@ class InMemoryTaskManagerTest {
         taskManager.deleteSubTaskById(subTask1.getId());
 
         List<Task> expected = List.of(subTask2, subTask3);
-        List<Task> actual = taskManager.getPrioritizedTasks();
+        List<Task> actual = List.copyOf(taskManager.getPrioritizedTasks());
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void deleteSubTaskById_shouldThrowAnException_ifIdDoesNotExist() {
-        taskManager.createEpic(epic1);
-        taskManager.createSubTask(subTask1);
-        taskManager.createSubTask(subTask2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.deleteSubTaskById(100)
-        );
-    }
-
-    @Test
-    void deleteSubTaskById_shouldThrowAnException_ifIdIsZero() {
-        taskManager.createEpic(epic1);
-        taskManager.createSubTask(subTask1);
-        taskManager.createSubTask(subTask2);
-
-        assertThrows(
-                NullPointerException.class,
-                () -> taskManager.deleteSubTaskById(0)
-        );
     }
 
     @Test
@@ -558,7 +422,7 @@ class InMemoryTaskManagerTest {
         taskManager.deleteTasks();
 
         List<Task> expected = List.of(subTask1, subTask2, subTask3);
-        List<Task> actual = taskManager.getPrioritizedTasks();
+        List<Task> actual = List.copyOf(taskManager.getPrioritizedTasks());
 
         assertEquals(expected, actual);
     }
@@ -630,7 +494,7 @@ class InMemoryTaskManagerTest {
         taskManager.deleteEpics();
 
         List<Task> expected = List.of(task1, task2);
-        List<Task> actual = taskManager.getPrioritizedTasks();
+        List<Task> actual = List.copyOf(taskManager.getPrioritizedTasks());
 
         assertEquals(expected, actual);
     }
@@ -706,7 +570,7 @@ class InMemoryTaskManagerTest {
         taskManager.deleteSubTasks();
 
         List<Task> expected = List.of(task1, task2);
-        List<Task> actual = taskManager.getPrioritizedTasks();
+        List<Task> actual = List.copyOf(taskManager.getPrioritizedTasks());
 
         assertEquals(expected, actual);
     }
@@ -1014,7 +878,7 @@ class InMemoryTaskManagerTest {
         assertEquals("Task execution time intersect with other tasks", exception.getMessage());
     }
 
-    protected void createTestTasks() {
+    protected void initTasks() {
         task1 = createTask("Задача1", "Описание задачи");
         task2 = createTask("Задача2", "Описание задачи");
         epic1 = createEpic("Эпик1", "Описание эпика");

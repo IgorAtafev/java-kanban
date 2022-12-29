@@ -6,6 +6,7 @@ import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -164,8 +165,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getPrioritizedTasks() {
-        return List.copyOf(prioritizedTasks);
+    public Set<Task> getPrioritizedTasks() {
+        return Collections.unmodifiableSet(prioritizedTasks);
     }
 
     private void addTaskToPrioritizedTasks(Task task) {

@@ -20,26 +20,27 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
-    private final String emptyFile = "test/empty.csv";
-    private final String fileToSave = "test/save.csv";
-    private final String fileToLoad = "test/load.csv";
+    private static final String EMPTY_FILE = "test/empty.csv";
+    private static final String FILE_TO_SAVE = "test/save.csv";
+    private static final String FILE_TO_LOAD = "test/load.csv";
 
     @Override
     protected FileBackedTaskManager createTaskManager() {
-        return FileBackedTaskManager.loadFromFile(emptyFile);
+        return FileBackedTaskManager.loadFromFile(EMPTY_FILE);
     }
 
     @BeforeEach
+    @Override
     void setUp() throws IOException {
-        Files.writeString(Path.of("resources/" + emptyFile), "");
+        Files.writeString(Path.of("resources/" + EMPTY_FILE), "");
         super.setUp();
     }
 
     @Test
     void save_shouldSaveTasksToAFile() throws IOException {
-        Path path = Path.of("resources/" + fileToSave);
+        Path path = Path.of("resources/" + FILE_TO_SAVE);
         Files.writeString(path, "");
-        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(fileToSave);
+        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(FILE_TO_SAVE);
 
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
         task1.setDuration(Duration.ofMinutes(30));
@@ -150,7 +151,7 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
 
     @Test
     void loadFromFile_shouldLoadTasksFromFileAndRestoreTaskListsAndHistory() {
-        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(fileToLoad);
+        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(FILE_TO_LOAD);
 
         Task task1 = createTask("Задача1", "Описание задачи");
         task1.setId(1);

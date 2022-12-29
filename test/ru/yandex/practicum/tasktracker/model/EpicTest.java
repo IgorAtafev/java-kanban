@@ -20,7 +20,7 @@ class EpicTest {
 
     @BeforeEach
     void setUp() {
-        createTestTasks();
+        initTasks();
     }
 
     @Test
@@ -197,7 +197,7 @@ class EpicTest {
         assertEquals(expected, epic1.getEndTime());
     }
 
-    private void createTestTasks() {
+    private void initTasks() {
         epic1 = createEpic("Эпик1", "Описание эпика");
         epic2 = createEpic("Эпик2", "Описание эпика");
         subTask1 = createSubTask("Подзадача1", "Описание подзадачи", epic1);
