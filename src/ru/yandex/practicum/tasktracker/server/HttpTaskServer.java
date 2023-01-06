@@ -1,12 +1,18 @@
 package ru.yandex.practicum.tasktracker.server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
-import ru.yandex.practicum.tasktracker.manager.InMemoryTaskManager;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
+import ru.yandex.practicum.tasktracker.model.Epic;
+import ru.yandex.practicum.tasktracker.model.SubTask;
+import ru.yandex.practicum.tasktracker.model.Task;
+import ru.yandex.practicum.tasktracker.util.EpicAdapter;
+import ru.yandex.practicum.tasktracker.util.SubTaskAdapter;
+import ru.yandex.practicum.tasktracker.util.TaskAdapter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,10 +48,28 @@ public class HttpTaskServer {
     public static void main(String[] args) throws IOException {
         HttpTaskServer httpTaskServer = new HttpTaskServer(FileBackedTaskManager.loadFromFile("tasks.csv"));
         httpTaskServer.start();
-        //httpTaskServer.stop();
+        httpTaskServer.stop();
     }
 
     class TaskHandler implements HttpHandler {
+        private static final int RESPONSE_CODE_OK = 200;
+        private static final int RESPONSE_CODE_NOT_FOUND = 404;
+        private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
+        private static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
+
+        private final Gson defaultGson = new Gson();
+        private final Gson epicGson = new GsonBuilder()
+                .registerTypeAdapter(SubTask.class, new SubTaskAdapter())
+                .create();
+        private final Gson subTaskGson = new GsonBuilder()
+                .registerTypeAdapter(Epic.class, new EpicAdapter())
+                .create();
+        private final Gson historyGson = new GsonBuilder()
+                .registerTypeAdapter(Task.class, new TaskAdapter())
+                .registerTypeAdapter(Epic.class, new EpicAdapter())
+                .registerTypeAdapter(SubTask.class, new SubTaskAdapter())
+                .create();
+
         private final Map<String, List<Endpoint>> paths = new HashMap<>();
 
         {
@@ -60,8 +84,6 @@ public class HttpTaskServer {
             paths.put("/tasks/subtask/\\?id=\\d+", List.of(Endpoint.GET_SUBTASK_BY_ID, Endpoint.DELETE_SUBTASK_BY_ID));
         }
 
-        private final Gson gson = new Gson();
-
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
@@ -69,14 +91,29 @@ public class HttpTaskServer {
             if (query != null) {
                 path += "?" + query;
             }
+
             Endpoint endpoint = getEndpoint(path, exchange.getRequestMethod());
 
             switch (endpoint) {
                 case GET_TASKS:
-                    handleGetTasks(exchange);
+                    writeResponse(exchange, RESPONSE_CODE_OK, defaultGson.toJson(taskManager.getTasks()),
+                            CONTENT_TYPE_APPLICATION_JSON);
+                    break;
+                case GET_EPICS:
+                    writeResponse(exchange, RESPONSE_CODE_OK, epicGson.toJson(taskManager.getEpics()),
+                            CONTENT_TYPE_APPLICATION_JSON);
+                    break;
+                case GET_SUBTASKS:
+                    writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTasks()),
+                            CONTENT_TYPE_APPLICATION_JSON);
+                    break;
+                case GET_HISTORY:
+                    writeResponse(exchange, RESPONSE_CODE_OK, historyGson.toJson(taskManager.getHistory()),
+                            CONTENT_TYPE_APPLICATION_JSON);
                     break;
                 default:
-                    writeResponse(exchange, "Endpoint does not exist", "text/plain", 404);
+                    writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, "Endpoint does not exist",
+                            CONTENT_TYPE_TEXT_PLAIN);
             }
         }
 
@@ -90,12 +127,8 @@ public class HttpTaskServer {
                     .orElse(Endpoint.UNKNOWN);
         }
 
-        private void handleGetTasks(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, gson.toJson(taskManager.getTasks()), "application/json", 200);
-        }
-
-        private void writeResponse(HttpExchange exchange, String responseString,
-                                   String contentType, int responseCode) throws IOException {
+        private void writeResponse(HttpExchange exchange, int responseCode, String responseString,
+                                   String contentType) throws IOException {
             byte[] bytes = new byte[0];
             int responseLength = 0;
 
