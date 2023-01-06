@@ -1,19 +1,25 @@
 package ru.yandex.practicum.tasktracker.server;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
 import ru.yandex.practicum.tasktracker.manager.InMemoryTaskManager;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class HttpTaskServer {
-    private static final int PORT = 8082;
+    private static final int PORT = 8080;
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private final HttpServer httpServer;
     private final TaskManager taskManager;
@@ -34,15 +40,15 @@ public class HttpTaskServer {
     }
 
     public static void main(String[] args) throws IOException {
-        HttpTaskServer httpTaskServer = new HttpTaskServer(new InMemoryTaskManager());
+        HttpTaskServer httpTaskServer = new HttpTaskServer(FileBackedTaskManager.loadFromFile("tasks.csv"));
         httpTaskServer.start();
-        httpTaskServer.stop();
+        //httpTaskServer.stop();
     }
 
-    private static class TaskHandler implements HttpHandler {
-        private static final Map<String, List<Endpoint>> paths = new HashMap<>();
+    class TaskHandler implements HttpHandler {
+        private final Map<String, List<Endpoint>> paths = new HashMap<>();
 
-        static {
+        {
             paths.put("/tasks/", List.of(Endpoint.GET_PRIORITIZED_TASKS));
             paths.put("/tasks/history/", List.of(Endpoint.GET_HISTORY));
             paths.put("/tasks/task/", List.of(Endpoint.GET_TASKS, Endpoint.POST_TASK, Endpoint.DELETE_TASKS));
@@ -54,6 +60,8 @@ public class HttpTaskServer {
             paths.put("/tasks/subtask/\\?id=\\d+", List.of(Endpoint.GET_SUBTASK_BY_ID, Endpoint.DELETE_SUBTASK_BY_ID));
         }
 
+        private final Gson gson = new Gson();
+
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
@@ -62,7 +70,14 @@ public class HttpTaskServer {
                 path += "?" + query;
             }
             Endpoint endpoint = getEndpoint(path, exchange.getRequestMethod());
-            System.out.println(endpoint);
+
+            switch (endpoint) {
+                case GET_TASKS:
+                    handleGetTasks(exchange);
+                    break;
+                default:
+                    writeResponse(exchange, "Endpoint does not exist", "text/plain", 404);
+            }
         }
 
         private Endpoint getEndpoint(String requestPath, String requestMethod) {
@@ -75,36 +90,63 @@ public class HttpTaskServer {
                     .orElse(Endpoint.UNKNOWN);
         }
 
-        private enum Endpoint {
-            GET_PRIORITIZED_TASKS("GET"),
-            GET_HISTORY("GET"),
-            GET_TASKS("GET"),
-            GET_EPICS("GET"),
-            GET_SUBTASKS("GET"),
-            GET_SUBTASKS_BY_EPIC("GET"),
-            GET_TASK_BY_ID("GET"),
-            GET_EPIC_BY_ID("GET"),
-            GET_SUBTASK_BY_ID("GET"),
-            DELETE_TASKS("DELETE"),
-            DELETE_EPICS("DELETE"),
-            DELETE_SUBTASKS("DELETE"),
-            DELETE_TASK_BY_ID("DELETE"),
-            DELETE_EPIC_BY_ID("DELETE"),
-            DELETE_SUBTASK_BY_ID("DELETE"),
-            POST_TASK("POST"),
-            POST_EPIC("POST"),
-            POST_SUBTASK("POST"),
-            UNKNOWN("");
+        private void handleGetTasks(HttpExchange exchange) throws IOException {
+            writeResponse(exchange, gson.toJson(taskManager.getTasks()), "application/json", 200);
+        }
 
-            private String requestMethod;
+        private void writeResponse(HttpExchange exchange, String responseString,
+                                   String contentType, int responseCode) throws IOException {
+            byte[] bytes = new byte[0];
+            int responseLength = 0;
 
-            Endpoint(String requestMethod) {
-                this.requestMethod = requestMethod;
+            if (!responseString.isBlank()) {
+                bytes = responseString.getBytes(DEFAULT_CHARSET);
+                responseLength = bytes.length;
             }
 
-            String getRequestMethod() {
-                return requestMethod;
+            if (!contentType.isBlank()) {
+                exchange.getResponseHeaders().set("Content-Type", contentType);
             }
+
+            exchange.sendResponseHeaders(responseCode, responseLength);
+
+            if (responseLength > 0) {
+                try (OutputStream outputStream = exchange.getResponseBody()) {
+                    outputStream.write(bytes);
+                }
+            }
+        }
+    }
+
+    private enum Endpoint {
+        GET_PRIORITIZED_TASKS("GET"),
+        GET_HISTORY("GET"),
+        GET_TASKS("GET"),
+        GET_EPICS("GET"),
+        GET_SUBTASKS("GET"),
+        GET_SUBTASKS_BY_EPIC("GET"),
+        GET_TASK_BY_ID("GET"),
+        GET_EPIC_BY_ID("GET"),
+        GET_SUBTASK_BY_ID("GET"),
+        DELETE_TASKS("DELETE"),
+        DELETE_EPICS("DELETE"),
+        DELETE_SUBTASKS("DELETE"),
+        DELETE_TASK_BY_ID("DELETE"),
+        DELETE_EPIC_BY_ID("DELETE"),
+        DELETE_SUBTASK_BY_ID("DELETE"),
+        POST_TASK("POST"),
+        POST_EPIC("POST"),
+        POST_SUBTASK("POST"),
+        UNKNOWN("");
+
+        private String requestMethod;
+
+        Endpoint(String requestMethod) {
+            this.requestMethod = requestMethod;
+        }
+
+        String getRequestMethod() {
+            return requestMethod;
         }
     }
 }
