@@ -57,17 +57,25 @@ public class HttpTaskServer {
         private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
         private static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
 
+        private static final String RESPONSE_BODY_ENDPOINT_NOT_FOUND = "Endpoint not found";
+        private static final String RESPONSE_BODY_TASK_NOT_FOUND = "Task with the specified ID was not found";
+        private static final String RESPONSE_BODY_EPIC_NOT_FOUND = "Epic with the specified ID was not found";
+        private static final String RESPONSE_BODY_SUBTASK_NOT_FOUND = "Subtask with the specified ID was not found";
+        private static final String RESPONSE_BODY_TASK_DELETED_SUCCESSFULLY = "Task deleted successfully";
+        private static final String RESPONSE_BODY_EPIC_DELETED_SUCCESSFULLY = "Epic deleted successfully";
+        private static final String RESPONSE_BODY_SUBTASK_DELETED_SUCCESSFULLY = "Subtask deleted successfully";
+
         private final Gson defaultGson = new Gson();
         private final Gson epicGson = new GsonBuilder()
-                .registerTypeAdapter(SubTask.class, new SubTaskAdapter())
+                .registerTypeAdapter(SubTask.class, new SubTaskAdapter(taskManager))
                 .create();
         private final Gson subTaskGson = new GsonBuilder()
-                .registerTypeAdapter(Epic.class, new EpicAdapter())
+                .registerTypeAdapter(Epic.class, new EpicAdapter(taskManager))
                 .create();
         private final Gson historyGson = new GsonBuilder()
-                .registerTypeAdapter(Task.class, new TaskAdapter())
-                .registerTypeAdapter(Epic.class, new EpicAdapter())
-                .registerTypeAdapter(SubTask.class, new SubTaskAdapter())
+                .registerTypeAdapter(Task.class, new TaskAdapter(taskManager))
+                .registerTypeAdapter(Epic.class, new EpicAdapter(taskManager))
+                .registerTypeAdapter(SubTask.class, new SubTaskAdapter(taskManager))
                 .create();
 
         private final Map<String, List<Endpoint>> paths = new HashMap<>();
@@ -95,24 +103,41 @@ public class HttpTaskServer {
             Endpoint endpoint = getEndpoint(path, exchange.getRequestMethod());
 
             switch (endpoint) {
+                case GET_HISTORY:
+                    handleGetHistory(exchange);
+                    break;
                 case GET_TASKS:
-                    writeResponse(exchange, RESPONSE_CODE_OK, defaultGson.toJson(taskManager.getTasks()),
-                            CONTENT_TYPE_APPLICATION_JSON);
+                    handleGetTasks(exchange);
                     break;
                 case GET_EPICS:
-                    writeResponse(exchange, RESPONSE_CODE_OK, epicGson.toJson(taskManager.getEpics()),
-                            CONTENT_TYPE_APPLICATION_JSON);
+                    handleGetEpics(exchange);
                     break;
                 case GET_SUBTASKS:
-                    writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTasks()),
-                            CONTENT_TYPE_APPLICATION_JSON);
+                    handleSubTasks(exchange);
                     break;
-                case GET_HISTORY:
-                    writeResponse(exchange, RESPONSE_CODE_OK, historyGson.toJson(taskManager.getHistory()),
-                            CONTENT_TYPE_APPLICATION_JSON);
+                case GET_SUBTASKS_BY_EPIC:
+                    handleGetSubTasksByEpic(exchange, query);
+                    break;
+                case GET_TASK_BY_ID:
+                    handleGetTaskById(exchange, query);
+                    break;
+                case GET_EPIC_BY_ID:
+                    handleGetEpicById(exchange, query);
+                    break;
+                case GET_SUBTASK_BY_ID:
+                    handleGetSubTaskById(exchange, query);
+                    break;
+                case DELETE_TASK_BY_ID:
+                    handleDeleteTaskById(exchange, query);
+                    break;
+                case DELETE_EPIC_BY_ID:
+                    handleDeleteEpicById(exchange, query);
+                    break;
+                case DELETE_SUBTASK_BY_ID:
+                    handleDeleteSubTaskById(exchange, query);
                     break;
                 default:
-                    writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, "Endpoint does not exist",
+                    writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_ENDPOINT_NOT_FOUND,
                             CONTENT_TYPE_TEXT_PLAIN);
             }
         }
@@ -125,6 +150,113 @@ public class HttpTaskServer {
                     .filter(endpoint -> endpoint.getRequestMethod().equals(requestMethod))
                     .findFirst()
                     .orElse(Endpoint.UNKNOWN);
+        }
+
+        private void handleGetHistory(HttpExchange exchange) throws IOException {
+            writeResponse(exchange, RESPONSE_CODE_OK, historyGson.toJson(taskManager.getHistory()),
+                    CONTENT_TYPE_APPLICATION_JSON);
+        }
+
+        private void handleGetTasks(HttpExchange exchange) throws IOException {
+            writeResponse(exchange, RESPONSE_CODE_OK, defaultGson.toJson(taskManager.getTasks()),
+                    CONTENT_TYPE_APPLICATION_JSON);
+        }
+
+        private void handleGetEpics(HttpExchange exchange) throws IOException {
+            writeResponse(exchange, RESPONSE_CODE_OK, epicGson.toJson(taskManager.getEpics()),
+                    CONTENT_TYPE_APPLICATION_JSON);
+        }
+
+        private void handleSubTasks(HttpExchange exchange) throws IOException {
+            writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTasks()),
+                    CONTENT_TYPE_APPLICATION_JSON);
+        }
+
+        private void handleGetSubTasksByEpic(HttpExchange exchange, String query) throws IOException {
+            int epicId = getTaskId(query);
+
+            if (isValidEpic(epicId)) {
+                writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTasksByEpic(epicId)),
+                        CONTENT_TYPE_APPLICATION_JSON);
+            } else {
+                writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_EPIC_NOT_FOUND,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            }
+        }
+
+        private void handleGetTaskById(HttpExchange exchange, String query) throws IOException {
+            int taskId = getTaskId(query);
+
+            if (isValidTask(taskId)) {
+                writeResponse(exchange, RESPONSE_CODE_OK, defaultGson.toJson(taskManager.getTaskById(taskId)),
+                        CONTENT_TYPE_APPLICATION_JSON);
+            } else {
+                writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_TASK_NOT_FOUND,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            }
+        }
+
+        private void handleGetEpicById(HttpExchange exchange, String query) throws IOException {
+            int epicId = getTaskId(query);
+
+            if (isValidEpic(epicId)) {
+                writeResponse(exchange, RESPONSE_CODE_OK, epicGson.toJson(taskManager.getEpicById(epicId)),
+                        CONTENT_TYPE_APPLICATION_JSON);
+            } else {
+                writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_EPIC_NOT_FOUND,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            }
+        }
+
+        private void handleGetSubTaskById(HttpExchange exchange, String query) throws IOException {
+            int subTaskId = getTaskId(query);
+
+            if (isValidSubTask(subTaskId)) {
+                writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTaskById(subTaskId)),
+                        CONTENT_TYPE_APPLICATION_JSON);
+            } else {
+                writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_SUBTASK_NOT_FOUND,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            }
+        }
+
+        private void handleDeleteTaskById(HttpExchange exchange, String query) throws IOException {
+            int taskId = getTaskId(query);
+
+            if (isValidTask(taskId)) {
+                taskManager.deleteTaskById(taskId);
+                writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_TASK_DELETED_SUCCESSFULLY,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            } else {
+                writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_TASK_NOT_FOUND,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            }
+        }
+
+        private void handleDeleteEpicById(HttpExchange exchange, String query) throws IOException {
+            int epicId = getTaskId(query);
+
+            if (isValidEpic(epicId)) {
+                taskManager.deleteEpicById(epicId);
+                writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_EPIC_DELETED_SUCCESSFULLY,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            } else {
+                writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_EPIC_NOT_FOUND,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            }
+        }
+
+        private void handleDeleteSubTaskById(HttpExchange exchange, String query) throws IOException {
+            int subTaskId = getTaskId(query);
+
+            if (isValidSubTask(subTaskId)) {
+                taskManager.deleteSubTaskById(subTaskId);
+                writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_SUBTASK_DELETED_SUCCESSFULLY,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            } else {
+                writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_SUBTASK_NOT_FOUND,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            }
         }
 
         private void writeResponse(HttpExchange exchange, int responseCode, String responseString,
@@ -149,37 +281,21 @@ public class HttpTaskServer {
                 }
             }
         }
-    }
 
-    private enum Endpoint {
-        GET_PRIORITIZED_TASKS("GET"),
-        GET_HISTORY("GET"),
-        GET_TASKS("GET"),
-        GET_EPICS("GET"),
-        GET_SUBTASKS("GET"),
-        GET_SUBTASKS_BY_EPIC("GET"),
-        GET_TASK_BY_ID("GET"),
-        GET_EPIC_BY_ID("GET"),
-        GET_SUBTASK_BY_ID("GET"),
-        DELETE_TASKS("DELETE"),
-        DELETE_EPICS("DELETE"),
-        DELETE_SUBTASKS("DELETE"),
-        DELETE_TASK_BY_ID("DELETE"),
-        DELETE_EPIC_BY_ID("DELETE"),
-        DELETE_SUBTASK_BY_ID("DELETE"),
-        POST_TASK("POST"),
-        POST_EPIC("POST"),
-        POST_SUBTASK("POST"),
-        UNKNOWN("");
-
-        private String requestMethod;
-
-        Endpoint(String requestMethod) {
-            this.requestMethod = requestMethod;
+        private int getTaskId(String query) {
+            return Integer.parseInt(query.replace("id=", ""));
         }
 
-        String getRequestMethod() {
-            return requestMethod;
+        private boolean isValidTask(int taskId) {
+            return taskManager.getTasks().stream().map(Task::getId).anyMatch(id -> taskId == id);
+        }
+
+        private boolean isValidEpic(int epicId) {
+            return taskManager.getEpics().stream().map(Epic::getId).anyMatch(id -> epicId == id);
+        }
+
+        private boolean isValidSubTask(int subTaskId) {
+            return taskManager.getSubTasks().stream().map(SubTask::getId).anyMatch(id -> subTaskId == id);
         }
     }
 }
