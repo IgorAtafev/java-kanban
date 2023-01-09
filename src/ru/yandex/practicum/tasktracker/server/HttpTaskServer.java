@@ -2,11 +2,13 @@ package ru.yandex.practicum.tasktracker.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
+import ru.yandex.practicum.tasktracker.manager.exception.TaskIntersectionException;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
@@ -48,11 +50,13 @@ public class HttpTaskServer {
     public static void main(String[] args) throws IOException {
         HttpTaskServer httpTaskServer = new HttpTaskServer(FileBackedTaskManager.loadFromFile("tasks.csv"));
         httpTaskServer.start();
-        httpTaskServer.stop();
+        //httpTaskServer.stop();
     }
 
     class TaskHandler implements HttpHandler {
         private static final int RESPONSE_CODE_OK = 200;
+        private static final int RESPONSE_CODE_CREATED = 201;
+        private static final int RESPONSE_CODE_BAD_REQUEST = 400;
         private static final int RESPONSE_CODE_NOT_FOUND = 404;
         private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
         private static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
@@ -61,9 +65,16 @@ public class HttpTaskServer {
         private static final String RESPONSE_BODY_TASK_NOT_FOUND = "Task with the specified ID was not found";
         private static final String RESPONSE_BODY_EPIC_NOT_FOUND = "Epic with the specified ID was not found";
         private static final String RESPONSE_BODY_SUBTASK_NOT_FOUND = "Subtask with the specified ID was not found";
+        private static final String RESPONSE_BODY_TASKS_DELETED_SUCCESSFULLY = "All tasks deleted successfully";
+        private static final String RESPONSE_BODY_EPICS_DELETED_SUCCESSFULLY = "All epics deleted successfully";
+        private static final String RESPONSE_BODY_SUBTASKS_DELETED_SUCCESSFULLY = "All subtasks deleted successfully";
         private static final String RESPONSE_BODY_TASK_DELETED_SUCCESSFULLY = "Task deleted successfully";
         private static final String RESPONSE_BODY_EPIC_DELETED_SUCCESSFULLY = "Epic deleted successfully";
         private static final String RESPONSE_BODY_SUBTASK_DELETED_SUCCESSFULLY = "Subtask deleted successfully";
+        private static final String RESPONSE_BODY_INCORRECT_JSON_RECEIVED = "Incorrect JSON received";
+        private static final String RESPONSE_BODY_NAME_CANNOT_BE_EMPTY = "Name cannot be empty";
+        private static final String RESPONSE_BODY_TASK_CREATED_SUCCESSFULLY = "Task created successfully";
+        private static final String RESPONSE_BODY_TASK_UPDATED_SUCCESSFULLY = "Task updated successfully";
 
         private final Gson defaultGson = new Gson();
         private final Gson epicGson = new GsonBuilder()
@@ -127,6 +138,15 @@ public class HttpTaskServer {
                 case GET_SUBTASK_BY_ID:
                     handleGetSubTaskById(exchange, query);
                     break;
+                case DELETE_TASKS:
+                    handleDeleteTasks(exchange);
+                    break;
+                case DELETE_EPICS:
+                    handleDeleteEpics(exchange);
+                    break;
+                case DELETE_SUBTASKS:
+                    handleDeleteSubTasks(exchange);
+                    break;
                 case DELETE_TASK_BY_ID:
                     handleDeleteTaskById(exchange, query);
                     break;
@@ -135,6 +155,9 @@ public class HttpTaskServer {
                     break;
                 case DELETE_SUBTASK_BY_ID:
                     handleDeleteSubTaskById(exchange, query);
+                    break;
+                case POST_TASK:
+                    handlePostTask(exchange);
                     break;
                 default:
                     writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_ENDPOINT_NOT_FOUND,
@@ -220,6 +243,24 @@ public class HttpTaskServer {
             }
         }
 
+        private void handleDeleteTasks(HttpExchange exchange) throws IOException {
+            taskManager.deleteTasks();
+            writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_TASKS_DELETED_SUCCESSFULLY,
+                    CONTENT_TYPE_TEXT_PLAIN);
+        }
+
+        private void handleDeleteEpics(HttpExchange exchange) throws IOException {
+            taskManager.deleteEpics();
+            writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_EPICS_DELETED_SUCCESSFULLY,
+                    CONTENT_TYPE_TEXT_PLAIN);
+        }
+
+        private void handleDeleteSubTasks(HttpExchange exchange) throws IOException {
+            taskManager.deleteSubTasks();
+            writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_SUBTASKS_DELETED_SUCCESSFULLY,
+                    CONTENT_TYPE_TEXT_PLAIN);
+        }
+
         private void handleDeleteTaskById(HttpExchange exchange, String query) throws IOException {
             int taskId = getTaskId(query);
 
@@ -255,6 +296,37 @@ public class HttpTaskServer {
                         CONTENT_TYPE_TEXT_PLAIN);
             } else {
                 writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_SUBTASK_NOT_FOUND,
+                        CONTENT_TYPE_TEXT_PLAIN);
+            }
+        }
+
+        private void handlePostTask(HttpExchange exchange) throws IOException {
+            String taskToJson = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
+
+            try {
+                Task task = defaultGson.fromJson(taskToJson, Task.class);
+                if (task.getName() == null || task.getName().isBlank()) {
+                    writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, RESPONSE_BODY_NAME_CANNOT_BE_EMPTY,
+                            CONTENT_TYPE_TEXT_PLAIN);
+                    return;
+                }
+
+                try {
+                    if (task.getId() == 0) {
+                        taskManager.createTask(task);
+                        writeResponse(exchange, RESPONSE_CODE_CREATED, RESPONSE_BODY_TASK_CREATED_SUCCESSFULLY,
+                                CONTENT_TYPE_TEXT_PLAIN);
+                    } else {
+                        taskManager.updateTask(task);
+                        writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_TASK_UPDATED_SUCCESSFULLY,
+                                CONTENT_TYPE_TEXT_PLAIN);
+                    }
+                } catch (TaskIntersectionException e) {
+                    writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, e.getMessage(),
+                            CONTENT_TYPE_TEXT_PLAIN);
+                }
+            } catch (JsonSyntaxException e) {
+                writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, RESPONSE_BODY_INCORRECT_JSON_RECEIVED,
                         CONTENT_TYPE_TEXT_PLAIN);
             }
         }
