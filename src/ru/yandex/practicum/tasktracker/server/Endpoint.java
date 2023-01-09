@@ -1,7 +1,6 @@
 package ru.yandex.practicum.tasktracker.server;
 
 public enum Endpoint {
-    GET_PRIORITIZED_TASKS("GET"),
     GET_HISTORY("GET"),
     GET_TASKS("GET"),
     GET_EPICS("GET"),
@@ -19,6 +18,7 @@ public enum Endpoint {
     POST_TASK("POST"),
     POST_EPIC("POST"),
     POST_SUBTASK("POST"),
+    GET_PRIORITIZED_TASKS("GET"),
     UNKNOWN("");
 
     private String requestMethod;
