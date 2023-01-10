@@ -6,13 +6,12 @@ import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.manager.exception.TaskIntersectionException;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
-import ru.yandex.practicum.tasktracker.util.EpicAdapter;
-import ru.yandex.practicum.tasktracker.util.SubTaskAdapter;
 import ru.yandex.practicum.tasktracker.util.TaskAdapter;
 
 import java.io.IOException;
@@ -46,6 +45,12 @@ public class HttpTaskServer {
         server.stop(0);
     }
 
+/*    public static void main(String[] args) throws IOException {
+        HttpTaskServer server = new HttpTaskServer(FileBackedTaskManager.loadFromFile("tasks.csv"));
+        server.start();
+        server.stop();
+    }*/
+
     class TaskHandler implements HttpHandler {
         private static final int RESPONSE_CODE_OK = 200;
         private static final int RESPONSE_CODE_CREATED = 201;
@@ -74,16 +79,16 @@ public class HttpTaskServer {
         private static final String RESPONSE_BODY_SUBTASK_UPDATED_SUCCESSFULLY = "Subtask updated successfully";
 
         private final Gson defaultGson = new Gson();
+        private final Gson taskGson = new GsonBuilder()
+                .registerTypeAdapter(Task.class, new TaskAdapter(taskManager))
+                .registerTypeAdapter(Epic.class, new TaskAdapter(taskManager))
+                .registerTypeAdapter(SubTask.class, new TaskAdapter(taskManager))
+                .create();
         private final Gson epicGson = new GsonBuilder()
-                .registerTypeAdapter(SubTask.class, new SubTaskAdapter(taskManager))
+                .registerTypeAdapter(SubTask.class, new TaskAdapter(taskManager))
                 .create();
         private final Gson subTaskGson = new GsonBuilder()
-                .registerTypeAdapter(Epic.class, new EpicAdapter(taskManager))
-                .create();
-        private final Gson tasksGson = new GsonBuilder()
-                .registerTypeAdapter(Task.class, new TaskAdapter(taskManager))
-                .registerTypeAdapter(Epic.class, new EpicAdapter(taskManager))
-                .registerTypeAdapter(SubTask.class, new SubTaskAdapter(taskManager))
+                .registerTypeAdapter(Epic.class, new TaskAdapter(taskManager))
                 .create();
 
         private final Map<String, List<Endpoint>> paths = new HashMap<>();
@@ -182,7 +187,7 @@ public class HttpTaskServer {
         }
 
         private void handleGetHistory(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, RESPONSE_CODE_OK, tasksGson.toJson(taskManager.getHistory()),
+            writeResponse(exchange, RESPONSE_CODE_OK, taskGson.toJson(taskManager.getHistory()),
                     CONTENT_TYPE_APPLICATION_JSON);
         }
 
@@ -389,7 +394,7 @@ public class HttpTaskServer {
         }
 
         private void handleGetPrioritizedTasks(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, RESPONSE_CODE_OK, tasksGson.toJson(taskManager.getPrioritizedTasks()),
+            writeResponse(exchange, RESPONSE_CODE_OK, taskGson.toJson(taskManager.getPrioritizedTasks()),
                     CONTENT_TYPE_APPLICATION_JSON);
         }
 

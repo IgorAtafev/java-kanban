@@ -49,14 +49,16 @@ class HttpTaskServerTest {
     private HttpClient client;
 
     private final Gson defaultGson = new Gson();
+    private final Gson taskGson = new GsonBuilder()
+            .registerTypeAdapter(Task.class, new TaskAdapter(taskManager))
+            .registerTypeAdapter(Epic.class, new TaskAdapter(taskManager))
+            .registerTypeAdapter(SubTask.class, new TaskAdapter(taskManager))
+            .create();
     private final Gson epicGson = new GsonBuilder()
             .registerTypeAdapter(SubTask.class, new TaskAdapter(taskManager))
             .create();
     private final Gson subTaskGson = new GsonBuilder()
             .registerTypeAdapter(Epic.class, new TaskAdapter(taskManager))
-            .create();
-    private final Gson taskGson = new GsonBuilder()
-            .registerTypeAdapter(Task.class, new TaskAdapter(taskManager))
             .create();
 
     @BeforeEach
