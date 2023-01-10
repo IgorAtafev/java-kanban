@@ -35,6 +35,9 @@ class HttpTaskServerTest {
     private static final String RESPONSE_BODY_TASK_NOT_FOUND = "Task with the specified ID was not found";
     private static final String RESPONSE_BODY_EPIC_NOT_FOUND = "Epic with the specified ID was not found";
     private static final String RESPONSE_BODY_SUBTASK_NOT_FOUND = "Subtask with the specified ID was not found";
+    private static final String RESPONSE_BODY_TASK_DELETED_SUCCESSFULLY = "Task deleted successfully";
+    private static final String RESPONSE_BODY_EPIC_DELETED_SUCCESSFULLY = "Epic deleted successfully";
+    private static final String RESPONSE_BODY_SUBTASK_DELETED_SUCCESSFULLY = "Subtask deleted successfully";
 
     private Task task1;
     private Task task2;
@@ -292,6 +295,116 @@ class HttpTaskServerTest {
 
         URI url = URI.create(URL + "/tasks/subtask/?id=100");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(RESPONSE_CODE_NOT_FOUND, response.statusCode());
+        assertEquals(RESPONSE_BODY_SUBTASK_NOT_FOUND, response.body());
+    }
+
+    @Test
+    void deleteTaskById_shouldRemoveTask() throws IOException, InterruptedException {
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+
+        URI url = URI.create(URL + "/tasks/task/?id=" + task1.getId());
+        HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(RESPONSE_CODE_OK, response.statusCode());
+        assertEquals(RESPONSE_BODY_TASK_DELETED_SUCCESSFULLY, response.body());
+
+        url = URI.create(URL + "/tasks/task/");
+        request = HttpRequest.newBuilder().uri(url).GET().build();
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        List<Task> expected = List.of(task2);
+        List<Task> actual = defaultGson.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+
+        assertEquals(RESPONSE_CODE_OK, response.statusCode());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteTaskById_shouldReturnResponseTaskNotFound_ifTaskDoesNotExist() throws IOException, InterruptedException {
+        taskManager.createTask(task1);
+
+        URI url = URI.create(URL + "/tasks/task/?id=100");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(RESPONSE_CODE_NOT_FOUND, response.statusCode());
+        assertEquals(RESPONSE_BODY_TASK_NOT_FOUND, response.body());
+    }
+
+    @Test
+    void deleteEpicById_shouldRemoveEpic() throws IOException, InterruptedException {
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+
+        URI url = URI.create(URL + "/tasks/epic/?id=" + epic1.getId());
+        HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(RESPONSE_CODE_OK, response.statusCode());
+        assertEquals(RESPONSE_BODY_EPIC_DELETED_SUCCESSFULLY, response.body());
+
+        url = URI.create(URL + "/tasks/epic/");
+        request = HttpRequest.newBuilder().uri(url).GET().build();
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        List<Epic> expected = List.of(epic2);
+        List<Epic> actual = epicGson.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
+
+        assertEquals(RESPONSE_CODE_OK, response.statusCode());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteEpicById_shouldReturnResponseEpicNotFound_ifTheEpicDoesNotExist()
+            throws IOException, InterruptedException {
+        taskManager.createEpic(epic1);
+
+        URI url = URI.create(URL + "/tasks/epic/?id=100");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(RESPONSE_CODE_NOT_FOUND, response.statusCode());
+        assertEquals(RESPONSE_BODY_EPIC_NOT_FOUND, response.body());
+    }
+
+    @Test
+    void deleteSubTaskById_shouldRemoveSubtask() throws IOException, InterruptedException {
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createSubTask(subTask1);
+        taskManager.createSubTask(subTask2);
+        taskManager.createSubTask(subTask3);
+
+        URI url = URI.create(URL + "/tasks/subtask/?id=" + subTask1.getId());
+        HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(RESPONSE_CODE_OK, response.statusCode());
+        assertEquals(RESPONSE_BODY_SUBTASK_DELETED_SUCCESSFULLY, response.body());
+
+        url = URI.create(URL + "/tasks/subtask/");
+        request = HttpRequest.newBuilder().uri(url).GET().build();
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        List<SubTask> expected = List.of(subTask2, subTask3);
+        List<SubTask> actual = subTaskGson.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
+
+        assertEquals(RESPONSE_CODE_OK, response.statusCode());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteSubTaskById_shouldReturnResponseSubtaskNotFound_ifSubtaskDoesNotExist()
+            throws IOException, InterruptedException {
+        taskManager.createEpic(epic1);
+
+        URI url = URI.create(URL + "/tasks/subtask/?id=100");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(RESPONSE_CODE_NOT_FOUND, response.statusCode());
