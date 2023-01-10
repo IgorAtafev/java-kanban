@@ -426,15 +426,21 @@ public class HttpTaskServer {
         }
 
         private boolean isValidTask(int taskId) {
-            return taskManager.getTasks().stream().map(Task::getId).anyMatch(id -> taskId == id);
+            return taskManager.getTasks().stream()
+                    .map(Task::getId)
+                    .anyMatch(id -> taskId == id);
         }
 
         private boolean isValidEpic(int epicId) {
-            return taskManager.getEpics().stream().map(Epic::getId).anyMatch(id -> epicId == id);
+            return taskManager.getEpics().stream()
+                    .map(Epic::getId)
+                    .anyMatch(id -> epicId == id);
         }
 
         private boolean isValidSubTask(int subTaskId) {
-            return taskManager.getSubTasks().stream().map(SubTask::getId).anyMatch(id -> subTaskId == id);
+            return taskManager.getSubTasks().stream()
+                    .map(SubTask::getId)
+                    .anyMatch(id -> subTaskId == id);
         }
     }
 }
