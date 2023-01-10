@@ -6,7 +6,6 @@ import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.manager.exception.TaskIntersectionException;
 import ru.yandex.practicum.tasktracker.model.Epic;
@@ -64,12 +63,12 @@ public class HttpTaskServer {
         private static final String RESPONSE_BODY_TASK_NOT_FOUND = "Task with the specified ID was not found";
         private static final String RESPONSE_BODY_EPIC_NOT_FOUND = "Epic with the specified ID was not found";
         private static final String RESPONSE_BODY_SUBTASK_NOT_FOUND = "Subtask with the specified ID was not found";
-        private static final String RESPONSE_BODY_TASKS_DELETED_SUCCESSFULLY = "All tasks deleted successfully";
-        private static final String RESPONSE_BODY_EPICS_DELETED_SUCCESSFULLY = "All epics deleted successfully";
-        private static final String RESPONSE_BODY_SUBTASKS_DELETED_SUCCESSFULLY = "All subtasks deleted successfully";
         private static final String RESPONSE_BODY_TASK_DELETED_SUCCESSFULLY = "Task deleted successfully";
         private static final String RESPONSE_BODY_EPIC_DELETED_SUCCESSFULLY = "Epic deleted successfully";
         private static final String RESPONSE_BODY_SUBTASK_DELETED_SUCCESSFULLY = "Subtask deleted successfully";
+        private static final String RESPONSE_BODY_TASKS_DELETED_SUCCESSFULLY = "All tasks deleted successfully";
+        private static final String RESPONSE_BODY_EPICS_DELETED_SUCCESSFULLY = "All epics deleted successfully";
+        private static final String RESPONSE_BODY_SUBTASKS_DELETED_SUCCESSFULLY = "All subtasks deleted successfully";
         private static final String RESPONSE_BODY_INCORRECT_JSON_RECEIVED = "Incorrect JSON received";
         private static final String RESPONSE_BODY_TASK_CREATED_SUCCESSFULLY = "Task created successfully";
         private static final String RESPONSE_BODY_TASK_UPDATED_SUCCESSFULLY = "Task updated successfully";
@@ -78,16 +77,16 @@ public class HttpTaskServer {
         private static final String RESPONSE_BODY_SUBTASK_CREATED_SUCCESSFULLY = "Subtask created successfully";
         private static final String RESPONSE_BODY_SUBTASK_UPDATED_SUCCESSFULLY = "Subtask updated successfully";
 
-        private final Gson defaultGson = new Gson();
-        private final Gson taskGson = new GsonBuilder()
+        private final Gson gsonDefault = new Gson();
+        private final Gson gsonTask = new GsonBuilder()
                 .registerTypeAdapter(Task.class, new TaskAdapter(taskManager))
                 .registerTypeAdapter(Epic.class, new TaskAdapter(taskManager))
                 .registerTypeAdapter(SubTask.class, new TaskAdapter(taskManager))
                 .create();
-        private final Gson epicGson = new GsonBuilder()
+        private final Gson gsonEpic = new GsonBuilder()
                 .registerTypeAdapter(SubTask.class, new TaskAdapter(taskManager))
                 .create();
-        private final Gson subTaskGson = new GsonBuilder()
+        private final Gson gsonSubTask = new GsonBuilder()
                 .registerTypeAdapter(Epic.class, new TaskAdapter(taskManager))
                 .create();
 
@@ -187,22 +186,22 @@ public class HttpTaskServer {
         }
 
         private void handleGetHistory(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, RESPONSE_CODE_OK, taskGson.toJson(taskManager.getHistory()),
+            writeResponse(exchange, RESPONSE_CODE_OK, gsonTask.toJson(taskManager.getHistory()),
                     CONTENT_TYPE_APPLICATION_JSON);
         }
 
         private void handleGetTasks(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, RESPONSE_CODE_OK, defaultGson.toJson(taskManager.getTasks()),
+            writeResponse(exchange, RESPONSE_CODE_OK, gsonDefault.toJson(taskManager.getTasks()),
                     CONTENT_TYPE_APPLICATION_JSON);
         }
 
         private void handleGetEpics(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, RESPONSE_CODE_OK, epicGson.toJson(taskManager.getEpics()),
+            writeResponse(exchange, RESPONSE_CODE_OK, gsonEpic.toJson(taskManager.getEpics()),
                     CONTENT_TYPE_APPLICATION_JSON);
         }
 
         private void handleSubTasks(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTasks()),
+            writeResponse(exchange, RESPONSE_CODE_OK, gsonSubTask.toJson(taskManager.getSubTasks()),
                     CONTENT_TYPE_APPLICATION_JSON);
         }
 
@@ -210,7 +209,7 @@ public class HttpTaskServer {
             int epicId = getTaskId(query);
 
             if (isValidEpic(epicId)) {
-                writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTasksByEpic(epicId)),
+                writeResponse(exchange, RESPONSE_CODE_OK, gsonSubTask.toJson(taskManager.getSubTasksByEpic(epicId)),
                         CONTENT_TYPE_APPLICATION_JSON);
             } else {
                 writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_EPIC_NOT_FOUND,
@@ -222,7 +221,7 @@ public class HttpTaskServer {
             int taskId = getTaskId(query);
 
             if (isValidTask(taskId)) {
-                writeResponse(exchange, RESPONSE_CODE_OK, defaultGson.toJson(taskManager.getTaskById(taskId)),
+                writeResponse(exchange, RESPONSE_CODE_OK, gsonDefault.toJson(taskManager.getTaskById(taskId)),
                         CONTENT_TYPE_APPLICATION_JSON);
             } else {
                 writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_TASK_NOT_FOUND,
@@ -234,7 +233,7 @@ public class HttpTaskServer {
             int epicId = getTaskId(query);
 
             if (isValidEpic(epicId)) {
-                writeResponse(exchange, RESPONSE_CODE_OK, epicGson.toJson(taskManager.getEpicById(epicId)),
+                writeResponse(exchange, RESPONSE_CODE_OK, gsonEpic.toJson(taskManager.getEpicById(epicId)),
                         CONTENT_TYPE_APPLICATION_JSON);
             } else {
                 writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_EPIC_NOT_FOUND,
@@ -246,7 +245,7 @@ public class HttpTaskServer {
             int subTaskId = getTaskId(query);
 
             if (isValidSubTask(subTaskId)) {
-                writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTaskById(subTaskId)),
+                writeResponse(exchange, RESPONSE_CODE_OK, gsonSubTask.toJson(taskManager.getSubTaskById(subTaskId)),
                         CONTENT_TYPE_APPLICATION_JSON);
             } else {
                 writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_SUBTASK_NOT_FOUND,
@@ -315,7 +314,7 @@ public class HttpTaskServer {
             String taskToJson = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
 
             try {
-                Task task = defaultGson.fromJson(taskToJson, Task.class);
+                Task task = gsonDefault.fromJson(taskToJson, Task.class);
 
                 try {
                     if (task.getId() == 0) {
@@ -344,7 +343,7 @@ public class HttpTaskServer {
             String epicToJson = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
 
             try {
-                Epic epic = epicGson.fromJson(epicToJson, Epic.class);
+                Epic epic = gsonEpic.fromJson(epicToJson, Epic.class);
 
                 if (epic.getId() == 0) {
                     taskManager.createEpic(epic);
@@ -368,7 +367,7 @@ public class HttpTaskServer {
             String subTaskToJson = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
 
             try {
-                SubTask subTask = subTaskGson.fromJson(subTaskToJson, SubTask.class);
+                SubTask subTask = gsonSubTask.fromJson(subTaskToJson, SubTask.class);
 
                 try {
                     if (subTask.getId() == 0) {
@@ -394,7 +393,7 @@ public class HttpTaskServer {
         }
 
         private void handleGetPrioritizedTasks(HttpExchange exchange) throws IOException {
-            writeResponse(exchange, RESPONSE_CODE_OK, taskGson.toJson(taskManager.getPrioritizedTasks()),
+            writeResponse(exchange, RESPONSE_CODE_OK, gsonTask.toJson(taskManager.getPrioritizedTasks()),
                     CONTENT_TYPE_APPLICATION_JSON);
         }
 

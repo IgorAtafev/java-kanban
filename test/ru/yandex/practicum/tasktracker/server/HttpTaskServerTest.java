@@ -38,6 +38,9 @@ class HttpTaskServerTest {
     private static final String RESPONSE_BODY_TASK_DELETED_SUCCESSFULLY = "Task deleted successfully";
     private static final String RESPONSE_BODY_EPIC_DELETED_SUCCESSFULLY = "Epic deleted successfully";
     private static final String RESPONSE_BODY_SUBTASK_DELETED_SUCCESSFULLY = "Subtask deleted successfully";
+    private static final String RESPONSE_BODY_TASKS_DELETED_SUCCESSFULLY = "All tasks deleted successfully";
+    private static final String RESPONSE_BODY_EPICS_DELETED_SUCCESSFULLY = "All epics deleted successfully";
+    private static final String RESPONSE_BODY_SUBTASKS_DELETED_SUCCESSFULLY = "All subtasks deleted successfully";
 
     private Task task1;
     private Task task2;
@@ -51,16 +54,14 @@ class HttpTaskServerTest {
     private HttpTaskServer server;
     private HttpClient client;
 
-    private final Gson defaultGson = new Gson();
-    private final Gson taskGson = new GsonBuilder()
+    private final Gson gsonDefault = new Gson();
+    private final Gson gsonTask = new GsonBuilder()
             .registerTypeAdapter(Task.class, new TaskAdapter(taskManager))
-            .registerTypeAdapter(Epic.class, new TaskAdapter(taskManager))
+            .create();
+    private final Gson gsonEpic = new GsonBuilder()
             .registerTypeAdapter(SubTask.class, new TaskAdapter(taskManager))
             .create();
-    private final Gson epicGson = new GsonBuilder()
-            .registerTypeAdapter(SubTask.class, new TaskAdapter(taskManager))
-            .create();
-    private final Gson subTaskGson = new GsonBuilder()
+    private final Gson gsonSubTask = new GsonBuilder()
             .registerTypeAdapter(Epic.class, new TaskAdapter(taskManager))
             .create();
 
@@ -96,7 +97,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(task1, task2, epic1, subTask1, subTask2);
-        List<Task> actual = taskGson.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+        List<Task> actual = gsonTask.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
 
         assertEquals(expected, actual);
     }
@@ -107,7 +108,7 @@ class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        List<Task> tasks = defaultGson.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+        List<Task> tasks = gsonDefault.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertTrue(tasks.isEmpty());
@@ -123,7 +124,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(task1, task2);
-        List<Task> actual = defaultGson.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+        List<Task> actual = gsonDefault.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -135,7 +136,7 @@ class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        List<Epic> epics = epicGson.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
+        List<Epic> epics = gsonEpic.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertTrue(epics.isEmpty());
@@ -151,7 +152,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Epic> expected = List.of(epic1, epic2);
-        List<Epic> actual = epicGson.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
+        List<Epic> actual = gsonEpic.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -163,7 +164,7 @@ class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        List<SubTask> subTasks = subTaskGson.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
+        List<SubTask> subTasks = gsonSubTask.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertTrue(subTasks.isEmpty());
@@ -182,7 +183,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> expected = List.of(subTask1, subTask2, subTask3);
-        List<SubTask> actual = subTaskGson.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
+        List<SubTask> actual = gsonSubTask.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -199,7 +200,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> expected = List.of(subTask1, subTask2);
-        List<SubTask> actual = subTaskGson.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
+        List<SubTask> actual = gsonSubTask.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -228,7 +229,7 @@ class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        Task task = defaultGson.fromJson(response.body(), Task.class);
+        Task task = gsonDefault.fromJson(response.body(), Task.class);
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(task1, task);
@@ -254,7 +255,7 @@ class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        Epic epic = epicGson.fromJson(response.body(), Epic.class);
+        Epic epic = gsonEpic.fromJson(response.body(), Epic.class);
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(epic1, epic);
@@ -281,7 +282,7 @@ class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        SubTask subTask = subTaskGson.fromJson(response.body(), SubTask.class);
+        SubTask subTask = gsonSubTask.fromJson(response.body(), SubTask.class);
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(subTask1, subTask);
@@ -318,7 +319,7 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(task2);
-        List<Task> actual = defaultGson.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+        List<Task> actual = gsonDefault.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -353,7 +354,7 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Epic> expected = List.of(epic2);
-        List<Epic> actual = epicGson.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
+        List<Epic> actual = gsonEpic.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -392,7 +393,7 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> expected = List.of(subTask2, subTask3);
-        List<SubTask> actual = subTaskGson.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
+        List<SubTask> actual = gsonSubTask.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -402,6 +403,7 @@ class HttpTaskServerTest {
     void deleteSubTaskById_shouldReturnResponseSubtaskNotFound_ifSubtaskDoesNotExist()
             throws IOException, InterruptedException {
         taskManager.createEpic(epic1);
+        taskManager.createSubTask(subTask1);
 
         URI url = URI.create(URL + "/tasks/subtask/?id=100");
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
