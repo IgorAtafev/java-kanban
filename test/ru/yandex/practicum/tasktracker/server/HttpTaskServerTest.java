@@ -18,7 +18,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -97,7 +96,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(task1, task2, epic1, subTask1, subTask2);
-        List<Task> actual = gsonTask.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+        List<Task> actual = gsonTask.fromJson(response.body(), new TypeToken<List<Task>>(){}.getType());
 
         assertEquals(expected, actual);
     }
@@ -108,7 +107,7 @@ class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        List<Task> tasks = gsonDefault.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+        List<Task> tasks = gsonDefault.fromJson(response.body(), new TypeToken<List<Task>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertTrue(tasks.isEmpty());
@@ -124,7 +123,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(task1, task2);
-        List<Task> actual = gsonDefault.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+        List<Task> actual = gsonDefault.fromJson(response.body(), new TypeToken<List<Task>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -136,7 +135,7 @@ class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        List<Epic> epics = gsonEpic.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
+        List<Epic> epics = gsonEpic.fromJson(response.body(), new TypeToken<List<Epic>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertTrue(epics.isEmpty());
@@ -152,7 +151,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Epic> expected = List.of(epic1, epic2);
-        List<Epic> actual = gsonEpic.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
+        List<Epic> actual = gsonEpic.fromJson(response.body(), new TypeToken<List<Epic>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -164,7 +163,7 @@ class HttpTaskServerTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        List<SubTask> subTasks = gsonSubTask.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
+        List<SubTask> subTasks = gsonSubTask.fromJson(response.body(), new TypeToken<List<SubTask>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertTrue(subTasks.isEmpty());
@@ -183,7 +182,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> expected = List.of(subTask1, subTask2, subTask3);
-        List<SubTask> actual = gsonSubTask.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
+        List<SubTask> actual = gsonSubTask.fromJson(response.body(), new TypeToken<List<SubTask>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -200,7 +199,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> expected = List.of(subTask1, subTask2);
-        List<SubTask> actual = gsonSubTask.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
+        List<SubTask> actual = gsonSubTask.fromJson(response.body(), new TypeToken<List<SubTask>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -319,7 +318,7 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(task2);
-        List<Task> actual = gsonDefault.fromJson(response.body(), new TypeToken<ArrayList<Task>>(){}.getType());
+        List<Task> actual = gsonDefault.fromJson(response.body(), new TypeToken<List<Task>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -354,7 +353,7 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Epic> expected = List.of(epic2);
-        List<Epic> actual = gsonEpic.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
+        List<Epic> actual = gsonEpic.fromJson(response.body(), new TypeToken<List<Epic>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
@@ -393,7 +392,7 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> expected = List.of(subTask2, subTask3);
-        List<SubTask> actual = gsonSubTask.fromJson(response.body(), new TypeToken<ArrayList<SubTask>>(){}.getType());
+        List<SubTask> actual = gsonSubTask.fromJson(response.body(), new TypeToken<List<SubTask>>(){}.getType());
 
         assertEquals(RESPONSE_CODE_OK, response.statusCode());
         assertEquals(expected, actual);
