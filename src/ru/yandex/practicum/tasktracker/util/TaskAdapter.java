@@ -7,6 +7,8 @@ import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class TaskAdapter extends TypeAdapter<Task> {
     private final TaskManager taskManager;
@@ -23,7 +25,8 @@ public class TaskAdapter extends TypeAdapter<Task> {
     @Override
     public Task read(JsonReader jsonReader) throws IOException {
         final int nextInt = jsonReader.nextInt();
-        return taskManager.getTasks().stream()
+        return Stream.of(taskManager.getTasks(), taskManager.getEpics(), taskManager.getSubTasks())
+                .flatMap(List::stream)
                 .filter(task -> nextInt == task.getId())
                 .findFirst()
                 .orElse(null);

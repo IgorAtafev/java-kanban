@@ -6,7 +6,6 @@ import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.manager.exception.TaskIntersectionException;
 import ru.yandex.practicum.tasktracker.model.Epic;
@@ -29,28 +28,22 @@ public class HttpTaskServer {
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-    private final HttpServer httpServer;
+    private final HttpServer server;
     private final TaskManager taskManager;
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
         this.taskManager = taskManager;
 
-        httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
-        httpServer.createContext("/tasks", new TaskHandler());
+        server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        server.createContext("/tasks", new TaskHandler());
     }
 
     public void start() {
-        httpServer.start();
+        server.start();
     }
 
     public void stop() {
-        httpServer.stop(0);
-    }
-
-    public static void main(String[] args) throws IOException {
-        HttpTaskServer httpTaskServer = new HttpTaskServer(FileBackedTaskManager.loadFromFile("tasks.csv"));
-        httpTaskServer.start();
-        httpTaskServer.stop();
+        server.stop(0);
     }
 
     class TaskHandler implements HttpHandler {
@@ -58,6 +51,7 @@ public class HttpTaskServer {
         private static final int RESPONSE_CODE_CREATED = 201;
         private static final int RESPONSE_CODE_BAD_REQUEST = 400;
         private static final int RESPONSE_CODE_NOT_FOUND = 404;
+
         private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
         private static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
 
