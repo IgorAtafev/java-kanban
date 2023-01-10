@@ -140,15 +140,6 @@ public class HttpTaskServer {
                 case GET_SUBTASK_BY_ID:
                     handleGetSubTaskById(exchange, query);
                     break;
-                case DELETE_TASKS:
-                    handleDeleteTasks(exchange);
-                    break;
-                case DELETE_EPICS:
-                    handleDeleteEpics(exchange);
-                    break;
-                case DELETE_SUBTASKS:
-                    handleDeleteSubTasks(exchange);
-                    break;
                 case DELETE_TASK_BY_ID:
                     handleDeleteTaskById(exchange, query);
                     break;
@@ -157,6 +148,15 @@ public class HttpTaskServer {
                     break;
                 case DELETE_SUBTASK_BY_ID:
                     handleDeleteSubTaskById(exchange, query);
+                    break;
+                case DELETE_TASKS:
+                    handleDeleteTasks(exchange);
+                    break;
+                case DELETE_EPICS:
+                    handleDeleteEpics(exchange);
+                    break;
+                case DELETE_SUBTASKS:
+                    handleDeleteSubTasks(exchange);
                     break;
                 case POST_TASK:
                     handlePostTask(exchange);
@@ -254,24 +254,6 @@ public class HttpTaskServer {
             }
         }
 
-        private void handleDeleteTasks(HttpExchange exchange) throws IOException {
-            taskManager.deleteTasks();
-            writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_TASKS_DELETED_SUCCESSFULLY,
-                    CONTENT_TYPE_TEXT_PLAIN);
-        }
-
-        private void handleDeleteEpics(HttpExchange exchange) throws IOException {
-            taskManager.deleteEpics();
-            writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_EPICS_DELETED_SUCCESSFULLY,
-                    CONTENT_TYPE_TEXT_PLAIN);
-        }
-
-        private void handleDeleteSubTasks(HttpExchange exchange) throws IOException {
-            taskManager.deleteSubTasks();
-            writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_SUBTASKS_DELETED_SUCCESSFULLY,
-                    CONTENT_TYPE_TEXT_PLAIN);
-        }
-
         private void handleDeleteTaskById(HttpExchange exchange, String query) throws IOException {
             int taskId = getTaskId(query);
 
@@ -309,6 +291,24 @@ public class HttpTaskServer {
                 writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, RESPONSE_BODY_SUBTASK_NOT_FOUND,
                         CONTENT_TYPE_TEXT_PLAIN);
             }
+        }
+
+        private void handleDeleteTasks(HttpExchange exchange) throws IOException {
+            taskManager.deleteTasks();
+            writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_TASKS_DELETED_SUCCESSFULLY,
+                    CONTENT_TYPE_TEXT_PLAIN);
+        }
+
+        private void handleDeleteEpics(HttpExchange exchange) throws IOException {
+            taskManager.deleteEpics();
+            writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_EPICS_DELETED_SUCCESSFULLY,
+                    CONTENT_TYPE_TEXT_PLAIN);
+        }
+
+        private void handleDeleteSubTasks(HttpExchange exchange) throws IOException {
+            taskManager.deleteSubTasks();
+            writeResponse(exchange, RESPONSE_CODE_OK, RESPONSE_BODY_SUBTASKS_DELETED_SUCCESSFULLY,
+                    CONTENT_TYPE_TEXT_PLAIN);
         }
 
         private void handlePostTask(HttpExchange exchange) throws IOException {
