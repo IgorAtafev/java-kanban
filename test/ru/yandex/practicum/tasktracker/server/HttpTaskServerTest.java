@@ -26,8 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HttpTaskServerTest {
-    private static final int PORT = 8080;
-    private static final String URL = "http://localhost:" + PORT;
+    private static final String URL = "http://localhost:" + HttpTaskServer.PORT;
 
     private static final int RESPONSE_CODE_OK = 200;
     private static final int RESPONSE_CODE_CREATED = 201;
@@ -79,7 +78,7 @@ class HttpTaskServerTest {
     @BeforeEach
     void setUp() throws IOException {
         initTasks();
-        server = new HttpTaskServer(PORT, taskManager);
+        server = new HttpTaskServer(taskManager);
         server.start();
         client = HttpClient.newHttpClient();
     }

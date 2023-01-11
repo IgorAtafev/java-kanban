@@ -23,17 +23,17 @@ import java.util.List;
 import java.util.Map;
 
 public class HttpTaskServer {
+    public static final int PORT = 8080;
+
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-    private final int port;
     private final TaskManager taskManager;
     private final HttpServer server;
 
-    public HttpTaskServer(int port, TaskManager taskManager) throws IOException {
-        this.port = port;
+    public HttpTaskServer(TaskManager taskManager) throws IOException {
         this.taskManager = taskManager;
 
-        server = HttpServer.create(new InetSocketAddress(port), 0);
+        server = HttpServer.create(new InetSocketAddress(PORT), 0);
         server.createContext("/tasks", new TaskHandler());
     }
 
