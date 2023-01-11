@@ -598,7 +598,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void createTask_shouldCreateATask() {
-        Task task3 = createEpic("Новая задача", "Описание задачи");
+        Task task3 = createTask("Новая задача", "Описание задачи");
 
         taskManager.createTask(task3);
 
@@ -646,8 +646,8 @@ class InMemoryTaskManagerTest {
 
         assertEquals(expected, actual);
 
-        assertEquals(taskManager.getTaskById(task1.getId()).getName(), "Обновленная задача");
-        assertEquals(taskManager.getTaskById(task1.getId()).getDescription(), "Описание обновленной задачи");
+        assertEquals("Обновленная задача", taskManager.getTaskById(task1.getId()).getName());
+        assertEquals("Описание обновленной задачи", taskManager.getTaskById(task1.getId()).getDescription());
     }
 
     @Test
@@ -655,6 +655,7 @@ class InMemoryTaskManagerTest {
         taskManager.createEpic(epic1);
         epic1.setName("Обновленный эпик");
         epic1.setDescription("Описание обновленного эпика");
+
         taskManager.updateEpic(epic1);
 
         List<Epic> expected = List.of(epic1);
@@ -662,8 +663,8 @@ class InMemoryTaskManagerTest {
 
         assertEquals(expected, actual);
 
-        assertEquals(taskManager.getEpicById(epic1.getId()).getName(), "Обновленный эпик");
-        assertEquals(taskManager.getEpicById(epic1.getId()).getDescription(), "Описание обновленного эпика");
+        assertEquals("Обновленный эпик", taskManager.getEpicById(epic1.getId()).getName());
+        assertEquals("Описание обновленного эпика", taskManager.getEpicById(epic1.getId()).getDescription());
     }
 
     @Test
@@ -672,6 +673,7 @@ class InMemoryTaskManagerTest {
         taskManager.createSubTask(subTask1);
         subTask1.setName("Обновленная подзадача");
         subTask1.setDescription("Описание обновленной подзадачи");
+
         taskManager.updateSubTask(subTask1);
 
         List<SubTask> expected = List.of(subTask1);
@@ -679,9 +681,9 @@ class InMemoryTaskManagerTest {
 
         assertEquals(expected, actual);
 
-        assertEquals(taskManager.getSubTaskById(subTask1.getId()).getName(), "Обновленная подзадача");
-        assertEquals(taskManager.getSubTaskById(subTask1.getId()).getDescription(),
-                "Описание обновленной подзадачи");
+        assertEquals("Обновленная подзадача", taskManager.getSubTaskById(subTask1.getId()).getName());
+        assertEquals("Описание обновленной подзадачи",
+                taskManager.getSubTaskById(subTask1.getId()).getDescription());
     }
 
     @Test
