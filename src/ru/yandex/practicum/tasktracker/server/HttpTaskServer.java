@@ -27,6 +27,16 @@ public class HttpTaskServer {
 
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
+    private static final int RESPONSE_CODE_OK = 200;
+    private static final int RESPONSE_CODE_CREATED = 201;
+    private static final int RESPONSE_CODE_BAD_REQUEST = 400;
+    private static final int RESPONSE_CODE_NOT_FOUND = 404;
+
+    private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
+    private static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
+
+    private final Gson gsonDefault = new Gson();
+
     private final TaskManager taskManager;
     private final HttpServer server;
 
@@ -46,14 +56,6 @@ public class HttpTaskServer {
     }
 
     class TaskHandler implements HttpHandler {
-        private static final int RESPONSE_CODE_OK = 200;
-        private static final int RESPONSE_CODE_CREATED = 201;
-        private static final int RESPONSE_CODE_BAD_REQUEST = 400;
-        private static final int RESPONSE_CODE_NOT_FOUND = 404;
-
-        private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
-        private static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
-
         private static final String ENDPOINT_NOT_FOUND = "Endpoint not found";
         private static final String TASK_NOT_FOUND = "Task with the specified ID was not found";
         private static final String EPIC_NOT_FOUND = "Epic with the specified ID was not found";
@@ -72,7 +74,6 @@ public class HttpTaskServer {
         private static final String SUBTASK_CREATED_SUCCESSFULLY = "Subtask created successfully";
         private static final String SUBTASK_UPDATED_SUCCESSFULLY = "Subtask updated successfully";
 
-        private final Gson gsonDefault = new Gson();
         private final Gson gsonTask = new GsonBuilder()
                 .registerTypeAdapter(Task.class, new TaskAdapter(taskManager))
                 .registerTypeAdapter(Epic.class, new TaskAdapter(taskManager))
