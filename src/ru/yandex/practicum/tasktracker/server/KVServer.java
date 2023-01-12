@@ -25,7 +25,6 @@ public class KVServer {
     }
 
     public void start() {
-        System.out.println("Запускаем сервер на порту " + PORT);
         server.start();
     }
 
