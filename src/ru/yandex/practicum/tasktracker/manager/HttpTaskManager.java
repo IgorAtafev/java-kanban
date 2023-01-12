@@ -3,6 +3,7 @@ package ru.yandex.practicum.tasktracker.manager;
 import com.google.gson.Gson;
 import ru.yandex.practicum.tasktracker.client.KVTaskClient;
 import ru.yandex.practicum.tasktracker.manager.exception.ManagerSaveException;
+import ru.yandex.practicum.tasktracker.server.KVServer;
 
 import java.io.IOException;
 
@@ -22,7 +23,7 @@ public class HttpTaskManager extends FileBackedTaskManager {
     private final Gson subTaskGson;
 
     private HttpTaskManager() {
-        this("http://localhost:8078");
+        this("http://localhost:" + KVServer.PORT);
     }
 
     private HttpTaskManager(String url) {
@@ -53,7 +54,7 @@ public class HttpTaskManager extends FileBackedTaskManager {
             client.put(SUBTASKS_KEY, subTasks);
             client.put(HISTORY_KEY, history);
         } catch (IOException | InterruptedException e) {
-            throw new ManagerSaveException("Server write error", e);
+            throw new ManagerSaveException("Error saving to server", e);
         }
     }
 }
