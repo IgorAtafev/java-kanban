@@ -38,7 +38,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private static final int TASK_EPIC_INDEX = 8;
 
     private final Path path;
+
     private final Map<Integer, Task> tasksFromFile = new HashMap<>();
+
+    protected FileBackedTaskManager() {
+        this("tasks.csv");
+    }
 
     private FileBackedTaskManager(String fileName) {
         this.path = Path.of("resources/" + fileName);
