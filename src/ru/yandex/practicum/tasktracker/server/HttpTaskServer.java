@@ -22,6 +22,7 @@ import java.util.Map;
 
 public class HttpTaskServer {
     public static final int PORT = 8080;
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     public static final int RESPONSE_CODE_OK = 200;
     public static final int RESPONSE_CODE_CREATED = 201;
@@ -46,8 +47,6 @@ public class HttpTaskServer {
     public static final String EPIC_UPDATED_SUCCESSFULLY = "Epic updated successfully";
     public static final String SUBTASK_CREATED_SUCCESSFULLY = "Subtask created successfully";
     public static final String SUBTASK_UPDATED_SUCCESSFULLY = "Subtask updated successfully";
-
-    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
     private static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";

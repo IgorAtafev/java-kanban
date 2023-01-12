@@ -12,7 +12,6 @@ import java.util.Map;
 
 public class KVServer {
     public static final int PORT = 8078;
-
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private final String apiToken;
