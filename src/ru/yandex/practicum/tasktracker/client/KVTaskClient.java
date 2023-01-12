@@ -34,7 +34,7 @@ public class KVTaskClient {
     /**
      * Returns the state of the task manager via a GET request /load/<key>?API_TOKEN=
      * @param key
-     * @return the state of the task manager
+     * @return state of the task manager
      */
     public String load(String key) throws IOException, InterruptedException {
         URI uri = URI.create(URL + "/load/" + key + "/?API_TOKEN=" + token);
