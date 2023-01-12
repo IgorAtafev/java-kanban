@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
 import ru.yandex.practicum.tasktracker.manager.Managers;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.model.Epic;
@@ -17,6 +18,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HttpTaskServerTest {
     private static final String URL = "http://localhost:" + HttpTaskServer.PORT;
 
-    private final TaskManager taskManager = Managers.getDefault();
+    private final TaskManager taskManager = FileBackedTaskManager.loadFromFile("test/empty.csv");
     private final Gson defaultGson = Managers.getDefaultGson();
     private final Gson taskGson = Managers.getTaskGson(taskManager);
     private final Gson epicGson = Managers.getEpicGson(taskManager);
@@ -46,6 +49,7 @@ class HttpTaskServerTest {
 
     @BeforeEach
     void setUp() throws IOException {
+        Files.writeString(Path.of("resources/test/empty.csv"), "");
         initTasks();
         server = new HttpTaskServer(taskManager);
         server.start();
@@ -53,7 +57,8 @@ class HttpTaskServerTest {
     }
 
     @AfterEach
-    void serverStop() {
+    void serverStop() throws IOException {
+        Files.writeString(Path.of("resources/test/empty.csv"), "");
         server.stop();
     }
 
