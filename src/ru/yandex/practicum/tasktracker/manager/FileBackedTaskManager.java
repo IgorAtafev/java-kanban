@@ -10,6 +10,7 @@ import ru.yandex.practicum.tasktracker.util.DateTimeFormatterHelper;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +27,8 @@ import java.util.stream.Stream;
  * Writes to a file and browsing history to a file and restores them from a file
  */
 public class FileBackedTaskManager extends InMemoryTaskManager {
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+
     private static final String FILE_HEADER = "id,type,name,status,description,start_time,duration,end_time,epic";
 
     private static final int TASK_ID_INDEX = 0;
@@ -150,7 +153,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager taskManager = new FileBackedTaskManager(fileName);
 
         try {
-            List<String> lines = Files.readAllLines(taskManager.path, StandardCharsets.UTF_8);
+            List<String> lines = Files.readAllLines(taskManager.path, DEFAULT_CHARSET);
 
             if (lines.size() <= 1) {
                 return taskManager;
@@ -179,8 +182,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return taskManager;
     }
 
-    private void save() {
-        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+    protected void save() {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, DEFAULT_CHARSET)) {
             writer.write(FILE_HEADER);
             writer.newLine();
 
