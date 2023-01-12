@@ -21,6 +21,10 @@ public class HttpTaskManager extends FileBackedTaskManager {
     private final Gson epicGson;
     private final Gson subTaskGson;
 
+    private HttpTaskManager() {
+        this("http://localhost:8078");
+    }
+
     private HttpTaskManager(String url) {
         this.url = url;
 
