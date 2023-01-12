@@ -52,12 +52,12 @@ public class HttpTaskServer {
     private static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
     private static final String CONTENT_TYPE_TEXT_PLAIN = "text/plain";
 
-    private final HttpServer server;
+    private final TaskManager taskManager;
     private final Gson defaultGson;
     private final Gson taskGson;
     private final Gson epicGson;
     private final Gson subTaskGson;
-    private final TaskManager taskManager;
+    private final HttpServer server;
 
     private final Map<String, List<Endpoint>> paths = new HashMap<>();
 
@@ -71,10 +71,6 @@ public class HttpTaskServer {
         paths.put("/tasks/task/\\?id=\\d+", List.of(Endpoint.GET_TASK_BY_ID, Endpoint.DELETE_TASK_BY_ID));
         paths.put("/tasks/epic/\\?id=\\d+", List.of(Endpoint.GET_EPIC_BY_ID, Endpoint.DELETE_EPIC_BY_ID));
         paths.put("/tasks/subtask/\\?id=\\d+", List.of(Endpoint.GET_SUBTASK_BY_ID, Endpoint.DELETE_SUBTASK_BY_ID));
-    }
-
-    public HttpTaskServer() throws IOException {
-        this(Managers.getDefault());
     }
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
@@ -100,7 +96,7 @@ public class HttpTaskServer {
     private void handleTasks(HttpExchange exchange) throws IOException {
         try {
             String path = exchange.getRequestURI().getPath();
-            String query = exchange.getRequestURI().getQuery();
+            String query = exchange.getRequestURI().getRawQuery();
             if (query != null) {
                 path += "?" + query;
             }

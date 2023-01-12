@@ -5,19 +5,24 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 public class KVServer {
     public static final int PORT = 8078;
+
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+
     private final String apiToken;
     private final HttpServer server;
+
     private final Map<String, String> data = new HashMap<>();
 
     public KVServer() throws IOException {
         apiToken = generateApiToken();
+
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/register", this::register);
         server.createContext("/save", this::save);
@@ -31,12 +36,6 @@ public class KVServer {
     public void stop() {
         server.stop(0);
     }
-
-/*    public static void main(String[] args) throws IOException {
-        KVServer kvServer = new KVServer();
-        kvServer.start();
-        kvServer.stop();
-    }*/
 
     private void load(HttpExchange h) throws IOException {
         try {
@@ -119,11 +118,11 @@ public class KVServer {
     }
 
     private String readText(HttpExchange h) throws IOException {
-        return new String(h.getRequestBody().readAllBytes(), UTF_8);
+        return new String(h.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
     }
 
     private void sendText(HttpExchange h, String text) throws IOException {
-        byte[] resp = text.getBytes(UTF_8);
+        byte[] resp = text.getBytes(DEFAULT_CHARSET);
         h.getResponseHeaders().add("Content-Type", "application/json");
         h.sendResponseHeaders(200, resp.length);
         h.getResponseBody().write(resp);
