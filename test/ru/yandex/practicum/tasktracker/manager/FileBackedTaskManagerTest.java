@@ -44,19 +44,21 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
 
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
         task1.setDuration(Duration.ofMinutes(30));
+        taskManager.createTask(task1);
+
         task2.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 40));
         task2.setDuration(Duration.ofMinutes(15));
+        taskManager.createTask(task2);
+
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
 
         subTask1.setStartTime(LocalDateTime.of(2022, 12, 22, 10, 30));
         subTask1.setDuration(Duration.ofMinutes(20));
+        taskManager.createSubTask(subTask1);
+
         subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 10, 50));
         subTask2.setDuration(Duration.ofMinutes(10));
-
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
-        taskManager.createEpic(epic1);
-        taskManager.createEpic(epic2);
-        taskManager.createSubTask(subTask1);
         taskManager.createSubTask(subTask2);
 
         taskManager.getTaskById(task1.getId());
@@ -79,18 +81,10 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         taskManager.updateEpic(epic1);
 
         taskManager.deleteTaskById(task1.getId());
-
-        subTask2.setStartTime(LocalDateTime.of(2022, 12, 22, 18, 15));
-        subTask2.setDuration(Duration.ofMinutes(15));
-        subTask2.setStatus(Status.DONE);
         taskManager.createSubTask(subTask3);
-
         taskManager.getSubTaskById(subTask3.getId());
-
         taskManager.deleteEpicById(epic1.getId());
-
         taskManager.deleteSubTaskById(subTask3.getId());
-
         taskManager.deleteTasks();
 
         Task task4 = createTask("Задача4", "Описание задачи");

@@ -62,7 +62,7 @@ class HttpTaskServerTest {
     }
 
     @AfterEach
-    void serverStop() throws IOException {
+    void serverStop() {
         httpTaskServer.stop();
         kvServer.stop();
     }

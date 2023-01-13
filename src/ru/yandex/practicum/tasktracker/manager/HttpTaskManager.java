@@ -40,7 +40,7 @@ public class HttpTaskManager extends FileBackedTaskManager {
             taskGson = Managers.getTaskGson(this);
             epicGson = Managers.getEpicGson(this);
             subTaskGson = Managers.getSubTaskGson(this);
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException | IllegalArgumentException e) {
             throw new ManagerSaveException("An error occurred while executing the request", e);
         }
     }
