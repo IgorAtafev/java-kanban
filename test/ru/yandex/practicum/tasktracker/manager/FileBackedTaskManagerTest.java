@@ -141,7 +141,7 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
     }
 
     @Test
-    void loadFromFile_shouldThrowAnException_ifTheFileIsNotFound() {
+    void load_shouldThrowAnException_ifTheFileIsNotFound() {
         ManagerSaveException exception = assertThrows(
                 ManagerSaveException.class,
                 () -> FileBackedTaskManager.load("file_not_found")
@@ -150,7 +150,7 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
     }
 
     @Test
-    void loadFromFile_shouldLoadTasksFromFileAndRestoreTaskListsAndHistory() {
+    void load_shouldLoadTasksFromFileAndRestoreTaskListsAndHistory() {
         FileBackedTaskManager taskManager = FileBackedTaskManager.load(FILE_TO_LOAD);
 
         Task task1 = createTask("Задача1", "Описание задачи");
