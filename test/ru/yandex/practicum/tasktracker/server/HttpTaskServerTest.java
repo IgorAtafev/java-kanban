@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HttpTaskServerTest {
     private static final String URL = "http://localhost:" + HttpTaskServer.PORT;
 
-    private final TaskManager taskManager = FileBackedTaskManager.loadFromFile("test/empty.csv");
+    private final TaskManager taskManager = FileBackedTaskManager.load("test/empty.csv");
     private final Gson defaultGson = Managers.getDefaultGson();
     private final Gson taskGson = Managers.getTaskGson(taskManager);
     private final Gson epicGson = Managers.getEpicGson(taskManager);

@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
+import ru.yandex.practicum.tasktracker.server.KVServer;
 import ru.yandex.practicum.tasktracker.util.TaskAdapter;
 
 public class Managers {
@@ -13,7 +14,7 @@ public class Managers {
      * @return task manager
      */
     public static TaskManager getDefault() {
-        return new InMemoryTaskManager();
+        return HttpTaskManager.load("http://localhost:" + KVServer.PORT);
     }
 
     /**

@@ -26,7 +26,7 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
 
     @Override
     protected FileBackedTaskManager createTaskManager() {
-        return FileBackedTaskManager.loadFromFile(EMPTY_FILE);
+        return FileBackedTaskManager.load(EMPTY_FILE);
     }
 
     @BeforeEach
@@ -40,7 +40,7 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
     void save_shouldSaveTasksToAFile() throws IOException {
         Path path = Path.of("resources/" + FILE_TO_SAVE);
         Files.writeString(path, "");
-        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(FILE_TO_SAVE);
+        FileBackedTaskManager taskManager = FileBackedTaskManager.load(FILE_TO_SAVE);
 
         task1.setStartTime(LocalDateTime.of(2022, 12, 22, 11, 0));
         task1.setDuration(Duration.ofMinutes(30));
@@ -144,14 +144,14 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
     void loadFromFile_shouldThrowAnException_ifTheFileIsNotFound() {
         ManagerSaveException exception = assertThrows(
                 ManagerSaveException.class,
-                () -> FileBackedTaskManager.loadFromFile("file_not_found")
+                () -> FileBackedTaskManager.load("file_not_found")
         );
         assertEquals("Error reading from file", exception.getMessage());
     }
 
     @Test
     void loadFromFile_shouldLoadTasksFromFileAndRestoreTaskListsAndHistory() {
-        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(FILE_TO_LOAD);
+        FileBackedTaskManager taskManager = FileBackedTaskManager.load(FILE_TO_LOAD);
 
         Task task1 = createTask("Задача1", "Описание задачи");
         task1.setId(1);

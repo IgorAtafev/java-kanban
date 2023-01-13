@@ -51,11 +51,9 @@ public class KVServer {
                 }
 
                 String value = data.get(key);
-                if (value.isEmpty()) {
-                    h.sendResponseHeaders(400, 0);
-                    return;
+                if (value == null) {
+                    value = "";
                 }
-
                 sendText(h, value);
             } else {
                 h.sendResponseHeaders(405, 0);

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Writes to a file and browsing history to a file and restores them from a file
+ * Saves tasks and browsing history to a file and restores them from a file
  */
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
@@ -147,9 +147,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     /**
      * Restore manager data from a file
+     * @param fileName
      * @return task manager
      */
-    public static FileBackedTaskManager loadFromFile(String fileName) {
+    public static FileBackedTaskManager load(String fileName) {
         FileBackedTaskManager taskManager = new FileBackedTaskManager(fileName);
 
         try {
