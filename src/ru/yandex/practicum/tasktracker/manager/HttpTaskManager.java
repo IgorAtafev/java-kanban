@@ -96,10 +96,18 @@ public class HttpTaskManager extends FileBackedTaskManager {
         String history = taskGson.toJson(getHistory());
 
         try {
-            client.put(TASKS_KEY, tasks);
-            client.put(EPICS_KEY, epics);
-            client.put(SUBTASKS_KEY, subTasks);
-            client.put(HISTORY_KEY, history);
+            if (!tasks.isBlank()) {
+                client.put(TASKS_KEY, tasks);
+            }
+            if (!epics.isBlank()) {
+                client.put(EPICS_KEY, epics);
+            }
+            if (!subTasks.isBlank()) {
+                client.put(SUBTASKS_KEY, subTasks);
+            }
+            if (!history.isBlank()) {
+                client.put(HISTORY_KEY, history);
+            }
         } catch (IOException | InterruptedException e) {
             throw new ManagerSaveException("Error saving to server", e);
         }

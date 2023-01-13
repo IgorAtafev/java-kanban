@@ -5,7 +5,6 @@ import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.tasktracker.manager.FileBackedTaskManager;
 import ru.yandex.practicum.tasktracker.manager.Managers;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.model.Epic;
@@ -18,8 +17,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HttpTaskServerTest {
     private static final String URL = "http://localhost:" + HttpTaskServer.PORT;
 
-    private final TaskManager taskManager = FileBackedTaskManager.load("test/empty.csv");
-    private final Gson defaultGson = Managers.getDefaultGson();
-    private final Gson taskGson = Managers.getTaskGson(taskManager);
-    private final Gson epicGson = Managers.getEpicGson(taskManager);
-    private final Gson subTaskGson = Managers.getSubTaskGson(taskManager);
-
-    private HttpTaskServer server;
+    private KVServer kvServer;
+    private TaskManager taskManager;
+    private Gson defaultGson;
+    private Gson taskGson;
+    private Gson epicGson;
+    private Gson subTaskGson;
+    private HttpTaskServer httpTaskServer;
     private HttpClient client;
 
     private Task task1;
@@ -49,17 +46,25 @@ class HttpTaskServerTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        Files.writeString(Path.of("resources/test/empty.csv"), "");
         initTasks();
-        server = new HttpTaskServer(taskManager);
-        server.start();
+        kvServer = new KVServer();
+        kvServer.start();
+
+        taskManager = Managers.getDefault();
+        defaultGson = Managers.getDefaultGson();
+        taskGson = Managers.getTaskGson(taskManager);
+        epicGson = Managers.getEpicGson(taskManager);
+        subTaskGson = Managers.getSubTaskGson(taskManager);
+
+        httpTaskServer = new HttpTaskServer(taskManager);
+        httpTaskServer.start();
         client = HttpClient.newHttpClient();
     }
 
     @AfterEach
     void serverStop() throws IOException {
-        Files.writeString(Path.of("resources/test/empty.csv"), "");
-        server.stop();
+        httpTaskServer.stop();
+        kvServer.stop();
     }
 
     @Test
