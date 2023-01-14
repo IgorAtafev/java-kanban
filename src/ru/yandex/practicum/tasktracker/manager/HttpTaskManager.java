@@ -55,7 +55,7 @@ public class HttpTaskManager extends FileBackedTaskManager {
         List<Task> tasks = taskManager.defaultGson.fromJson(tasksToJson, new TypeToken<List<Task>>(){}.getType());
         tasks.forEach(taskManager::updateTask);
 
-        epicsToJson = epicsToJson.replaceAll("\"subTasks\":\\[\\d+(,\\d+)*\\],", "");
+        epicsToJson = epicsToJson.replaceFirst("\"subTasks\":\\[\\d+(,\\d+)*\\],", "");
         List<Epic> epics = taskManager.defaultGson.fromJson(epicsToJson, new TypeToken<List<Epic>>(){}.getType());
         epics.forEach(taskManager::updateEpic);
 
