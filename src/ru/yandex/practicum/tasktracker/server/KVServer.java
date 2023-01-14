@@ -15,20 +15,19 @@ public class KVServer {
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private final String apiToken;
-    private final HttpServer server;
+    private HttpServer server;
 
     private final Map<String, String> data = new HashMap<>();
 
-    public KVServer() throws IOException {
+    public KVServer() {
         apiToken = generateApiToken();
+    }
 
+    public void start() throws IOException {
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/register", this::register);
         server.createContext("/save", this::save);
         server.createContext("/load", this::load);
-    }
-
-    public void start() {
         server.start();
     }
 

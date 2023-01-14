@@ -56,11 +56,11 @@ public class HttpTaskServer {
     private final Gson taskGson;
     private final Gson epicGson;
     private final Gson subTaskGson;
-    private final HttpServer server;
+    private  HttpServer server;
 
     private final Map<String, List<Endpoint>> paths = new HashMap<>();
 
-    public HttpTaskServer(TaskManager taskManager) throws IOException {
+    public HttpTaskServer(TaskManager taskManager) {
         this.taskManager = taskManager;
 
         defaultGson = Managers.getDefaultGson();
@@ -68,12 +68,12 @@ public class HttpTaskServer {
         epicGson = Managers.getEpicGson(taskManager);
         subTaskGson = Managers.getSubTaskGson(taskManager);
 
-        server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
-        server.createContext("/tasks", this::handleTasks);
         fillPaths();
     }
 
-    public void start() {
+    public void start() throws IOException {
+        server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
+        server.createContext("/tasks", this::handleTasks);
         server.start();
     }
 
