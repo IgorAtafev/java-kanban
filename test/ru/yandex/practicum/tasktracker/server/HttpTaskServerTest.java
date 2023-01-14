@@ -365,6 +365,7 @@ class HttpTaskServerTest {
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
         assertEquals(HttpTaskServer.TASK_DELETED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/task/");
         request = HttpRequest.newBuilder().uri(uri).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -408,6 +409,7 @@ class HttpTaskServerTest {
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
         assertEquals(HttpTaskServer.EPIC_DELETED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/epic/");
         request = HttpRequest.newBuilder().uri(uri).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -455,6 +457,7 @@ class HttpTaskServerTest {
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
         assertEquals(HttpTaskServer.SUBTASK_DELETED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/subtask/");
         request = HttpRequest.newBuilder().uri(uri).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -500,6 +503,7 @@ class HttpTaskServerTest {
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
         assertEquals(HttpTaskServer.TASKS_DELETED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/task/");
         request = HttpRequest.newBuilder().uri(uri).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -527,6 +531,7 @@ class HttpTaskServerTest {
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
         assertEquals(HttpTaskServer.EPICS_DELETED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/epic/");
         request = HttpRequest.newBuilder().uri(uri).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -557,6 +562,7 @@ class HttpTaskServerTest {
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
         assertEquals(HttpTaskServer.SUBTASKS_DELETED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/subtask/");
         request = HttpRequest.newBuilder().uri(uri).GET().build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());

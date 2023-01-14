@@ -31,7 +31,6 @@ public class KVTaskClient {
                     .uri(uri)
                     .POST(body)
                     .build();
-
             client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException | IllegalArgumentException e) {
             throw new HttpRequestSendException("An error occurred while executing the save manager state request", e);
@@ -51,7 +50,6 @@ public class KVTaskClient {
                     .uri(uri)
                     .GET()
                     .build();
-
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             return response.body();
@@ -68,7 +66,6 @@ public class KVTaskClient {
                     .uri(uri)
                     .GET()
                     .build();
-
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             return response.body();
