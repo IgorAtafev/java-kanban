@@ -24,13 +24,13 @@ public class KVTaskClient {
      */
     public void put(String key, String value) {
         try {
-            HttpClient client = HttpClient.newHttpClient();
             URI uri = URI.create(url + "/save/" + key + "/?API_TOKEN=" + token);
             HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(value);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
                     .POST(body)
                     .build();
+            HttpClient client = HttpClient.newHttpClient();
             client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException | IllegalArgumentException e) {
             throw new HttpRequestSendException("An error occurred while executing the save manager state request", e);
@@ -44,12 +44,12 @@ public class KVTaskClient {
      */
     public String load(String key) {
         try {
-            HttpClient client = HttpClient.newHttpClient();
             URI uri = URI.create(url + "/load/" + key + "/?API_TOKEN=" + token);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
                     .GET()
                     .build();
+            HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             return response.body();
@@ -60,12 +60,12 @@ public class KVTaskClient {
 
     private String register() {
         try {
-            HttpClient client = HttpClient.newHttpClient();
             URI uri = URI.create(url + "/register/");
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
                     .GET()
                     .build();
+            HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             return response.body();
