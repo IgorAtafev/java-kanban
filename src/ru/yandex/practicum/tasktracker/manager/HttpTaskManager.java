@@ -3,12 +3,10 @@ package ru.yandex.practicum.tasktracker.manager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import ru.yandex.practicum.tasktracker.client.KVTaskClient;
-import ru.yandex.practicum.tasktracker.manager.exception.ManagerSaveException;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.SubTask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -21,8 +19,6 @@ public class HttpTaskManager extends FileBackedTaskManager {
     private static final String SUBTASKS_KEY = "subtasks";
     private static final String HISTORY_KEY = "history";
 
-    private final String url;
-
     private final KVTaskClient client;
 
     private final Gson defaultGson;
@@ -31,18 +27,12 @@ public class HttpTaskManager extends FileBackedTaskManager {
     private final Gson subTaskGson;
 
     public HttpTaskManager(String url) {
-        this.url = url;
+        client = new KVTaskClient(url);
 
-        try {
-            client = new KVTaskClient(url);
-
-            defaultGson = Managers.getDefaultGson();
-            taskGson = Managers.getTaskGson(this);
-            epicGson = Managers.getEpicGson(this);
-            subTaskGson = Managers.getSubTaskGson(this);
-        } catch (IOException | InterruptedException | IllegalArgumentException e) {
-            throw new ManagerSaveException("An error occurred while executing the request", e);
-        }
+        defaultGson = Managers.getDefaultGson();
+        taskGson = Managers.getTaskGson(this);
+        epicGson = Managers.getEpicGson(this);
+        subTaskGson = Managers.getSubTaskGson(this);
     }
 
     /**
@@ -53,37 +43,33 @@ public class HttpTaskManager extends FileBackedTaskManager {
     public static HttpTaskManager load(String url) {
         HttpTaskManager taskManager = new HttpTaskManager(url);
 
-        try {
-            String tasksToJson = taskManager.client.load(TASKS_KEY);
-            String epicsToJson = taskManager.client.load(EPICS_KEY);
-            String subTasksToJson = taskManager.client.load(SUBTASKS_KEY);
-            String historyToJson = taskManager.client.load(HISTORY_KEY);
+        String tasksToJson = taskManager.client.load(TASKS_KEY);
+        String epicsToJson = taskManager.client.load(EPICS_KEY);
+        String subTasksToJson = taskManager.client.load(SUBTASKS_KEY);
+        String historyToJson = taskManager.client.load(HISTORY_KEY);
 
-            if (tasksToJson.isBlank() && epicsToJson.isBlank()) {
-                return taskManager;
-            }
-
-            List<Task> tasks = taskManager.defaultGson.fromJson(tasksToJson, new TypeToken<List<Task>>(){}.getType());
-            tasks.stream().forEach(taskManager::updateTask);
-
-            epicsToJson = epicsToJson.replaceAll("\"subTasks\":\\[\\d+(,\\d+)*\\],", "");
-            List<Epic> epics = taskManager.defaultGson.fromJson(epicsToJson, new TypeToken<List<Epic>>(){}.getType());
-            epics.stream().forEach(taskManager::updateEpic);
-
-            List<SubTask> subTasks = taskManager.subTaskGson.fromJson(subTasksToJson, new TypeToken<List<SubTask>>(){}.getType());
-            subTasks.stream().forEach(taskManager::updateSubTask);
-
-            List<Task> history = taskManager.taskGson.fromJson(historyToJson, new TypeToken<List<Task>>(){}.getType());
-            history.stream().forEach(taskManager.historyManager::add);
-
-            taskManager.nextTaskId = Stream.of(tasks, epics, subTasks)
-                    .flatMap(List::stream)
-                    .map(Task::getId)
-                    .max(Integer::compareTo)
-                    .get();
-        } catch (IOException | InterruptedException e) {
-            throw new ManagerSaveException("Server restore error", e);
+        if (tasksToJson.isBlank() && epicsToJson.isBlank()) {
+            return taskManager;
         }
+
+        List<Task> tasks = taskManager.defaultGson.fromJson(tasksToJson, new TypeToken<List<Task>>(){}.getType());
+        tasks.forEach(taskManager::updateTask);
+
+        epicsToJson = epicsToJson.replaceAll("\"subTasks\":\\[\\d+(,\\d+)*\\],", "");
+        List<Epic> epics = taskManager.defaultGson.fromJson(epicsToJson, new TypeToken<List<Epic>>(){}.getType());
+        epics.forEach(taskManager::updateEpic);
+
+        List<SubTask> subTasks = taskManager.subTaskGson.fromJson(subTasksToJson, new TypeToken<List<SubTask>>(){}.getType());
+        subTasks.forEach(taskManager::updateSubTask);
+
+        List<Task> history = taskManager.taskGson.fromJson(historyToJson, new TypeToken<List<Task>>(){}.getType());
+        history.forEach(taskManager.historyManager::add);
+
+        taskManager.nextTaskId = Stream.of(tasks, epics, subTasks)
+                .flatMap(List::stream)
+                .map(Task::getId)
+                .max(Integer::compareTo)
+                .orElse(0);
 
         return taskManager;
     }
@@ -95,13 +81,9 @@ public class HttpTaskManager extends FileBackedTaskManager {
         String subTasks = subTaskGson.toJson(getSubTasks());
         String history = taskGson.toJson(getHistory());
 
-        try {
-            client.put(TASKS_KEY, tasks);
-            client.put(EPICS_KEY, epics);
-            client.put(SUBTASKS_KEY, subTasks);
-            client.put(HISTORY_KEY, history);
-        } catch (IOException | InterruptedException e) {
-            throw new ManagerSaveException("Error saving to server", e);
-        }
+        client.put(TASKS_KEY, tasks);
+        client.put(EPICS_KEY, epics);
+        client.put(SUBTASKS_KEY, subTasks);
+        client.put(HISTORY_KEY, history);
     }
 }

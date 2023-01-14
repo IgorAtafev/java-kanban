@@ -34,7 +34,6 @@ class HttpTaskServerTest {
     private Gson epicGson;
     private Gson subTaskGson;
     private HttpTaskServer httpTaskServer;
-    private HttpClient client;
 
     private Task task1;
     private Task task2;
@@ -58,7 +57,6 @@ class HttpTaskServerTest {
 
         httpTaskServer = new HttpTaskServer(taskManager);
         httpTaskServer.start();
-        client = HttpClient.newHttpClient();
     }
 
     @AfterEach
@@ -81,8 +79,12 @@ class HttpTaskServerTest {
         taskManager.getSubTaskById(subTask1.getId());
         taskManager.getSubTaskById(subTask2.getId());
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/history/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(task1, task2, epic1, subTask1, subTask2);
@@ -93,8 +95,12 @@ class HttpTaskServerTest {
 
     @Test
     void getTasks_shouldReturnEmptyListOfTasks() throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> tasks = defaultGson.fromJson(response.body(), new TypeToken<List<Task>>(){}.getType());
@@ -108,8 +114,12 @@ class HttpTaskServerTest {
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(task1, task2);
@@ -121,8 +131,12 @@ class HttpTaskServerTest {
 
     @Test
     void getEpics_shouldReturnEmptyListOfEpics() throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Epic> epics = epicGson.fromJson(response.body(), new TypeToken<List<Epic>>(){}.getType());
@@ -136,8 +150,12 @@ class HttpTaskServerTest {
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Epic> expected = List.of(epic1, epic2);
@@ -149,8 +167,12 @@ class HttpTaskServerTest {
 
     @Test
     void getSubTasks_shouldReturnEmptyListOfSubtasks() throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> subTasks = subTaskGson.fromJson(response.body(), new TypeToken<List<SubTask>>(){}.getType());
@@ -167,8 +189,12 @@ class HttpTaskServerTest {
         taskManager.createSubTask(subTask2);
         taskManager.createSubTask(subTask3);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> expected = List.of(subTask1, subTask2, subTask3);
@@ -184,8 +210,12 @@ class HttpTaskServerTest {
         taskManager.createSubTask(subTask1);
         taskManager.createSubTask(subTask2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/epic/?id=" + epic1.getId());
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> expected = List.of(subTask1, subTask2);
@@ -202,8 +232,12 @@ class HttpTaskServerTest {
         taskManager.createSubTask(subTask1);
         taskManager.createSubTask(subTask2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/epic/?id=100");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_NOT_FOUND, response.statusCode());
@@ -214,8 +248,12 @@ class HttpTaskServerTest {
     void getTaskById_shouldReturnTaskById() throws IOException, InterruptedException {
         taskManager.createTask(task1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/?id=" + task1.getId());
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Task task = defaultGson.fromJson(response.body(), Task.class);
@@ -228,8 +266,12 @@ class HttpTaskServerTest {
     void getTaskById_shouldReturnResponseTaskNotFound_ifTaskDoesNotExist() throws IOException, InterruptedException {
         taskManager.createTask(task1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/?id=100");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_NOT_FOUND, response.statusCode());
@@ -240,8 +282,12 @@ class HttpTaskServerTest {
     void getEpicById_shouldReturnEpicById() throws IOException, InterruptedException {
         taskManager.createEpic(epic1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/?id=" + epic1.getId());
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Epic epic = epicGson.fromJson(response.body(), Epic.class);
@@ -254,8 +300,12 @@ class HttpTaskServerTest {
     void getEpicById_shouldReturnResponseEpicNotFound_ifTheEpicDoesNotExist() throws IOException, InterruptedException {
         taskManager.createEpic(epic1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/?id=100");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_NOT_FOUND, response.statusCode());
@@ -267,8 +317,12 @@ class HttpTaskServerTest {
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subTask1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/?id=" + subTask1.getId());
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         SubTask subTask = subTaskGson.fromJson(response.body(), SubTask.class);
@@ -283,8 +337,12 @@ class HttpTaskServerTest {
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subTask1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/?id=100");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_NOT_FOUND, response.statusCode());
@@ -296,8 +354,12 @@ class HttpTaskServerTest {
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/?id=" + task1.getId());
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).DELETE().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .DELETE()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
@@ -318,8 +380,12 @@ class HttpTaskServerTest {
     void deleteTaskById_shouldReturnResponseTaskNotFound_ifTaskDoesNotExist() throws IOException, InterruptedException {
         taskManager.createTask(task1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/?id=100");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).DELETE().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .DELETE()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_NOT_FOUND, response.statusCode());
@@ -331,8 +397,12 @@ class HttpTaskServerTest {
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/?id=" + epic1.getId());
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).DELETE().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .DELETE()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
@@ -354,8 +424,12 @@ class HttpTaskServerTest {
             throws IOException, InterruptedException {
         taskManager.createEpic(epic1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/?id=100");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).DELETE().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .DELETE()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_NOT_FOUND, response.statusCode());
@@ -370,8 +444,12 @@ class HttpTaskServerTest {
         taskManager.createSubTask(subTask2);
         taskManager.createSubTask(subTask3);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/?id=" + subTask1.getId());
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).DELETE().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .DELETE()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
@@ -394,8 +472,12 @@ class HttpTaskServerTest {
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subTask1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/?id=100");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).DELETE().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .DELETE()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_NOT_FOUND, response.statusCode());
@@ -407,8 +489,12 @@ class HttpTaskServerTest {
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).DELETE().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .DELETE()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
@@ -430,8 +516,12 @@ class HttpTaskServerTest {
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).DELETE().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .DELETE()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
@@ -456,8 +546,12 @@ class HttpTaskServerTest {
         taskManager.createSubTask(subTask2);
         taskManager.createSubTask(subTask3);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).DELETE().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .DELETE()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
@@ -476,8 +570,12 @@ class HttpTaskServerTest {
 
     @Test
     void createTask_shouldCreateATask() throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> tasks = defaultGson.fromJson(response.body(), new TypeToken<List<Task>>(){}.getType());
@@ -487,16 +585,24 @@ class HttpTaskServerTest {
 
         String taskToJson = defaultGson.toJson(task1);
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/task/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(taskToJson);
-        request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_CREATED, response.statusCode());
         assertEquals(HttpTaskServer.TASK_CREATED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/task/");
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         tasks = defaultGson.fromJson(response.body(), new TypeToken<List<Task>>(){}.getType());
@@ -510,9 +616,13 @@ class HttpTaskServerTest {
             throws IOException, InterruptedException {
         String taskToJson = "{incorrect json}";
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(taskToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_BAD_REQUEST, response.statusCode());
@@ -531,16 +641,24 @@ class HttpTaskServerTest {
 
         String taskToJson = defaultGson.toJson(task2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(taskToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_BAD_REQUEST, response.statusCode());
         assertEquals("Task execution time intersect with other tasks", response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/task/");
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(task1);
@@ -552,8 +670,12 @@ class HttpTaskServerTest {
 
     @Test
     void createEpic_shouldCreateAnEpic() throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Epic> epics = epicGson.fromJson(response.body(), new TypeToken<List<Epic>>(){}.getType());
@@ -563,16 +685,24 @@ class HttpTaskServerTest {
 
         String epicToJson = epicGson.toJson(epic1);
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/epic/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(epicToJson);
-        request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_CREATED, response.statusCode());
         assertEquals(HttpTaskServer.EPIC_CREATED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/epic/");
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         epics = epicGson.fromJson(response.body(), new TypeToken<List<Epic>>(){}.getType());
@@ -586,9 +716,13 @@ class HttpTaskServerTest {
             throws IOException, InterruptedException {
         String epicToJson = "{incorrect json}";
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(epicToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_BAD_REQUEST, response.statusCode());
@@ -597,8 +731,12 @@ class HttpTaskServerTest {
 
     @Test
     void createSubTask_shouldCreateASubtask() throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> subTasks = subTaskGson.fromJson(response.body(), new TypeToken<List<SubTask>>(){}.getType());
@@ -610,16 +748,24 @@ class HttpTaskServerTest {
 
         String subTaskToJson = subTaskGson.toJson(subTask1);
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/subtask/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(subTaskToJson);
-        request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_CREATED, response.statusCode());
         assertEquals(HttpTaskServer.SUBTASK_CREATED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/subtask/");
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         subTasks = subTaskGson.fromJson(response.body(), new TypeToken<List<SubTask>>(){}.getType());
@@ -633,9 +779,13 @@ class HttpTaskServerTest {
             throws IOException, InterruptedException {
         String subTaskToJson = "{incorrect json}";
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(subTaskToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_BAD_REQUEST, response.statusCode());
@@ -656,16 +806,24 @@ class HttpTaskServerTest {
 
         String subTaskToJson = subTaskGson.toJson(subTask2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(subTaskToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_BAD_REQUEST, response.statusCode());
         assertEquals("Task execution time intersect with other tasks", response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/subtask/");
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> expected = List.of(subTask1);
@@ -683,16 +841,24 @@ class HttpTaskServerTest {
 
         String taskToJson = defaultGson.toJson(task1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(taskToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
         assertEquals(HttpTaskServer.TASK_UPDATED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/task/?id=" + task1.getId());
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Task task = defaultGson.fromJson(response.body(), Task.class);
@@ -711,16 +877,24 @@ class HttpTaskServerTest {
 
         String taskToJson = defaultGson.toJson(task2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/task/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(taskToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_BAD_REQUEST, response.statusCode());
         assertEquals(HttpTaskServer.TASK_NOT_FOUND, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/task/");
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(task1);
@@ -738,16 +912,24 @@ class HttpTaskServerTest {
 
         String epicToJson = epicGson.toJson(epic1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(epicToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
         assertEquals(HttpTaskServer.EPIC_UPDATED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/epic/?id=" + epic1.getId());
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Epic epic = epicGson.fromJson(response.body(), Epic.class);
@@ -766,16 +948,24 @@ class HttpTaskServerTest {
 
         String epicToJson = epicGson.toJson(epic2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/epic/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(epicToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_BAD_REQUEST, response.statusCode());
         assertEquals(HttpTaskServer.EPIC_NOT_FOUND, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/epic/");
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Epic> expected = List.of(epic1);
@@ -794,16 +984,24 @@ class HttpTaskServerTest {
 
         String subTaskToJson = subTaskGson.toJson(subTask1);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(subTaskToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_OK, response.statusCode());
         assertEquals(HttpTaskServer.SUBTASK_UPDATED_SUCCESSFULLY, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/subtask/?id=" + subTask1.getId());
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         SubTask subTask = subTaskGson.fromJson(response.body(), SubTask.class);
@@ -824,16 +1022,24 @@ class HttpTaskServerTest {
 
         String subTaskToJson = subTaskGson.toJson(subTask2);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/subtask/");
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(subTaskToJson);
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).POST(body).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(body)
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_BAD_REQUEST, response.statusCode());
         assertEquals(HttpTaskServer.SUBTASK_NOT_FOUND, response.body());
 
+        client = HttpClient.newHttpClient();
         uri = URI.create(URL + "/tasks/subtask/");
-        request = HttpRequest.newBuilder().uri(uri).GET().build();
+        request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<SubTask> expected = List.of(subTask1);
@@ -865,8 +1071,12 @@ class HttpTaskServerTest {
         subTask3.setDuration(Duration.ofMinutes(45));
         taskManager.createSubTask(subTask3);
 
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         List<Task> expected = List.of(subTask3, task3, task2, task1, subTask1, subTask2);
@@ -878,8 +1088,12 @@ class HttpTaskServerTest {
 
     @Test
     void getResponseEndpointNotAllowed_shouldReturnResponseEndpointNotAllowed() throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
         URI uri = URI.create(URL + "/tasks/not_found/");
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(HttpTaskServer.RESPONSE_CODE_METHOD_NOT_ALLOWED, response.statusCode());

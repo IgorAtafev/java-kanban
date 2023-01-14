@@ -60,18 +60,6 @@ public class HttpTaskServer {
 
     private final Map<String, List<Endpoint>> paths = new HashMap<>();
 
-    {
-        paths.put("/tasks/", List.of(Endpoint.GET_PRIORITIZED_TASKS));
-        paths.put("/tasks/history/", List.of(Endpoint.GET_HISTORY));
-        paths.put("/tasks/task/", List.of(Endpoint.GET_TASKS, Endpoint.POST_TASK, Endpoint.DELETE_TASKS));
-        paths.put("/tasks/epic/", List.of(Endpoint.GET_EPICS, Endpoint.POST_EPIC, Endpoint.DELETE_EPICS));
-        paths.put("/tasks/subtask/", List.of(Endpoint.GET_SUBTASKS, Endpoint.POST_SUBTASK, Endpoint.DELETE_SUBTASKS));
-        paths.put("/tasks/subtask/epic/\\?id=\\d+", List.of(Endpoint.GET_SUBTASKS_BY_EPIC));
-        paths.put("/tasks/task/\\?id=\\d+", List.of(Endpoint.GET_TASK_BY_ID, Endpoint.DELETE_TASK_BY_ID));
-        paths.put("/tasks/epic/\\?id=\\d+", List.of(Endpoint.GET_EPIC_BY_ID, Endpoint.DELETE_EPIC_BY_ID));
-        paths.put("/tasks/subtask/\\?id=\\d+", List.of(Endpoint.GET_SUBTASK_BY_ID, Endpoint.DELETE_SUBTASK_BY_ID));
-    }
-
     public HttpTaskServer(TaskManager taskManager) throws IOException {
         this.taskManager = taskManager;
 
@@ -82,6 +70,7 @@ public class HttpTaskServer {
 
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/tasks", this::handleTasks);
+        fillPaths();
     }
 
     public void start() {
@@ -431,5 +420,17 @@ public class HttpTaskServer {
         return taskManager.getSubTasks().stream()
                 .map(SubTask::getId)
                 .anyMatch(id -> subTaskId == id);
+    }
+
+    private void fillPaths() {
+        paths.put("/tasks/", List.of(Endpoint.GET_PRIORITIZED_TASKS));
+        paths.put("/tasks/history/", List.of(Endpoint.GET_HISTORY));
+        paths.put("/tasks/task/", List.of(Endpoint.GET_TASKS, Endpoint.POST_TASK, Endpoint.DELETE_TASKS));
+        paths.put("/tasks/epic/", List.of(Endpoint.GET_EPICS, Endpoint.POST_EPIC, Endpoint.DELETE_EPICS));
+        paths.put("/tasks/subtask/", List.of(Endpoint.GET_SUBTASKS, Endpoint.POST_SUBTASK, Endpoint.DELETE_SUBTASKS));
+        paths.put("/tasks/subtask/epic/\\?id=\\d+", List.of(Endpoint.GET_SUBTASKS_BY_EPIC));
+        paths.put("/tasks/task/\\?id=\\d+", List.of(Endpoint.GET_TASK_BY_ID, Endpoint.DELETE_TASK_BY_ID));
+        paths.put("/tasks/epic/\\?id=\\d+", List.of(Endpoint.GET_EPIC_BY_ID, Endpoint.DELETE_EPIC_BY_ID));
+        paths.put("/tasks/subtask/\\?id=\\d+", List.of(Endpoint.GET_SUBTASK_BY_ID, Endpoint.DELETE_SUBTASK_BY_ID));
     }
 }

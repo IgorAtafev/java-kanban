@@ -3,7 +3,7 @@ package ru.yandex.practicum.tasktracker.manager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.tasktracker.manager.exception.ManagerSaveException;
+import ru.yandex.practicum.tasktracker.manager.exception.HttpRequestSendException;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.Status;
 import ru.yandex.practicum.tasktracker.model.SubTask;
@@ -44,11 +44,10 @@ class HttpTaskManagerTest extends InMemoryTaskManagerTest {
 
     @Test
     void load_shouldThrowAnException_ifTheServerIsNotFound() {
-        ManagerSaveException exception = assertThrows(
-                ManagerSaveException.class,
+        HttpRequestSendException exception = assertThrows(
+                HttpRequestSendException.class,
                 () -> HttpTaskManager.load("http://not_found")
         );
-        assertEquals("An error occurred while executing the request", exception.getMessage());
     }
 
     @Test
