@@ -26,7 +26,7 @@ public class HttpTaskManager extends FileBackedTaskManager {
     private final Gson epicGson;
     private final Gson subTaskGson;
 
-    public HttpTaskManager(String url) {
+    private HttpTaskManager(String url) {
         client = new KVTaskClient(url);
 
         defaultGson = Managers.getDefaultGson();
