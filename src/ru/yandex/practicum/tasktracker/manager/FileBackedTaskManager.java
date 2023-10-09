@@ -27,6 +27,7 @@ import java.util.stream.Stream;
  * Saves tasks and browsing history to a file and restores them from a file
  */
 public class FileBackedTaskManager extends InMemoryTaskManager {
+
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private static final String FILE_HEADER = "id,type,name,status,description,start_time,duration,end_time,epic";
