@@ -25,6 +25,7 @@ public class KVTaskClient {
     public void put(String key, String value) {
         try {
             URI uri = URI.create(url + "/save/" + key + "/?API_TOKEN=" + token);
+
             HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(value);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
@@ -45,6 +46,7 @@ public class KVTaskClient {
     public String load(String key) {
         try {
             URI uri = URI.create(url + "/load/" + key + "/?API_TOKEN=" + token);
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
                     .GET()
@@ -61,6 +63,7 @@ public class KVTaskClient {
     private String register() {
         try {
             URI uri = URI.create(url + "/register/");
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
                     .GET()
