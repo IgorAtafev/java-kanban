@@ -9,6 +9,7 @@ import ru.yandex.practicum.tasktracker.server.KVServer;
 import ru.yandex.practicum.tasktracker.util.TaskAdapter;
 
 public class Managers {
+
     /**
      * Returns a default task manager
      * @return task manager

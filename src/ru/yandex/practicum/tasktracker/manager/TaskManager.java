@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface TaskManager {
+
     /**
      * Returns a list of viewed tasks
      * @return list of viewed tasks
