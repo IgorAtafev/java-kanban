@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class TaskAdapter extends TypeAdapter<Task> {
+
     private final TaskManager taskManager;
 
     public TaskAdapter(TaskManager taskManager) {

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class DateTimeFormatterHelper {
+
     public static String format(LocalDateTime dateTime, String pattern) {
         if (dateTime == null) {
             return "";
