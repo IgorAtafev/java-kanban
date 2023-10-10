@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface HistoryManager {
+
     /**
      * Adds a task to history
      * @param task

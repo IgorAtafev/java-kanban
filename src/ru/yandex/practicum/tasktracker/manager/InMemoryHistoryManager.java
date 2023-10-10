@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * The previous view should be deleted immediately after the new one appears - in O(1)
  */
 public class InMemoryHistoryManager implements HistoryManager {
+
     private Node first;
     private Node last;
     private final Map<Integer, Node> nodes = new HashMap<>();
