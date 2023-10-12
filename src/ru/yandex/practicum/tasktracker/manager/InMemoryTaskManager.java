@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class InMemoryTaskManager implements TaskManager {
+
     protected int nextTaskId = 0;
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
