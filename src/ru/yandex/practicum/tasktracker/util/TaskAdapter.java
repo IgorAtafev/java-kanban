@@ -26,6 +26,7 @@ public class TaskAdapter extends TypeAdapter<Task> {
     @Override
     public Task read(JsonReader jsonReader) throws IOException {
         final int nextInt = jsonReader.nextInt();
+
         return Stream.of(taskManager.getTasks(), taskManager.getEpics(), taskManager.getSubTasks())
                 .flatMap(List::stream)
                 .filter(task -> nextInt == task.getId())

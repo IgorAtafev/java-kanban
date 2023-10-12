@@ -14,6 +14,7 @@ import java.util.stream.Stream;
  * Saves tasks and browsing history on the server and restores them from the server
  */
 public class HttpTaskManager extends FileBackedTaskManager {
+
     private static final String TASKS_KEY = "tasks";
     private static final String EPICS_KEY = "epics";
     private static final String SUBTASKS_KEY = "subtasks";
@@ -59,7 +60,8 @@ public class HttpTaskManager extends FileBackedTaskManager {
         List<Epic> epics = taskManager.defaultGson.fromJson(epicsToJson, new TypeToken<List<Epic>>(){}.getType());
         epics.forEach(taskManager::updateEpic);
 
-        List<SubTask> subTasks = taskManager.subTaskGson.fromJson(subTasksToJson, new TypeToken<List<SubTask>>(){}.getType());
+        List<SubTask> subTasks = taskManager.subTaskGson.fromJson(subTasksToJson,
+                new TypeToken<List<SubTask>>(){}.getType());
         subTasks.forEach(taskManager::updateSubTask);
 
         List<Task> history = taskManager.taskGson.fromJson(historyToJson, new TypeToken<List<Task>>(){}.getType());
