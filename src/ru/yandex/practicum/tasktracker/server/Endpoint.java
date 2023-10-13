@@ -1,6 +1,7 @@
 package ru.yandex.practicum.tasktracker.server;
 
 public enum Endpoint {
+
     GET_HISTORY("GET"),
     GET_TASKS("GET"),
     GET_EPICS("GET"),
