@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KVServer {
+
     public static final int PORT = 8078;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
@@ -35,73 +36,73 @@ public class KVServer {
         server.stop(0);
     }
 
-    private void load(HttpExchange h) throws IOException {
+    private void load(HttpExchange exchange) throws IOException {
         try {
-            if (!hasAuth(h)) {
-                h.sendResponseHeaders(403, 0);
+            if (!hasAuth(exchange)) {
+                exchange.sendResponseHeaders(403, 0);
                 return;
             }
 
-            if ("GET".equals(h.getRequestMethod())) {
-                String key = h.getRequestURI().getPath().substring("/load/".length());
+            if ("GET".equals(exchange.getRequestMethod())) {
+                String key = exchange.getRequestURI().getPath().substring("/load/".length());
                 if (key.isEmpty()) {
-                    h.sendResponseHeaders(400, 0);
+                    exchange.sendResponseHeaders(400, 0);
                     return;
                 }
 
                 String value = data.get(key);
                 if (value == null) {
-                    h.sendResponseHeaders(400, 0);
+                    exchange.sendResponseHeaders(400, 0);
                     return;
                 }
-                sendText(h, value);
+                sendText(exchange, value);
             } else {
-                h.sendResponseHeaders(405, 0);
+                exchange.sendResponseHeaders(405, 0);
             }
         } finally {
-            h.close();
+            exchange.close();
         }
     }
 
-    private void save(HttpExchange h) throws IOException {
+    private void save(HttpExchange exchange) throws IOException {
         try {
-            if (!hasAuth(h)) {
-                h.sendResponseHeaders(403, 0);
+            if (!hasAuth(exchange)) {
+                exchange.sendResponseHeaders(403, 0);
                 return;
             }
 
-            if ("POST".equals(h.getRequestMethod())) {
-                String key = h.getRequestURI().getPath().substring("/save/".length());
+            if ("POST".equals(exchange.getRequestMethod())) {
+                String key = exchange.getRequestURI().getPath().substring("/save/".length());
                 if (key.isEmpty()) {
-                    h.sendResponseHeaders(400, 0);
+                    exchange.sendResponseHeaders(400, 0);
                     return;
                 }
 
-                String value = readText(h);
+                String value = readText(exchange);
                 if (value.isEmpty()) {
-                    h.sendResponseHeaders(400, 0);
+                    exchange.sendResponseHeaders(400, 0);
                     return;
                 }
 
                 data.put(key, value);
-                h.sendResponseHeaders(200, 0);
+                exchange.sendResponseHeaders(200, 0);
             } else {
-                h.sendResponseHeaders(405, 0);
+                exchange.sendResponseHeaders(405, 0);
             }
         } finally {
-            h.close();
+            exchange.close();
         }
     }
 
-    private void register(HttpExchange h) throws IOException {
+    private void register(HttpExchange exchange) throws IOException {
         try {
-            if ("GET".equals(h.getRequestMethod())) {
-                sendText(h, apiToken);
+            if ("GET".equals(exchange.getRequestMethod())) {
+                sendText(exchange, apiToken);
             } else {
-                h.sendResponseHeaders(405, 0);
+                exchange.sendResponseHeaders(405, 0);
             }
         } finally {
-            h.close();
+            exchange.close();
         }
     }
 
