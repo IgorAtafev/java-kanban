@@ -21,14 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 public class HttpTaskServer {
+
     public static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-
-    public static final int RESPONSE_CODE_OK = 200;
-    public static final int RESPONSE_CODE_CREATED = 201;
-    public static final int RESPONSE_CODE_BAD_REQUEST = 400;
-    public static final int RESPONSE_CODE_NOT_FOUND = 404;
-    public static final int RESPONSE_CODE_METHOD_NOT_ALLOWED = 405;
 
     public static final String ENDPOINT_NOT_ALLOWED = "Endpoint not allowed";
     public static final String TASK_NOT_FOUND = "Task with the specified ID was not found";
@@ -147,7 +142,7 @@ public class HttpTaskServer {
                     handleGetPrioritizedTasks(exchange);
                     break;
                 default:
-                    writeResponse(exchange, RESPONSE_CODE_METHOD_NOT_ALLOWED, ENDPOINT_NOT_ALLOWED,
+                    writeResponse(exchange, 405, ENDPOINT_NOT_ALLOWED,
                             CONTENT_TYPE_TEXT_PLAIN);
             }
         } finally {
@@ -166,22 +161,22 @@ public class HttpTaskServer {
     }
 
     private void handleGetHistory(HttpExchange exchange) throws IOException {
-        writeResponse(exchange, RESPONSE_CODE_OK, taskGson.toJson(taskManager.getHistory()),
+        writeResponse(exchange, 200, taskGson.toJson(taskManager.getHistory()),
                 CONTENT_TYPE_APPLICATION_JSON);
     }
 
     private void handleGetTasks(HttpExchange exchange) throws IOException {
-        writeResponse(exchange, RESPONSE_CODE_OK, defaultGson.toJson(taskManager.getTasks()),
+        writeResponse(exchange, 200, defaultGson.toJson(taskManager.getTasks()),
                 CONTENT_TYPE_APPLICATION_JSON);
     }
 
     private void handleGetEpics(HttpExchange exchange) throws IOException {
-        writeResponse(exchange, RESPONSE_CODE_OK, epicGson.toJson(taskManager.getEpics()),
+        writeResponse(exchange, 200, epicGson.toJson(taskManager.getEpics()),
                 CONTENT_TYPE_APPLICATION_JSON);
     }
 
     private void handleSubTasks(HttpExchange exchange) throws IOException {
-        writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTasks()),
+        writeResponse(exchange, 200, subTaskGson.toJson(taskManager.getSubTasks()),
                 CONTENT_TYPE_APPLICATION_JSON);
     }
 
@@ -189,10 +184,10 @@ public class HttpTaskServer {
         int epicId = getTaskId(query);
 
         if (isValidEpic(epicId)) {
-            writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTasksByEpic(epicId)),
+            writeResponse(exchange, 200, subTaskGson.toJson(taskManager.getSubTasksByEpic(epicId)),
                     CONTENT_TYPE_APPLICATION_JSON);
         } else {
-            writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, EPIC_NOT_FOUND,
+            writeResponse(exchange, 404, EPIC_NOT_FOUND,
                     CONTENT_TYPE_TEXT_PLAIN);
         }
     }
@@ -201,10 +196,10 @@ public class HttpTaskServer {
         int taskId = getTaskId(query);
 
         if (isValidTask(taskId)) {
-            writeResponse(exchange, RESPONSE_CODE_OK, defaultGson.toJson(taskManager.getTaskById(taskId)),
+            writeResponse(exchange, 200, defaultGson.toJson(taskManager.getTaskById(taskId)),
                     CONTENT_TYPE_APPLICATION_JSON);
         } else {
-            writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, TASK_NOT_FOUND,
+            writeResponse(exchange, 404, TASK_NOT_FOUND,
                     CONTENT_TYPE_TEXT_PLAIN);
         }
     }
@@ -213,10 +208,10 @@ public class HttpTaskServer {
         int epicId = getTaskId(query);
 
         if (isValidEpic(epicId)) {
-            writeResponse(exchange, RESPONSE_CODE_OK, epicGson.toJson(taskManager.getEpicById(epicId)),
+            writeResponse(exchange, 200, epicGson.toJson(taskManager.getEpicById(epicId)),
                     CONTENT_TYPE_APPLICATION_JSON);
         } else {
-            writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, EPIC_NOT_FOUND,
+            writeResponse(exchange, 404, EPIC_NOT_FOUND,
                     CONTENT_TYPE_TEXT_PLAIN);
         }
     }
@@ -225,10 +220,10 @@ public class HttpTaskServer {
         int subTaskId = getTaskId(query);
 
         if (isValidSubTask(subTaskId)) {
-            writeResponse(exchange, RESPONSE_CODE_OK, subTaskGson.toJson(taskManager.getSubTaskById(subTaskId)),
+            writeResponse(exchange, 200, subTaskGson.toJson(taskManager.getSubTaskById(subTaskId)),
                     CONTENT_TYPE_APPLICATION_JSON);
         } else {
-            writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, SUBTASK_NOT_FOUND,
+            writeResponse(exchange, 404, SUBTASK_NOT_FOUND,
                     CONTENT_TYPE_TEXT_PLAIN);
         }
     }
@@ -238,10 +233,10 @@ public class HttpTaskServer {
 
         if (isValidTask(taskId)) {
             taskManager.deleteTaskById(taskId);
-            writeResponse(exchange, RESPONSE_CODE_OK, TASK_DELETED_SUCCESSFULLY,
+            writeResponse(exchange, 200, TASK_DELETED_SUCCESSFULLY,
                     CONTENT_TYPE_TEXT_PLAIN);
         } else {
-            writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, TASK_NOT_FOUND,
+            writeResponse(exchange, 404, TASK_NOT_FOUND,
                     CONTENT_TYPE_TEXT_PLAIN);
         }
     }
@@ -251,10 +246,10 @@ public class HttpTaskServer {
 
         if (isValidEpic(epicId)) {
             taskManager.deleteEpicById(epicId);
-            writeResponse(exchange, RESPONSE_CODE_OK, EPIC_DELETED_SUCCESSFULLY,
+            writeResponse(exchange, 200, EPIC_DELETED_SUCCESSFULLY,
                     CONTENT_TYPE_TEXT_PLAIN);
         } else {
-            writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, EPIC_NOT_FOUND,
+            writeResponse(exchange, 404, EPIC_NOT_FOUND,
                     CONTENT_TYPE_TEXT_PLAIN);
         }
     }
@@ -264,29 +259,29 @@ public class HttpTaskServer {
 
         if (isValidSubTask(subTaskId)) {
             taskManager.deleteSubTaskById(subTaskId);
-            writeResponse(exchange, RESPONSE_CODE_OK, SUBTASK_DELETED_SUCCESSFULLY,
+            writeResponse(exchange, 200, SUBTASK_DELETED_SUCCESSFULLY,
                     CONTENT_TYPE_TEXT_PLAIN);
         } else {
-            writeResponse(exchange, RESPONSE_CODE_NOT_FOUND, SUBTASK_NOT_FOUND,
+            writeResponse(exchange, 404, SUBTASK_NOT_FOUND,
                     CONTENT_TYPE_TEXT_PLAIN);
         }
     }
 
     private void handleDeleteTasks(HttpExchange exchange) throws IOException {
         taskManager.deleteTasks();
-        writeResponse(exchange, RESPONSE_CODE_OK, TASKS_DELETED_SUCCESSFULLY,
+        writeResponse(exchange, 200, TASKS_DELETED_SUCCESSFULLY,
                 CONTENT_TYPE_TEXT_PLAIN);
     }
 
     private void handleDeleteEpics(HttpExchange exchange) throws IOException {
         taskManager.deleteEpics();
-        writeResponse(exchange, RESPONSE_CODE_OK, EPICS_DELETED_SUCCESSFULLY,
+        writeResponse(exchange, 200, EPICS_DELETED_SUCCESSFULLY,
                 CONTENT_TYPE_TEXT_PLAIN);
     }
 
     private void handleDeleteSubTasks(HttpExchange exchange) throws IOException {
         taskManager.deleteSubTasks();
-        writeResponse(exchange, RESPONSE_CODE_OK, SUBTASKS_DELETED_SUCCESSFULLY,
+        writeResponse(exchange, 200, SUBTASKS_DELETED_SUCCESSFULLY,
                 CONTENT_TYPE_TEXT_PLAIN);
     }
 
@@ -299,22 +294,22 @@ public class HttpTaskServer {
             try {
                 if (task.getId() == 0) {
                     taskManager.createTask(task);
-                    writeResponse(exchange, RESPONSE_CODE_CREATED, TASK_CREATED_SUCCESSFULLY,
+                    writeResponse(exchange, 201, TASK_CREATED_SUCCESSFULLY,
                             CONTENT_TYPE_TEXT_PLAIN);
                 } else if (isValidTask(task.getId())) {
                     taskManager.updateTask(task);
-                    writeResponse(exchange, RESPONSE_CODE_OK, TASK_UPDATED_SUCCESSFULLY,
+                    writeResponse(exchange, 200, TASK_UPDATED_SUCCESSFULLY,
                             CONTENT_TYPE_TEXT_PLAIN);
                 } else {
-                    writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, TASK_NOT_FOUND,
+                    writeResponse(exchange, 400, TASK_NOT_FOUND,
                             CONTENT_TYPE_TEXT_PLAIN);
                 }
             } catch (TaskIntersectionException e) {
-                writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, e.getMessage(),
+                writeResponse(exchange, 400, e.getMessage(),
                         CONTENT_TYPE_TEXT_PLAIN);
             }
         } catch (JsonSyntaxException e) {
-            writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, INCORRECT_JSON_RECEIVED,
+            writeResponse(exchange, 400, INCORRECT_JSON_RECEIVED,
                     CONTENT_TYPE_TEXT_PLAIN);
         }
     }
@@ -327,18 +322,18 @@ public class HttpTaskServer {
 
             if (epic.getId() == 0) {
                 taskManager.createEpic(epic);
-                writeResponse(exchange, RESPONSE_CODE_CREATED, EPIC_CREATED_SUCCESSFULLY,
+                writeResponse(exchange, 201, EPIC_CREATED_SUCCESSFULLY,
                         CONTENT_TYPE_TEXT_PLAIN);
             } else if (isValidEpic(epic.getId())) {
                 taskManager.updateEpic(epic);
-                writeResponse(exchange, RESPONSE_CODE_OK, EPIC_UPDATED_SUCCESSFULLY,
+                writeResponse(exchange, 200, EPIC_UPDATED_SUCCESSFULLY,
                         CONTENT_TYPE_TEXT_PLAIN);
             } else {
-                writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, EPIC_NOT_FOUND,
+                writeResponse(exchange, 400, EPIC_NOT_FOUND,
                         CONTENT_TYPE_TEXT_PLAIN);
             }
         } catch (JsonSyntaxException e) {
-            writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, INCORRECT_JSON_RECEIVED,
+            writeResponse(exchange, 400, INCORRECT_JSON_RECEIVED,
                     CONTENT_TYPE_TEXT_PLAIN);
         }
     }
@@ -352,28 +347,28 @@ public class HttpTaskServer {
             try {
                 if (subTask.getId() == 0) {
                     taskManager.createSubTask(subTask);
-                    writeResponse(exchange, RESPONSE_CODE_CREATED, SUBTASK_CREATED_SUCCESSFULLY,
+                    writeResponse(exchange, 201, SUBTASK_CREATED_SUCCESSFULLY,
                             CONTENT_TYPE_TEXT_PLAIN);
                 } else if (isValidSubTask(subTask.getId())) {
                     taskManager.updateSubTask(subTask);
-                    writeResponse(exchange, RESPONSE_CODE_OK, SUBTASK_UPDATED_SUCCESSFULLY,
+                    writeResponse(exchange, 200, SUBTASK_UPDATED_SUCCESSFULLY,
                             CONTENT_TYPE_TEXT_PLAIN);
                 } else {
-                    writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, SUBTASK_NOT_FOUND,
+                    writeResponse(exchange, 400, SUBTASK_NOT_FOUND,
                             CONTENT_TYPE_TEXT_PLAIN);
                 }
             } catch (TaskIntersectionException e) {
-                writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, e.getMessage(),
+                writeResponse(exchange, 400, e.getMessage(),
                         CONTENT_TYPE_TEXT_PLAIN);
             }
         } catch (JsonSyntaxException e) {
-            writeResponse(exchange, RESPONSE_CODE_BAD_REQUEST, INCORRECT_JSON_RECEIVED,
+            writeResponse(exchange, 400, INCORRECT_JSON_RECEIVED,
                     CONTENT_TYPE_TEXT_PLAIN);
         }
     }
 
     private void handleGetPrioritizedTasks(HttpExchange exchange) throws IOException {
-        writeResponse(exchange, RESPONSE_CODE_OK, taskGson.toJson(taskManager.getPrioritizedTasks()),
+        writeResponse(exchange, 200, taskGson.toJson(taskManager.getPrioritizedTasks()),
                 CONTENT_TYPE_APPLICATION_JSON);
     }
 
