@@ -275,7 +275,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(404, response.statusCode());
-        assertEquals(HttpTaskServer.TASK_NOT_FOUND, response.body());
+        assertEquals("Task with the specified ID was not found", response.body());
     }
 
     @Test
@@ -390,7 +390,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(404, response.statusCode());
-        assertEquals(HttpTaskServer.TASK_NOT_FOUND, response.body());
+        assertEquals("Task with the specified ID was not found", response.body());
     }
 
     @Test
@@ -893,7 +893,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(400, response.statusCode());
-        assertEquals(HttpTaskServer.TASK_NOT_FOUND, response.body());
+        assertEquals("Task with the specified ID was not found", response.body());
 
         uri = URI.create(URL + "/tasks/task/");
         request = HttpRequest.newBuilder()
@@ -1103,7 +1103,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(405, response.statusCode());
-        assertEquals(HttpTaskServer.ENDPOINT_NOT_ALLOWED, response.body());
+        assertEquals("Endpoint not allowed", response.body());
     }
 
     private void initTasks() {

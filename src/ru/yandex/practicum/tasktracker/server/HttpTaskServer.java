@@ -25,8 +25,6 @@ public class HttpTaskServer {
     public static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-    public static final String ENDPOINT_NOT_ALLOWED = "Endpoint not allowed";
-    public static final String TASK_NOT_FOUND = "Task with the specified ID was not found";
     public static final String EPIC_NOT_FOUND = "Epic with the specified ID was not found";
     public static final String SUBTASK_NOT_FOUND = "Subtask with the specified ID was not found";
     public static final String TASK_DELETED_SUCCESSFULLY = "Task deleted successfully";
@@ -139,7 +137,7 @@ public class HttpTaskServer {
                     handleGetPrioritizedTasks(exchange);
                     break;
                 default:
-                    writeResponse(exchange, 405, ENDPOINT_NOT_ALLOWED,"text/plain");
+                    writeResponse(exchange, 405,"Endpoint not allowed","text/plain");
             }
         } finally {
             exchange.close();
@@ -194,7 +192,8 @@ public class HttpTaskServer {
             writeResponse(exchange, 200, defaultGson.toJson(taskManager.getTaskById(taskId)),
                     "application/json");
         } else {
-            writeResponse(exchange, 404, TASK_NOT_FOUND,"text/plain");
+            writeResponse(exchange, 404, "Task with the specified ID was not found",
+                    "text/plain");
         }
     }
 
@@ -227,7 +226,8 @@ public class HttpTaskServer {
             taskManager.deleteTaskById(taskId);
             writeResponse(exchange, 200, TASK_DELETED_SUCCESSFULLY,"text/plain");
         } else {
-            writeResponse(exchange, 404, TASK_NOT_FOUND,"text/plain");
+            writeResponse(exchange, 404, "Task with the specified ID was not found",
+                    "text/plain");
         }
     }
 
@@ -282,7 +282,8 @@ public class HttpTaskServer {
                     taskManager.updateTask(task);
                     writeResponse(exchange, 200, TASK_UPDATED_SUCCESSFULLY,"text/plain");
                 } else {
-                    writeResponse(exchange, 400, TASK_NOT_FOUND,"text/plain");
+                    writeResponse(exchange, 400, "Task with the specified ID was not found",
+                            "text/plain");
                 }
             } catch (TaskIntersectionException e) {
                 writeResponse(exchange, 400, e.getMessage(),"text/plain");
