@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HttpTaskServerTest {
+
     private static final String URL = "http://localhost:" + HttpTaskServer.PORT;
 
     private KVServer kvServer;
