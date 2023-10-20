@@ -38,7 +38,6 @@ public class HttpTaskServer {
     public static final String TASK_UPDATED_SUCCESSFULLY = "Task updated successfully";
     public static final String EPIC_CREATED_SUCCESSFULLY = "Epic created successfully";
     public static final String EPIC_UPDATED_SUCCESSFULLY = "Epic updated successfully";
-    public static final String SUBTASK_CREATED_SUCCESSFULLY = "Subtask created successfully";
 
     private final TaskManager taskManager;
     private final Gson defaultGson;
@@ -321,7 +320,7 @@ public class HttpTaskServer {
             try {
                 if (subTask.getId() == 0) {
                     taskManager.createSubTask(subTask);
-                    writeResponse(exchange, 201, SUBTASK_CREATED_SUCCESSFULLY,"text/plain");
+                    writeResponse(exchange, 201, "Subtask created successfully","text/plain");
                 } else if (isValidSubTask(subTask.getId())) {
                     taskManager.updateSubTask(subTask);
                     writeResponse(exchange, 200, "Subtask updated successfully","text/plain");

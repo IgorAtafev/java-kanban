@@ -765,7 +765,7 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(201, response.statusCode());
-        assertEquals(HttpTaskServer.SUBTASK_CREATED_SUCCESSFULLY, response.body());
+        assertEquals("Subtask created successfully", response.body());
 
         uri = URI.create(URL + "/tasks/subtask/");
         request = HttpRequest.newBuilder()
