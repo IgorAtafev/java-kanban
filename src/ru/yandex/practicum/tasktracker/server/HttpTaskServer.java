@@ -37,7 +37,6 @@ public class HttpTaskServer {
     public static final String TASK_CREATED_SUCCESSFULLY = "Task created successfully";
     public static final String TASK_UPDATED_SUCCESSFULLY = "Task updated successfully";
     public static final String EPIC_CREATED_SUCCESSFULLY = "Epic created successfully";
-    public static final String EPIC_UPDATED_SUCCESSFULLY = "Epic updated successfully";
 
     private final TaskManager taskManager;
     private final Gson defaultGson;
@@ -302,7 +301,7 @@ public class HttpTaskServer {
                 writeResponse(exchange, 201, EPIC_CREATED_SUCCESSFULLY,"text/plain");
             } else if (isValidEpic(epic.getId())) {
                 taskManager.updateEpic(epic);
-                writeResponse(exchange, 200, EPIC_UPDATED_SUCCESSFULLY,"text/plain");
+                writeResponse(exchange, 200, "Epic updated successfully","text/plain");
             } else {
                 writeResponse(exchange, 400, EPIC_NOT_FOUND,"text/plain");
             }

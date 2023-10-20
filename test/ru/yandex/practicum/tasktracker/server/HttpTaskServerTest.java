@@ -929,7 +929,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        assertEquals(HttpTaskServer.EPIC_UPDATED_SUCCESSFULLY, response.body());
+        assertEquals("Epic updated successfully", response.body());
 
         uri = URI.create(URL + "/tasks/epic/?id=" + epic1.getId());
         request = HttpRequest.newBuilder()
