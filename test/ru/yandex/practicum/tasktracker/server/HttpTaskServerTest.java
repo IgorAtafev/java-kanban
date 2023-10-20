@@ -1001,7 +1001,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        assertEquals(HttpTaskServer.SUBTASK_UPDATED_SUCCESSFULLY, response.body());
+        assertEquals("Subtask updated successfully", response.body());
 
         uri = URI.create(URL + "/tasks/subtask/?id=" + subTask1.getId());
         request = HttpRequest.newBuilder()
