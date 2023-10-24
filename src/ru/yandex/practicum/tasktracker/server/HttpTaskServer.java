@@ -27,11 +27,6 @@ public class HttpTaskServer {
 
     public static final String EPIC_NOT_FOUND = "Epic with the specified ID was not found";
     public static final String SUBTASK_NOT_FOUND = "Subtask with the specified ID was not found";
-    public static final String TASK_DELETED_SUCCESSFULLY = "Task deleted successfully";
-    public static final String EPIC_DELETED_SUCCESSFULLY = "Epic deleted successfully";
-    public static final String SUBTASK_DELETED_SUCCESSFULLY = "Subtask deleted successfully";
-    public static final String TASKS_DELETED_SUCCESSFULLY = "All tasks deleted successfully";
-    public static final String EPICS_DELETED_SUCCESSFULLY = "All epics deleted successfully";
     public static final String INCORRECT_JSON_RECEIVED = "Incorrect JSON received";
 
     private final TaskManager taskManager;
@@ -217,7 +212,7 @@ public class HttpTaskServer {
 
         if (isValidTask(taskId)) {
             taskManager.deleteTaskById(taskId);
-            writeResponse(exchange, 200, TASK_DELETED_SUCCESSFULLY,"text/plain");
+            writeResponse(exchange, 200, "Task deleted successfully","text/plain");
         } else {
             writeResponse(exchange, 404, "Task with the specified ID was not found",
                     "text/plain");
@@ -229,7 +224,7 @@ public class HttpTaskServer {
 
         if (isValidEpic(epicId)) {
             taskManager.deleteEpicById(epicId);
-            writeResponse(exchange, 200, EPIC_DELETED_SUCCESSFULLY,"text/plain");
+            writeResponse(exchange, 200, "Epic deleted successfully","text/plain");
         } else {
             writeResponse(exchange, 404, EPIC_NOT_FOUND,"text/plain");
         }
@@ -240,7 +235,7 @@ public class HttpTaskServer {
 
         if (isValidSubTask(subTaskId)) {
             taskManager.deleteSubTaskById(subTaskId);
-            writeResponse(exchange, 200, SUBTASK_DELETED_SUCCESSFULLY,"text/plain");
+            writeResponse(exchange, 200, "Subtask deleted successfully","text/plain");
         } else {
             writeResponse(exchange, 404, SUBTASK_NOT_FOUND,"text/plain");
         }
@@ -248,12 +243,12 @@ public class HttpTaskServer {
 
     private void handleDeleteTasks(HttpExchange exchange) throws IOException {
         taskManager.deleteTasks();
-        writeResponse(exchange, 200, TASKS_DELETED_SUCCESSFULLY,"text/plain");
+        writeResponse(exchange, 200, "All tasks deleted successfully","text/plain");
     }
 
     private void handleDeleteEpics(HttpExchange exchange) throws IOException {
         taskManager.deleteEpics();
-        writeResponse(exchange, 200, EPICS_DELETED_SUCCESSFULLY,"text/plain");
+        writeResponse(exchange, 200, "All epics deleted successfully","text/plain");
     }
 
     private void handleDeleteSubTasks(HttpExchange exchange) throws IOException {
