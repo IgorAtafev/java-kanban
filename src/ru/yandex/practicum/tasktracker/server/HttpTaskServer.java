@@ -32,11 +32,7 @@ public class HttpTaskServer {
     public static final String SUBTASK_DELETED_SUCCESSFULLY = "Subtask deleted successfully";
     public static final String TASKS_DELETED_SUCCESSFULLY = "All tasks deleted successfully";
     public static final String EPICS_DELETED_SUCCESSFULLY = "All epics deleted successfully";
-    public static final String SUBTASKS_DELETED_SUCCESSFULLY = "All subtasks deleted successfully";
     public static final String INCORRECT_JSON_RECEIVED = "Incorrect JSON received";
-    public static final String TASK_CREATED_SUCCESSFULLY = "Task created successfully";
-    public static final String TASK_UPDATED_SUCCESSFULLY = "Task updated successfully";
-    public static final String EPIC_CREATED_SUCCESSFULLY = "Epic created successfully";
 
     private final TaskManager taskManager;
     private final Gson defaultGson;
@@ -262,7 +258,7 @@ public class HttpTaskServer {
 
     private void handleDeleteSubTasks(HttpExchange exchange) throws IOException {
         taskManager.deleteSubTasks();
-        writeResponse(exchange, 200, SUBTASKS_DELETED_SUCCESSFULLY,"text/plain");
+        writeResponse(exchange, 200, "All subtasks deleted successfully","text/plain");
     }
 
     private void handlePostTask(HttpExchange exchange) throws IOException {
@@ -274,10 +270,12 @@ public class HttpTaskServer {
             try {
                 if (task.getId() == 0) {
                     taskManager.createTask(task);
-                    writeResponse(exchange, 201, TASK_CREATED_SUCCESSFULLY,"text/plain");
+                    writeResponse(exchange, 201, "Task created successfully",
+                            "text/plain");
                 } else if (isValidTask(task.getId())) {
                     taskManager.updateTask(task);
-                    writeResponse(exchange, 200, TASK_UPDATED_SUCCESSFULLY,"text/plain");
+                    writeResponse(exchange, 200, "Task updated successfully",
+                            "text/plain");
                 } else {
                     writeResponse(exchange, 400, "Task with the specified ID was not found",
                             "text/plain");
@@ -298,7 +296,7 @@ public class HttpTaskServer {
 
             if (epic.getId() == 0) {
                 taskManager.createEpic(epic);
-                writeResponse(exchange, 201, EPIC_CREATED_SUCCESSFULLY,"text/plain");
+                writeResponse(exchange, 201, "Epic created successfully","text/plain");
             } else if (isValidEpic(epic.getId())) {
                 taskManager.updateEpic(epic);
                 writeResponse(exchange, 200, "Epic updated successfully","text/plain");
@@ -319,10 +317,12 @@ public class HttpTaskServer {
             try {
                 if (subTask.getId() == 0) {
                     taskManager.createSubTask(subTask);
-                    writeResponse(exchange, 201, "Subtask created successfully","text/plain");
+                    writeResponse(exchange, 201, "Subtask created successfully",
+                            "text/plain");
                 } else if (isValidSubTask(subTask.getId())) {
                     taskManager.updateSubTask(subTask);
-                    writeResponse(exchange, 200, "Subtask updated successfully","text/plain");
+                    writeResponse(exchange, 200, "Subtask updated successfully",
+                            "text/plain");
                 } else {
                     writeResponse(exchange, 400, SUBTASK_NOT_FOUND,"text/plain");
                 }

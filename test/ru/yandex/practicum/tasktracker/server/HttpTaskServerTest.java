@@ -561,7 +561,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        assertEquals(HttpTaskServer.SUBTASKS_DELETED_SUCCESSFULLY, response.body());
+        assertEquals("All subtasks deleted successfully", response.body());
 
         uri = URI.create(URL + "/tasks/subtask/");
         request = HttpRequest.newBuilder().uri(uri).GET().build();
@@ -602,7 +602,7 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(201, response.statusCode());
-        assertEquals(HttpTaskServer.TASK_CREATED_SUCCESSFULLY, response.body());
+        assertEquals("Task created successfully", response.body());
 
         uri = URI.create(URL + "/tasks/task/");
         request = HttpRequest.newBuilder()
@@ -702,7 +702,7 @@ class HttpTaskServerTest {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(201, response.statusCode());
-        assertEquals(HttpTaskServer.EPIC_CREATED_SUCCESSFULLY, response.body());
+        assertEquals("Epic created successfully", response.body());
 
         uri = URI.create(URL + "/tasks/epic/");
         request = HttpRequest.newBuilder()
@@ -858,7 +858,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-        assertEquals(HttpTaskServer.TASK_UPDATED_SUCCESSFULLY, response.body());
+        assertEquals("Task updated successfully", response.body());
 
         uri = URI.create(URL + "/tasks/task/?id=" + task1.getId());
         request = HttpRequest.newBuilder()
@@ -1094,7 +1094,8 @@ class HttpTaskServerTest {
     }
 
     @Test
-    void getResponseEndpointNotAllowed_shouldReturnResponseEndpointNotAllowed() throws IOException, InterruptedException {
+    void getResponseEndpointNotAllowed_shouldReturnResponseEndpointNotAllowed() throws IOException,
+            InterruptedException {
         URI uri = URI.create(URL + "/tasks/not_found/");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
