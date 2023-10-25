@@ -25,8 +25,6 @@ public class HttpTaskServer {
     public static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-    public static final String INCORRECT_JSON_RECEIVED = "Incorrect JSON received";
-
     private final TaskManager taskManager;
     private final Gson defaultGson;
     private final Gson taskGson;
@@ -282,7 +280,7 @@ public class HttpTaskServer {
                 writeResponse(exchange, 400, e.getMessage(),"text/plain");
             }
         } catch (JsonSyntaxException e) {
-            writeResponse(exchange, 400, INCORRECT_JSON_RECEIVED,"text/plain");
+            writeResponse(exchange, 400, "Incorrect JSON received","text/plain");
         }
     }
 
@@ -303,7 +301,7 @@ public class HttpTaskServer {
                         "text/plain");
             }
         } catch (JsonSyntaxException e) {
-            writeResponse(exchange, 400, INCORRECT_JSON_RECEIVED,"text/plain");
+            writeResponse(exchange, 400, "Incorrect JSON received","text/plain");
         }
     }
 
@@ -330,7 +328,7 @@ public class HttpTaskServer {
                 writeResponse(exchange, 400, e.getMessage(),"text/plain");
             }
         } catch (JsonSyntaxException e) {
-            writeResponse(exchange, 400, INCORRECT_JSON_RECEIVED,"text/plain");
+            writeResponse(exchange, 400, "Incorrect JSON received","text/plain");
         }
     }
 

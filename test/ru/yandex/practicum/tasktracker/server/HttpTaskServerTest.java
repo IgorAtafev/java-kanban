@@ -633,7 +633,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(400, response.statusCode());
-        assertEquals(HttpTaskServer.INCORRECT_JSON_RECEIVED, response.body());
+        assertEquals("Incorrect JSON received", response.body());
     }
 
     @Test
@@ -733,7 +733,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(400, response.statusCode());
-        assertEquals(HttpTaskServer.INCORRECT_JSON_RECEIVED, response.body());
+        assertEquals("Incorrect JSON received", response.body());
     }
 
     @Test
@@ -796,7 +796,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(400, response.statusCode());
-        assertEquals(HttpTaskServer.INCORRECT_JSON_RECEIVED, response.body());
+        assertEquals("Incorrect JSON received", response.body());
     }
 
     @Test
