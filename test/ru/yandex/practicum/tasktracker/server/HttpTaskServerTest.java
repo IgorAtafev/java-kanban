@@ -347,7 +347,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(404, response.statusCode());
-        assertEquals(HttpTaskServer.SUBTASK_NOT_FOUND, response.body());
+        assertEquals("Subtask with the specified ID was not found", response.body());
     }
 
     @Test
@@ -485,7 +485,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(404, response.statusCode());
-        assertEquals(HttpTaskServer.SUBTASK_NOT_FOUND, response.body());
+        assertEquals("Subtask with the specified ID was not found", response.body());
     }
 
     @Test
@@ -1039,7 +1039,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(400, response.statusCode());
-        assertEquals(HttpTaskServer.SUBTASK_NOT_FOUND, response.body());
+        assertEquals("Subtask with the specified ID was not found", response.body());
 
         uri = URI.create(URL + "/tasks/subtask/");
         request = HttpRequest.newBuilder()

@@ -25,7 +25,6 @@ public class HttpTaskServer {
     public static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-    public static final String SUBTASK_NOT_FOUND = "Subtask with the specified ID was not found";
     public static final String INCORRECT_JSON_RECEIVED = "Incorrect JSON received";
 
     private final TaskManager taskManager;
@@ -204,7 +203,8 @@ public class HttpTaskServer {
             writeResponse(exchange, 200, subTaskGson.toJson(taskManager.getSubTaskById(subTaskId)),
                     "application/json");
         } else {
-            writeResponse(exchange, 404, SUBTASK_NOT_FOUND,"text/plain");
+            writeResponse(exchange, 404, "Subtask with the specified ID was not found",
+                    "text/plain");
         }
     }
 
@@ -239,7 +239,8 @@ public class HttpTaskServer {
             taskManager.deleteSubTaskById(subTaskId);
             writeResponse(exchange, 200, "Subtask deleted successfully","text/plain");
         } else {
-            writeResponse(exchange, 404, SUBTASK_NOT_FOUND,"text/plain");
+            writeResponse(exchange, 404, "Subtask with the specified ID was not found",
+                    "text/plain");
         }
     }
 
@@ -322,7 +323,8 @@ public class HttpTaskServer {
                     writeResponse(exchange, 200, "Subtask updated successfully",
                             "text/plain");
                 } else {
-                    writeResponse(exchange, 400, SUBTASK_NOT_FOUND,"text/plain");
+                    writeResponse(exchange, 400, "Subtask with the specified ID was not found",
+                            "text/plain");
                 }
             } catch (TaskIntersectionException e) {
                 writeResponse(exchange, 400, e.getMessage(),"text/plain");
