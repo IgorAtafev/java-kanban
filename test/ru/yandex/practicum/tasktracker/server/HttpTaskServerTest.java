@@ -242,7 +242,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(404, response.statusCode());
-        assertEquals(HttpTaskServer.EPIC_NOT_FOUND, response.body());
+        assertEquals("Epic with the specified ID was not found", response.body());
     }
 
     @Test
@@ -310,7 +310,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(404, response.statusCode());
-        assertEquals(HttpTaskServer.EPIC_NOT_FOUND, response.body());
+        assertEquals("Epic with the specified ID was not found", response.body());
     }
 
     @Test
@@ -436,7 +436,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(404, response.statusCode());
-        assertEquals(HttpTaskServer.EPIC_NOT_FOUND, response.body());
+        assertEquals("Epic with the specified ID was not found", response.body());
     }
 
     @Test
@@ -965,7 +965,7 @@ class HttpTaskServerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(400, response.statusCode());
-        assertEquals(HttpTaskServer.EPIC_NOT_FOUND, response.body());
+        assertEquals("Epic with the specified ID was not found", response.body());
 
         uri = URI.create(URL + "/tasks/epic/");
         request = HttpRequest.newBuilder()

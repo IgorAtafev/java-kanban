@@ -25,7 +25,6 @@ public class HttpTaskServer {
     public static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-    public static final String EPIC_NOT_FOUND = "Epic with the specified ID was not found";
     public static final String SUBTASK_NOT_FOUND = "Subtask with the specified ID was not found";
     public static final String INCORRECT_JSON_RECEIVED = "Incorrect JSON received";
 
@@ -169,7 +168,8 @@ public class HttpTaskServer {
             writeResponse(exchange, 200, subTaskGson.toJson(taskManager.getSubTasksByEpic(epicId)),
                     "application/json");
         } else {
-            writeResponse(exchange, 404, EPIC_NOT_FOUND,"text/plain");
+            writeResponse(exchange, 404, "Epic with the specified ID was not found",
+                    "text/plain");
         }
     }
 
@@ -192,7 +192,8 @@ public class HttpTaskServer {
             writeResponse(exchange, 200, epicGson.toJson(taskManager.getEpicById(epicId)),
                     "application/json");
         } else {
-            writeResponse(exchange, 404, EPIC_NOT_FOUND,"text/plain");
+            writeResponse(exchange, 404, "Epic with the specified ID was not found",
+                    "text/plain");
         }
     }
 
@@ -226,7 +227,8 @@ public class HttpTaskServer {
             taskManager.deleteEpicById(epicId);
             writeResponse(exchange, 200, "Epic deleted successfully","text/plain");
         } else {
-            writeResponse(exchange, 404, EPIC_NOT_FOUND,"text/plain");
+            writeResponse(exchange, 404, "Epic with the specified ID was not found",
+                    "text/plain");
         }
     }
 
@@ -296,7 +298,8 @@ public class HttpTaskServer {
                 taskManager.updateEpic(epic);
                 writeResponse(exchange, 200, "Epic updated successfully","text/plain");
             } else {
-                writeResponse(exchange, 400, EPIC_NOT_FOUND,"text/plain");
+                writeResponse(exchange, 400, "Epic with the specified ID was not found",
+                        "text/plain");
             }
         } catch (JsonSyntaxException e) {
             writeResponse(exchange, 400, INCORRECT_JSON_RECEIVED,"text/plain");
