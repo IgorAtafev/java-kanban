@@ -3,6 +3,7 @@ package ru.yandex.practicum.tasktracker.model;
 import java.util.Objects;
 
 public class SubTask extends Task {
+
     private Epic epic;
 
     public Epic getEpic() {
