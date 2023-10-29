@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HttpTaskManagerTest extends InMemoryTaskManagerTest {
+
     private static final String URL = "http://localhost:" + KVServer.PORT;
 
     private KVServer kvServer;
