@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EpicTest {
+
     private Epic epic1;
     private Epic epic2;
     private SubTask subTask1;
